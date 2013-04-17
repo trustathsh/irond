@@ -1,0 +1,1227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="irond demo" resourceRoot="${projectDir}" soapui-version="3.6" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="Service" type="wsdl" bindingName="{http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl}Service" soapVersion="1_2" anonymous="optional" definition="../svn/ifmap/trunk/xml-schemas/modded/ifmap-2.0-soap-12.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/home/trustuser/svn/ifmap/trunk/xml-schemas/modded/ifmap-2.0-soap-12.wsdl"><con:part><con:url>file:/home/trustuser/svn/ifmap/trunk/xml-schemas/modded/ifmap-2.0-soap-12.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl" xmlns:ifmapwsdl="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap12/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <wsdl:types>
+    <xsd:schema>
+      <xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" schemaLocation="ifmap-base-2.0v17.xsd"/>
+      <xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2" schemaLocation="ifmap-metadata-2.0v8.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="Response">
+    <wsdl:part name="response" element="ifmap:response"/>
+  </wsdl:message>
+  <wsdl:message name="PublishRequest">
+    <wsdl:part name="request" element="ifmap:publish"/>
+  </wsdl:message>
+  <wsdl:message name="SearchRequest">
+    <wsdl:part name="request" element="ifmap:search"/>
+  </wsdl:message>
+  <wsdl:message name="SubscribeRequest">
+    <wsdl:part name="request" element="ifmap:subscribe"/>
+  </wsdl:message>
+  <wsdl:message name="PollRequest">
+    <wsdl:part name="request" element="ifmap:poll"/>
+  </wsdl:message>
+  <wsdl:message name="PurgePublisherRequest">
+    <wsdl:part name="request" element="ifmap:purgePublisher"/>
+  </wsdl:message>
+  <wsdl:message name="NewSessionRequest">
+    <wsdl:part name="request" element="ifmap:newSession"/>
+  </wsdl:message>
+  <wsdl:message name="RenewSessionRequest">
+    <wsdl:part name="request" element="ifmap:renewSession"/>
+  </wsdl:message>
+  <wsdl:message name="AttachSessionRequest">
+    <wsdl:part name="request" element="ifmap:attachSession"/>
+  </wsdl:message>
+  <wsdl:message name="EndSessionRequest">
+    <wsdl:part name="request" element="ifmap:endSession"/>
+  </wsdl:message>
+  <wsdl:portType name="IfmapPortType">
+    <wsdl:operation name="publish">
+      <wsdl:input message="ifmapwsdl:PublishRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <wsdl:input message="ifmapwsdl:SearchRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <wsdl:input message="ifmapwsdl:SubscribeRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="poll">
+      <wsdl:input message="ifmapwsdl:PollRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="purgePublisher">
+      <wsdl:input message="ifmapwsdl:PurgePublisherRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="newSession">
+      <wsdl:input message="ifmapwsdl:NewSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="attachSession">
+      <wsdl:input message="ifmapwsdl:AttachSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="renewSession">
+      <wsdl:input message="ifmapwsdl:RenewSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="endSession">
+      <wsdl:input message="ifmapwsdl:EndSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Service" type="ifmapwsdl:IfmapPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="publish">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="poll">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="purgePublisher">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="newSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attachSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="renewSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="endSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IfmapService">
+    <wsdl:documentation>IF-MAP Service</wsdl:documentation>
+    <wsdl:port name="IfmapPort" binding="ifmapwsdl:Service">
+      <soap:address location="https://localhost:8443/axis2/services/IfmapService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/home/trustuser/svn/ifmap/trunk/xml-schemas/modded/ifmap-base-2.0v17.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+  <!--18.02.10 aw - Some modifications to get the wsdl2java
+       tool generating better code. Additionally removed
+       minOccurs and maxOccurs in the UpdateType-->
+  <!--top-level elements represent all the possible
+       requests and responses-->
+  <xsd:element name="publish" type="PublishRequestType"/>
+  <xsd:element name="search" type="SearchRequestType"/>
+  <xsd:element name="subscribe" type="SubscribeRequestType"/>
+  <xsd:element name="poll" type="PollRequestType"/>
+  <xsd:element name="purgePublisher" type="PurgePublisherRequestType"/>
+  <xsd:element name="newSession" type="NewSessionRequestType"/>
+  <xsd:element name="attachSession">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="sessionAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="renewSession" type="renewSessionType"/>
+  <xsd:element name="endSession" type="endSessionType"/>
+  <!--Tobias Ruhe's Dump Request-->
+  <xsd:element name="dump" type="DumpRequestType"/>
+  <xsd:element name="response" type="ResponseType"/>
+  <xsd:complexType name="renewSessionType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <xsd:complexType name="endSessionType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--AccessRequestType Identifier represents an endpoint
+       which is attempting to gain entry to the network-->
+  <xsd:complexType name="AccessRequestType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--DeviceType Identifier represents a physical asset
+       which is attempting to gain entry to the network-->
+  <xsd:complexType name="DeviceType">
+    <xsd:choice>
+      <xsd:element name="aik-name" type="xsd:string"/>
+      <xsd:element name="name" type="xsd:string"/>
+    </xsd:choice>
+  </xsd:complexType>
+  <!--IdentityType Identifier represents an end-user-->
+  <xsd:complexType name="IdentityType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="aik-name"/>
+          <xsd:enumeration value="distinguished-name"/>
+          <xsd:enumeration value="dns-name"/>
+          <xsd:enumeration value="email-address"/>
+          <xsd:enumeration value="hip-hit"/>
+          <xsd:enumeration value="kerberos-principal"/>
+          <xsd:enumeration value="trusted-platform-module"/>
+          <xsd:enumeration value="username"/>
+          <xsd:enumeration value="sip-uri"/>
+          <xsd:enumeration value="tel-uri"/>
+          <xsd:enumeration value="other"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="other-type-definition" type="xsd:string"/>
+  </xsd:complexType>
+  <!--IPAddressType Identifier represents a single IP address-->
+  <xsd:complexType name="IPAddressType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+    <xsd:attribute name="type">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="IPv4"/>
+          <xsd:enumeration value="IPv6"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--MACAddressType Identifier represents an Ethernet MAC address-->
+  <xsd:complexType name="MACAddressType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--MetadataListType is a container for metadata within
+       other elements-->
+  <xsd:complexType name="MetadataListType">
+    <xsd:sequence>
+      <xsd:any minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--FilterType is a subset of XPath-->
+  <xsd:simpleType name="FilterType">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:complexType name="NewSessionRequestType">
+    <xsd:attribute name="max-poll-result-size" type="xsd:integer" use="optional"/>
+  </xsd:complexType>
+  <xsd:attributeGroup name="validationAttributes">
+    <xsd:attribute name="validation" use="optional">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="BaseOnly"/>
+          <xsd:enumeration value="MetadataOnly"/>
+          <xsd:enumeration value="All"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="sessionAttributes">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+  </xsd:attributeGroup>
+  <!--SessionRequestType is stateful session handling-->
+  <xsd:complexType name="SessionRequestType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--UpdateType is the type for requests that update metadata-->
+  <xsd:complexType name="UpdateType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="lifetime" default="session">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="session"/>
+          <xsd:enumeration value="forever"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--Just a copy of UpdateType to produce better code when using
+       JAXBRI code generation. getUpdate or getDelete was created,
+       but no getNotify-->
+  <xsd:complexType name="NotifyType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType"/>
+    </xsd:sequence>
+    <xsd:attribute name="lifetime" default="session">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="session"/>
+          <xsd:enumeration value="forever"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--DeleteType is the type for the delete element of
+       a publish request, and specifies which metadata
+       to delete.-->
+  <xsd:complexType name="DeleteType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="filter" type="FilterType" use="optional"/>
+  </xsd:complexType>
+  <!--PublishRequestType updates or deletes metadata-->
+  <xsd:complexType name="PublishRequestType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="update" type="UpdateType"/>
+        <xsd:element name="notify" type="NotifyType"/>
+        <xsd:element name="delete" type="DeleteType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--SearchType specifies the parameters for a search, and is used
+       for the search element as well as the update sub-element of a
+       subscribe element-->
+  <xsd:complexType name="SearchType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="1">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="match-links" type="FilterType"/>
+    <xsd:attribute name="max-depth" type="xsd:unsignedInt"/>
+    <xsd:attribute name="terminal-identifier-type" type="xsd:string"/>
+    <xsd:attribute name="max-size" type="xsd:unsignedInt"/>
+    <xsd:attribute name="result-filter" type="FilterType"/>
+  </xsd:complexType>
+  <!--SearchRequestType queries the server for matching
+       metadata-->
+  <xsd:complexType name="SearchRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="SearchType">
+        <xsd:attributeGroup ref="sessionAttributes"/>
+        <xsd:attributeGroup ref="validationAttributes"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!--DeleteSearchRequestType is for removing subscriptions-->
+  <xsd:complexType name="DeleteSearchRequestType">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--SubscribeRequestType is for managing subscriptions-->
+  <xsd:complexType name="SubscribeRequestType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="update">
+          <xsd:complexType>
+            <xsd:complexContent>
+              <xsd:extension base="SearchType">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+              </xsd:extension>
+            </xsd:complexContent>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="delete" type="DeleteSearchRequestType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--PollRequestType is for polling for notification of
+       metadata changes that match subscriptions-->
+  <xsd:complexType name="PollRequestType">
+    <xsd:attributeGroup ref="validationAttributes"/>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--PurgePublisherRequestType is for removing all metadata
+       published by a particular publisher-->
+  <xsd:complexType name="PurgePublisherRequestType">
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string"/>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--ResultItemType is for search or poll results showing
+       metadata attached to identifiers and links-->
+  <xsd:complexType name="ResultItemType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--SearchResultType contains the identifiers and links
+       along with associated metadata-->
+  <xsd:complexType name="SearchResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="UpdateResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="DeleteResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="NotifyResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--PollResultType contains a searchResult for each
+       subscription that had changes since the last poll-->
+  <xsd:complexType name="PollResultType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="searchResult" type="SearchResultType"/>
+        <xsd:element name="updateResult" type="UpdateResultType"/>
+        <xsd:element name="deleteResult" type="DeleteResultType"/>
+        <xsd:element name="notifyResult" type="NotifyResultType"/>
+        <xsd:element name="errorResult" type="ErrorResultType"/>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--ErrorResultType indicates the cause of an error-->
+  <xsd:complexType name="ErrorResultType">
+    <xsd:sequence>
+      <xsd:element name="errorString" type="xsd:string"/>
+    </xsd:sequence>
+    <xsd:attribute name="errorCode" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="AccessDenied"/>
+          <xsd:enumeration value="Failure"/>
+          <xsd:enumeration value="InvalidIdentifier"/>
+          <xsd:enumeration value="InvalidIdentifierType"/>
+          <xsd:enumeration value="IdentifierTooLong"/>
+          <xsd:enumeration value="InvalidMetadata"/>
+          <xsd:enumeration value="InvalidSchemaVersion"/>
+          <xsd:enumeration value="InvalidSessionID"/>
+          <xsd:enumeration value="MetadataTooLong"/>
+          <xsd:enumeration value="SearchResultsTooBig"/>
+          <xsd:enumeration value="PollResultsTooBig"/>
+          <xsd:enumeration value="SystemError"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--SessionResultType is for stateful session handling-->
+  <xsd:complexType name="SessionResultType">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <xsd:complexType name="NewSessionResultType">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="max-poll-result-size" type="xsd:integer" use="optional"/>
+  </xsd:complexType>
+  <!--ResponseType encapsulates results from all the different
+       requests-->
+  <xsd:complexType name="ResponseType">
+    <xsd:choice>
+      <xsd:element name="errorResult" type="ErrorResultType"/>
+      <xsd:element name="pollResult" type="PollResultType"/>
+      <xsd:element name="searchResult" type="SearchResultType"/>
+      <xsd:element name="subscribeReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="publishReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="purgePublisherReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="newSessionResult" type="NewSessionResultType"/>
+      <xsd:element name="attachSessionResult" type="SessionResultType"/>
+      <xsd:element name="renewSessionResult">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="endSessionResult">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="dumpResult" type="DumpResponseType"/>
+    </xsd:choice>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--metadataAttributes specifies attributes on metadata which are
+       used by MAP servers.
+
+       ifmap-publisher-id and ifmap-timestamp are added to all metadata by the
+       server before storage in the database. MAP clients MUST NOT
+       include ifmap-publisher-id or ifmap-timestamp in published metadata.
+
+       cardinality is used by the MAP client to indicate to the server
+       whether the metadata can have multiple values.
+
+       anyAttribute enables metadata elements which include the
+       ifmap:metadataAttributes attributeGroup to add new attributes
+       for use with future versions of IF-MAP.-->
+  <xsd:attributeGroup name="metadataAttributes">
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string"/>
+    <xsd:attribute name="ifmap-timestamp" type="xsd:dateTime"/>
+    <xsd:anyAttribute/>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="singleValueMetadataAttributes">
+    <xsd:attributeGroup ref="metadataAttributes"/>
+    <xsd:attribute name="ifmap-cardinality" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="singleValue"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="multiValueMetadataAttributes">
+    <xsd:attributeGroup ref="metadataAttributes"/>
+    <xsd:attribute name="ifmap-cardinality" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="multiValue"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <!--12.08.10 aw - Modifications to add Tobias Ruhe's
+  	dump operation-->
+  <xsd:complexType name="DumpRequestType">
+    <xsd:complexContent>
+      <xsd:restriction base="xsd:anyType">
+        <xsd:attributeGroup ref="sessionAttributes"/>
+        <xsd:attribute name="identifier" type="xsd:string"/>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="DumpResponseType">
+    <xsd:complexContent>
+      <xsd:restriction base="xsd:anyType">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="access-request" type="AccessRequestType"/>
+          <xsd:element name="identity" type="IdentityType"/>
+          <xsd:element name="ip-address" type="IPAddressType"/>
+          <xsd:element name="mac-address" type="MACAddressType"/>
+          <xsd:element name="device" type="DeviceType"/>
+        </xsd:choice>
+        <xsd:attribute name="last-update" type="xsd:string"/>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/home/trustuser/svn/ifmap/trunk/xml-schemas/modded/ifmap-metadata-2.0v8.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+  <!--18.02.10 (aw) The import element was added later as
+        wsdl2java complained about it being missing-->
+  <xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" schemaLocation="ifmap-base-2.0v17.xsd"/>
+  <!--Schema for IF-MAP Metadata for Network Security-->
+  <!--access-request-device is link metadata that
+       associates an access-request identifier with
+       a device identifier-->
+  <xsd:element name="access-request-device">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--access-request-ip is link metadata that
+       associates an access-request identifier with
+       an ip-address identifier-->
+  <xsd:element name="access-request-ip">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--access-request-mac is link metadata that
+       associates an access-request identifier with
+       a mac-address identifier-->
+  <xsd:element name="access-request-mac">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--authenticated-as is link metadata that
+       associates an access-request identifier with
+       an identity identifier-->
+  <xsd:element name="authenticated-as">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--authenticated-by is link metadata that
+       associates an access-request identifier with
+       the device identifier of the PDP that
+       authenticated the access-request-->
+  <xsd:element name="authenticated-by">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--capability is access-request metadata that names
+       a collection of privileges assigned to an endpoint-->
+  <xsd:element name="capability">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="administrative-domain" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--device-attribute is link metadata that associates
+       an access-request identifier with a device identifier
+       and which includes information about the device such
+       as its health-->
+  <xsd:element name="device-attribute">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--device-characteristic is link metadata that associates
+       an access-request, ip-address, or mac-address identifier
+       of an endpoint with the device identifier of the MAP
+       Client publishing the metadata, which includes information
+       about what kind of device is represented by the 
+       mac-address, ip-address, or access-request-->
+  <xsd:element name="device-characteristic">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="manufacturer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="model" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="os" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="os-version" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="device-type" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="discovered-time" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discoverer-id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discovery-method" type="xsd:string" minOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--device-ip is link metadata that associates a device
+     identifier of a PDP with an IP address which it has
+     authenticated-->
+  <xsd:element name="device-ip">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--discovered-by is link metadata that associates
+       an ip-address or mac-address identifier of an endpoint
+       with the device identifier of a MAP Client that has
+       noticed the endpoint on the network-->
+  <xsd:element name="discovered-by">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--enforcement-report is link metadata between a device 
+     identifier of a PEP or flow controller and an ip-address
+     or mac-address identifier of an endpoint, indicating an
+     enforcement action in progress-->
+  <xsd:element name="enforcement-report">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="enforcement-action" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="block"/>
+              <xsd:enumeration value="quarantine"/>
+              <xsd:enumeration value="other"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="other-type-definition" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="enforcement-reason" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--event is access-request, identity, ip-address, or
+       mac-address metadata that describes activity of
+       interest detected on the network-->
+  <xsd:element name="event">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discovered-time" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discoverer-id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="magnitude" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="100"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="confidence" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="100"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="significance" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="critical"/>
+              <xsd:enumeration value="important"/>
+              <xsd:enumeration value="informational"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="type" minOccurs="0" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="p2p"/>
+              <xsd:enumeration value="cve"/>
+              <xsd:enumeration value="botnet infection"/>
+              <xsd:enumeration value="worm infection"/>
+              <xsd:enumeration value="excessive flows"/>
+              <xsd:enumeration value="behavioral change"/>
+              <xsd:enumeration value="policy violation"/>
+              <xsd:enumeration value="other"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="other-type-definition" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="information" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="vulnerability-uri" type="xsd:anyURI" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--ip-mac is link metadata that associates an
+       ip-address identifier with a mac-address identifier
+       and which includes optional DHCP lease information-->
+  <xsd:element name="ip-mac">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="start-time" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="end-time" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="dhcp-server" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--layer2-information is link metadata that
+       associates an access-request identifier with
+       the device identifier of the PEP through
+       which the endpoint is accessing the network-->
+  <xsd:element name="layer2-information">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="vlan" type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="vlan-name" type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="port" type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="administrative-domain" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--location indicates information about the location of an 
+    identity, ip-address, or mac-address-->
+  <xsd:element name="location">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="location-information" minOccurs="1" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="type" type="xsd:string"/>
+            <xsd:attribute name="value" type="xsd:string"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="discovered-time" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discoverer-id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--request-for-investigation is link metadata that associates
+     an ip-address or mac-address identifier with a device
+     identifier representing a PDP that would like a Sensor to
+     investigate the ip-address or mac-address-->
+  <xsd:element name="request-for-investigation">
+    <xsd:complexType>
+      <xsd:attribute name="qualifier" type="xsd:string" use="optional"/>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--role is link metadata that associates an
+       access-request identifier with an identity
+       identifier and which names collections of
+       privileges associated with the end-user-->
+  <xsd:element name="role">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="administrative-domain" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:simpleType name="wlan-security-enum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="open"/>
+      <xsd:enumeration value="wep"/>
+      <xsd:enumeration value="tkip"/>
+      <xsd:enumeration value="ccmp"/>
+      <xsd:enumeration value="bip"/>
+      <xsd:enumeration value="other"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="wlan-security-type">
+    <xsd:simpleContent>
+      <xsd:extension base="wlan-security-enum">
+        <xsd:attribute name="other-type-definition" type="xsd:string" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <!--wlan-information is link metadata between an access-
+     request and device, and indicates properties of the
+     wireless LAN connection of the access-request-->
+  <xsd:element name="wlan-information">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="ssid" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="ssid-unicast-security" minOccurs="1" maxOccurs="unbounded" type="wlan-security-type"></xsd:element>
+        <xsd:element name="ssid-group-security" minOccurs="1" maxOccurs="1" type="wlan-security-type"/>
+        <xsd:element name="ssid-management-security" minOccurs="1" maxOccurs="unbounded" type="wlan-security-type"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--unexpected-behavior is access-request, identity, ip-
+     address, or mac-address metadata that describes activity
+of interest detected on the network-->
+  <xsd:element name="unexpected-behavior">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="discovered-time" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="discoverer-id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="information" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="magnitude" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="100"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="confidence" minOccurs="0" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="100"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="significance" minOccurs="1" maxOccurs="1">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="critical"/>
+              <xsd:enumeration value="important"/>
+              <xsd:enumeration value="informational"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ifmap:multiValueMetadataAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="attachSession" bindingOperationName="attachSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:attachSession session-id="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/attachSessionRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="endSession" bindingOperationName="endSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:endSession session-id="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/endSessionRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="newSession" bindingOperationName="newSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:newSession max-poll-result-size="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/newSessionRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="poll" bindingOperationName="poll" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:poll validation="?" session-id="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/pollRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="publish" bindingOperationName="publish" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:publish session-id="?" validation="?">
+         <!--You have a CHOICE of the next 3 items at this level-->
+         <update lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+            <metadata>
+               <!--You may enter ANY elements at this point-->
+            </metadata>
+         </update>
+         <notify lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+            <metadata>
+               <!--You may enter ANY elements at this point-->
+            </metadata>
+         </notify>
+         <delete filter="?">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+         </delete>
+      </ns:publish>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/publishRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="purgePublisher" bindingOperationName="purgePublisher" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:purgePublisher ifmap-publisher-id="?" session-id="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/purgePublisherRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="renewSession" bindingOperationName="renewSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:renewSession session-id="?"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/renewSessionRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="search" bindingOperationName="search" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:search match-links="?" max-depth="?" terminal-identifier-type="?" max-size="?" result-filter="?" session-id="?" validation="?">
+         <!--You have a CHOICE of the next 5 items at this level-->
+         <access-request administrative-domain="?" name="?"/>
+         <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+         <ip-address administrative-domain="?" value="?" type="?"/>
+         <mac-address administrative-domain="?" value="?"/>
+         <device>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <aik-name>?</aik-name>
+            <name>?</name>
+         </device>
+      </ns:search>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/searchRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="subscribe" bindingOperationName="subscribe" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:subscribe session-id="?" validation="?">
+         <!--You have a CHOICE of the next 2 items at this level-->
+         <update match-links="?" max-depth="?" terminal-identifier-type="?" max-size="?" result-filter="?" name="?">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+         </update>
+         <delete name="?"/>
+      </ns:subscribe>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/subscribeRequest"/></con:call></con:operation></con:interface><con:testSuite name="ifmap metadata for network security example 1+2"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="802.1X AR via L2 Switch PEP authenticated by PDP" searchProperties="true" id="96cae182-8550-487e-9414-18df0f21c252"><con:settings/><con:testStep type="request" name="step 01: newSession from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step 01: newSession from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:newSession/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="copy session-id"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step02: publish access-request capability from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay1"><con:settings/><con:config><delay>10000</delay></con:config></con:testStep><con:testStep type="request" name="step02: publish access-request capability from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step02: publish access-request capability from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+<update>
+  <access-request name="111:33"/>
+    <metadata>
+      <meta:capability ifmap-cardinality="multiValue">
+         <name>access-finance-service-allowed</name>
+      </meta:capability>
+    </metadata>
+</update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="copy session-id 2"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step03: publish access-request + identity + role from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay2"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step03: publish access-request + identity + role from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step03: publish access-request + identity + role from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <identity name="john.smith" type="username"/>
+    <metadata>
+      <meta:role ifmap-cardinality="multiValue">
+        <name>finance</name>
+      </meta:role>
+      <meta:role ifmap-cardinality="multiValue">
+        <name>employee</name>
+      </meta:role>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="copy session-id 3"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step04: publish access-request + authenticated-as + identity from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay3"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step04: publish access-request + authenticated-as + identity from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step04: publish access-request + authenticated-as + identity from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <identity name="john.smith" type="username"/>
+    <metadata>
+      <meta:authenticated-as ifmap-cardinality="singleValue"/>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 4"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step05: publish layer2info from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay4"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step05: publish layer2info from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step05: publish layer2info from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <device>
+      <name>111:4</name>
+    </device>
+    <metadata>
+      <meta:layer2-information ifmap-cardinality="multiValue">
+        <vlan>1234</vlan>
+        <port>12</port>
+      </meta:layer2-information>
+    </metadata>
+  </update>
+  <update>
+    <device>
+      <name>111:4</name>
+    </device>
+    <ip-address value="192.0.2.55"/>
+    <metadata>
+      <meta:device-ip ifmap-cardinality="singleValue"/>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 5"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step06: publish access-request mac from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay5"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step06: publish access-request mac from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step06: publish access-request mac from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <mac-address value="00:11:22:33:44:55"/>
+    <metadata>
+      <meta:access-request-mac ifmap-cardinality="singleValue"/>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 6"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step07: publish metadata about PDP from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay6"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step07: publish metadata about PDP from PDP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step07: publish metadata about PDP from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <device>
+      <name>111:0</name>
+    </device>
+    <metadata>
+      <meta:authenticated-by ifmap-cardinality="singleValue"/>
+    </metadata>
+  </update>
+  <update>
+    <device>
+      <name>111:0</name>
+    </device>
+    <ip-address value="192.0.2.60"/>
+    <metadata>
+      <meta:device-ip ifmap-cardinality="singleValue"/>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 7"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step08: publish access-request device attributes</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay7"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step08: publish access-request device attributes"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step08: publish access-request device attributes"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <access-request name="111:33"/>
+    <device>
+      <name>111:55</name>
+    </device>
+    <metadata>
+      <meta:access-request-device ifmap-cardinality="singleValue"/>
+      <meta:device-attribute ifmap-cardinality="multiValue">
+        <name>anti-virus-running</name>
+      </meta:device-attribute>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 8"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step09: publish IP MAC from DHCP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay8"><con:settings/><con:config><delay>20000</delay></con:config></con:testStep><con:testStep type="request" name="step09: publish IP MAC from DHCP"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step09: publish IP MAC from DHCP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:publish session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update>
+    <mac-address value="00:11:22:33:44:55"/>
+    <ip-address value="192.0.2.7"/>
+    <metadata>
+      <meta:ip-mac ifmap-cardinality="multiValue">
+        <start-time>2010-10-20T12:21:39Z</start-time>
+        <end-time>2010-10-21T12:21:39Z</end-time>
+	<dhcp-server>"My DHCP Server"</dhcp-server>
+      </meta:ip-mac>
+    </metadata>
+  </update>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 9"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step10: subscribe to events</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="step10: subscribe to events"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step10: subscribe to events"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+<ifmap:subscribe session-id="658183781AA7B6B0B3B270D88F1AB388">
+  <update name="1" match-links="meta:access-request-mac or meta:ip-mac" max-depth="2" result-filter="meta:event">
+          <access-request name="111:33"/>
+  </update>
+</ifmap:subscribe>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 10"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step11: PDP poll</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="step11: PDP poll"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step11: PDP poll"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request>&lt;env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+&lt;env:Body>
+&lt;ifmap:poll session-id="658183781AA7B6B0B3B270D88F1AB388"/>
+&lt;/env:Body>
+&lt;/env:Envelope></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 11"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step 12: search</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="step 12: search" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>search</con:operation><con:request name="step 12: search"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:search session-id="658183781AA7B6B0B3B270D88F1AB388" max-depth="10">
+         <!--You have a CHOICE of the next 5 items at this level-->
+         <access-request name="111:33"/>
+      </ns:search>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id 12"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>cpsession-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>step 01: newSession from PDP</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step 13: endSession from PDP</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="step 13: endSession from PDP" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step 13: endSession from PDP"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:endSession session-id="658183781AA7B6B0B3B270D88F1AB388"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Sensor pubslihes event metadata via notify" searchProperties="true" id="f5b0e0da-8843-4761-82f6-0a342617e327"><con:settings/><con:testStep type="request" name="newSession from Sensor"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="newSession from Sensor"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:newSession max-poll-result-size="1000000"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>sensor</con:username><con:password>sensor</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="session-id"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>copy session-id</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>newSession from Sensor</con:sourceStep><con:sourcePath>//@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>step02: publish event to ip</con:targetStep><con:targetPath>//@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="step02: publish event to ip"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="step02: publish event to ip"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443/axis2/services/IfmapService</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:meta="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2">
+<env:Body>
+  <ifmap:publish session-id="C9AF8E3C5777F0361F106FFC328915EC">
+    <notify>
+      <ip-address value="192.0.2.7" type="IPv4"/>
+      <metadata>
+        <meta:event ifmap-cardinality="multiValue">
+          <name>Kazaa In use</name>
+          <discovered-time>2010-10-20T16:00:00Z</discovered-time>
+          <discoverer-id>"Snort IDS"</discoverer-id>
+          <magnitude>45</magnitude>
+          <confidence>100</confidence>
+          <significance>important</significance>
+          <type>policy violation</type>
+          <information>Possible MP3 file sharing violation</information>
+        </meta:event>
+      </metadata>
+    </notify>
+</ifmap:publish>
+</env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:username>sensor</con:username><con:password>sensor</con:password><con:domain/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/></con:soapui-project>

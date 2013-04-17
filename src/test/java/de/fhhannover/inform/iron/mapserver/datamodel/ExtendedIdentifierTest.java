@@ -1,0 +1,223 @@
+package de.fhhannover.inform.iron.mapserver.datamodel;
+
+/*
+ * #%L
+ * ====================================================
+ *   _____                _     ____  _____ _   _ _   _
+ *  |_   _|_ __ _   _ ___| |_  / __ \|  ___| | | | | | |
+ *    | | | '__| | | / __| __|/ / _` | |_  | |_| | |_| |
+ *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
+ *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
+ *                             \____/
+ * 
+ * =====================================================
+ * 
+ * Fachhochschule Hannover 
+ * (University of Applied Sciences and Arts, Hannover)
+ * Faculty IV, Dept. of Computer Science
+ * Ricklinger Stadtweg 118, 30459 Hannover, Germany
+ * 
+ * Email: trust@f4-i.fh-hannover.de
+ * Website: http://trust.inform.fh-hannover.de/
+ * 
+ * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * research group at the Fachhochschule Hannover.
+ * 
+ * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
+ * JAVA. irond supports both basic authentication and certificate-based 
+ * authentication (using X.509 certificates) of MAP clients. irond is
+ * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
+ * developement was carried out during the ESUKOM research project.
+ * %%
+ * Copyright (C) 2010 - 2013 Trust@FHH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+import static junit.framework.Assert.*;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
+import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
+
+
+/**
+ * Extended Identifier tests.
+ * 
+ * These tests likely need to be adapted when there's a real test-suite
+ * from the TCG for extended identifiers.
+ * 
+ * @author aw
+ */
+public class ExtendedIdentifierTest {
+
+	private static String valid = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " administrative-domain=&quot;mydomain&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 "&gt;&lt;/network&gt;";
+
+	private static String validMultiElement = "&lt;parent xmlns=&quot;http://ns&quot;" +
+										 " administrative-domain=&quot;mydomain&quot;" +
+										 "&gt;" +
+										 "&lt;child value=&quot;child&quot;&gt;&lt;/child&gt;" +
+										 "&lt;/parent&gt;";
+
+	private static String validNoAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 "&gt;&lt;/network&gt;";
+
+	private static String validEmptyAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " administrative-domain=&quot;&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 "&gt;&lt;/network&gt;";
+	
+	private static String validAttrWrong = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 " administrative-domain=&quot;mydomain&quot;" +
+										 "&gt;&lt;/network&gt;";
+	
+	private static String validNoEscape = "<network xmlns=\"http://ns\"" +
+									 " administrative-domain=\"mydomain\"" +
+									 " ip=\"192.168.0.2\"></network>";
+
+	private static String validBadNorm = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 " administrative-domain=&quot;mydomain&quot;" +
+										 "/&gt;";
+	private static String validBadNormSpace = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 "     ip=&quot;192.168.0.1&quot;" +
+										 "     administrative-domain=&quot;mydomain&quot;" +
+										 "/&gt;";
+
+	private static String validWithNewline = "&lt;network xmlns=&quot;http://ns&quot;" +
+										 " administrative-domain=&quot;mydomain&quot;" +
+										 " ip=&quot;192.168.0.1&quot;" +
+										 "&gt;\n&lt;/network&gt;";
+
+	private static String noNS = "&lt;network" +
+								 " administrative-domain=&quot;mydomain&quot;" +
+								 " ip=&quot;192.168.0.1&quot;" +
+								 "&gt;&lt;/network&gt;";
+
+	private static String unusedNS = "&lt;network xmlns=&quot;http://ns&quot;" +
+									 " xmlns:unused=&quot;http://unused&quot;" +
+									 " administrative-domain=&quot;mydomain&quot;" +
+									 " ip=&quot;192.168.0.1&quot;" +
+									 "&gt;&lt;/network&gt;";
+
+	private static String multiNS = "&lt;parent xmlns=&quot;http://ns&quot;" +
+									 " administrative-domain=&quot;mydomain&quot;" +
+									 "&gt;" +
+									 "&lt;child xmlns=&quot;http://ns2&quot;" +
+									 " value=&quot;child&quot;&gt;&lt;/child&gt;" +
+									 "&lt;/parent&gt;";
+	
+	
+	@BeforeClass
+	public static void before() {
+		DataModelService.newInstance(DummyDataModelConf.getDummyConf());
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testNonXmlName() throws InvalidIdentifierException {
+		Identity i = new Identity("blub", "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test
+	public void testValid() throws InvalidIdentifierException {
+		Identity i = new Identity(valid, "", "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Test
+	public void testValid2() throws InvalidIdentifierException {
+		Identity i = new Identity(valid, null, "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testAttrOrdering() throws InvalidIdentifierException {
+		Identity i = new Identity(validAttrWrong, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testAdmDomainMissing() throws InvalidIdentifierException {
+		Identity i = new Identity(validNoAdmDom, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testAdmDomainEmpty() throws InvalidIdentifierException {
+		Identity i = new Identity(validEmptyAdmDom, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testValidButAdministrativeDomain() throws InvalidIdentifierException {
+		Identity i = new Identity(valid, "admdom", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testUnescapedValid() throws InvalidIdentifierException {
+		Identity i = new Identity(validNoEscape, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testBadNormStartEndTags() throws InvalidIdentifierException {
+		Identity i = new Identity(validBadNorm, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testBadSpaces() throws InvalidIdentifierException {
+		Identity i = new Identity(validBadNormSpace, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testWithNewline() throws InvalidIdentifierException {
+		Identity i = new Identity(validWithNewline, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testNoNs() throws InvalidIdentifierException {
+		Identity i = new Identity(noNS, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test(expected=InvalidIdentifierException.class)
+	public void testUnusedNS() throws InvalidIdentifierException {
+		Identity i = new Identity(unusedNS, "", "extended", IdentityTypeEnum.other);
+		assertNull(i);
+	}
+
+	@Test
+	public void testMultiElement() throws InvalidIdentifierException {
+		Identity i = new Identity(validMultiElement, "", "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Test
+	public void testMultiNS() throws InvalidIdentifierException {
+		Identity i = new Identity(multiNS, "", "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+}

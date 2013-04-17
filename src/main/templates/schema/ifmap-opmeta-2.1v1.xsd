@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns="http://www.trustedcomputinggroup.org/2012/IFMAP-OPERATIONAL-METADATA/1" targetNamespace="http://www.trustedcomputinggroup.org/2012/IFMAP-OPERATIONAL-METADATA/1">
+	<xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" schemaLocation="ifmap-base-2.0v17.xsd"/>
+	<!-- a singleValue metadata published on a device identifier that is unique and represents the MAP 
+		Client. MAP Clients SHOULD update the client-time metadata with a lifetime of session. -->
+	<xsd:element name="client-time">
+		<xsd:complexType>
+			<xsd:attribute name="current-timestamp" type="xsd:dateTime" use="required"/>
+			<xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns="http://trust.inform.fh-hannover.de/2012/NETWORK-METADATA-EXAMPLE/1" targetNamespace="http://trust.inform.fh-hannover.de/2012/NETWORK-METADATA-EXAMPLE/1">
+	<xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" schemaLocation="ifmap-base-2.0v17.xsd"/>
+	<!-- Example XSD for vendor-specific metadata which represents a part-of relation
+	     between devices located on the same subnet as shown in ifmapj-examples -->
+	<xsd:element name="part-of">
+		<xsd:complexType>
+			<xsd:attribute name="dhcp-lease-time" type="xsd:string" />
+			<xsd:attribute name="link-status" type="xsd:string" use="required" />
+			<xsd:attributeGroup ref="ifmap:singleValueMetadataAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

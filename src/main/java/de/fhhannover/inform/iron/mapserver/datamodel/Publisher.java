@@ -1,0 +1,214 @@
+package de.fhhannover.inform.iron.mapserver.datamodel;
+
+/*
+ * #%L
+ * ====================================================
+ *   _____                _     ____  _____ _   _ _   _
+ *  |_   _|_ __ _   _ ___| |_  / __ \|  ___| | | | | | |
+ *    | | | '__| | | / __| __|/ / _` | |_  | |_| | |_| |
+ *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
+ *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
+ *                             \____/
+ * 
+ * =====================================================
+ * 
+ * Fachhochschule Hannover 
+ * (University of Applied Sciences and Arts, Hannover)
+ * Faculty IV, Dept. of Computer Science
+ * Ricklinger Stadtweg 118, 30459 Hannover, Germany
+ * 
+ * Email: trust@f4-i.fh-hannover.de
+ * Website: http://trust.inform.fh-hannover.de/
+ * 
+ * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * research group at the Fachhochschule Hannover.
+ * 
+ * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
+ * JAVA. irond supports both basic authentication and certificate-based 
+ * authentication (using X.509 certificates) of MAP clients. irond is
+ * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
+ * developement was carried out during the ESUKOM research project.
+ * %%
+ * Copyright (C) 2010 - 2013 Trust@FHH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.Collections;
+import java.util.List;
+
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
+import de.fhhannover.inform.iron.mapserver.datamodel.search.SubscriptionState;
+import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
+import de.fhhannover.inform.iron.mapserver.utils.LengthCheck;
+import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
+
+/**
+ * This class represents a Publisher which in general represents a MAPC.
+ * 
+ * During a call to newSession() a new Publisher is generated.
+ * 
+ * A publisher has references to its published metadata. Splitted up into
+ * lifetime and session metadata to be easily removed when endSession() or
+ * purgePublisher() is called.
+ * 
+ * 
+ * @author aw
+ * @version 0.1
+ * 
+ */
+public class Publisher {
+ 
+	/**
+	 * The Publishers ifmap-publisher-id
+	 */
+	private final String mPublisherId;
+	
+	/**
+	 * The session-id, this can be null if the Publisher currently has no 
+	 * session open but still has metadata in the graph
+	 */
+	private String mSessionId;
+	
+	private final List<MetadataHolder> mSessionMetadata;
+	
+	private final List<MetadataHolder> mForeverMetadata;
+	
+	private SubscriptionState mSubscriptionState;
+	
+	public Publisher(String publisherId, String sessionId, Integer mprs) {
+		
+		NullCheck.check(publisherId, "publisherId is null");
+		NullCheck.check(sessionId, "sessionId is null");
+		LengthCheck.checkMin(publisherId, 1, "publisherId length bad");
+		LengthCheck.checkMin(sessionId, 1, "sessionId length bad");
+		
+		mSubscriptionState = new SubscriptionState();
+		mSessionMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
+		mForeverMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
+		mPublisherId = publisherId;
+		mSessionId = sessionId;
+		
+		mSubscriptionState.setMaxPollResultSize(mprs);
+	}
+	 
+	
+	/**
+	 * Set the session id of this publisher. Only works if the sessionId
+	 * is not null
+	 * 
+	 * @param sid
+	 */
+	public void setSessionId(String sid) {
+			mSessionId = sid;
+	}
+	
+	/**
+	 * The only way to set the sessionId attribute to null.
+	 */
+	public void deleteSessionId() {
+		setSessionId(null);
+	}
+	
+	/**
+	 * Add a reference to the given metadata. The implementation decides
+	 * whether it is added into the session metadata list or lifetime
+	 * metadata list.
+	 * 
+	 * @param m
+	 */
+	public void addMetadataHolder(MetadataHolder m) {
+		NullCheck.check(m, "metadataHolder is null");
+		switch (m.getLifetime()) {
+		case session:
+			addSessionMetadata(m);
+			break;
+			
+		case forever:
+			addLifeTimeMetadata(m);
+			break;
+		}
+	}
+	
+	private void addSessionMetadata(MetadataHolder m) {
+		mSessionMetadata.add(m);
+	}
+	
+	private void addLifeTimeMetadata(MetadataHolder m) {
+		mForeverMetadata.add(m);
+	}
+	
+	/**
+	 * @return a read-only list of the session metadata.
+	 */
+	public List<MetadataHolder> getSessionMetadata() {
+		return Collections.unmodifiableList(mSessionMetadata);
+	}
+	 
+	/**
+	 * @return a read-only list of the lifetime metadata.
+	 */
+	public List<MetadataHolder> getForeverMetadata() {
+		return Collections.unmodifiableList(mForeverMetadata);
+	}
+	
+	public String getPublisherId() {
+			return mPublisherId;
+	}
+	
+	public String getSessionId() {
+		return mSessionId;
+	}
+	
+	/**
+	 * Remove metadata from a publisher.
+	 * 
+	 * Check which lifetime the Metadata has and call
+	 * the corresponding remove methods.
+	 * 
+	 * @param m
+	 */
+	public boolean removeMetadataHolder(MetadataHolder m) {
+		NullCheck.check(m, "metadataHolder is null");
+		boolean res = false;
+		switch (m.getLifetime()) {
+		case session:
+			res = removeSessionMetadata(m);
+			break;
+			
+		case forever:
+			res = removeLifeTimeMetadata(m);
+			break;
+		}
+		return res;
+	}
+	
+
+	private boolean removeLifeTimeMetadata(MetadataHolder m) {
+		return mForeverMetadata.remove(m);
+	}
+
+	private boolean removeSessionMetadata(MetadataHolder m) {
+		return mSessionMetadata.remove(m);
+	}
+	
+	public SubscriptionState getSubscriptionState() {
+		return mSubscriptionState;
+	}
+	
+	public String toString() {
+		return "publisher{" + mPublisherId + "}";
+	}
+}
+ 

@@ -1,0 +1,212 @@
+irond Release 0.3.4 - 27.08.12
+
+* Bugfix: Use subject instead of issuer id when doing 
+  	  certificate based authentication
+
+* Updated keystore and irond certificate (now valid for 10 years)
+
+irond Release 0.3.0 - 21.12.11
+
+* Bugfix: Proper handling of terminal-identifier-types.
+          irond now checks validity of the given string.
+
+* Added irond.comm.rawlog=[true|false] in order to allow
+  for raw logging of received requests. See
+  irond.properties.orig and log4j.properties for details.
+
+* Added irond.xml.validate=[true|false] in order to turn
+  XML schema validation on or off.
+  Further added irond.xml.schema.0=file.xsd to specify the
+  XML schema to be used for validation. See
+  irond.properties.orig for details.
+
+* Rewrote MAP graph data structures to allow for optimizationas
+  mentioned below. Decouple MAP graph structure from actual
+  content in the MAP graph.
+
+* Rewrote subscription management:
+  Differential results for PollResults were determined by the
+  results of two searches. One search on the old state of the
+  MAP graph and one search on the new state of the MAP graph.
+  This is very expensive, both in terms of runtime of the
+  searches alone and further in terms of the number of matching
+  operations that have to be done on metadata objects.
+  
+  The new implementation now holds the state of a subscriptions's
+  search-graph and included metadata objects in the MAP graph itself
+  in order to make the determination of differential results less
+  expensive.
+
+  irond's performance managing subscription updates was significantly
+  improved compared to 0.2.4.
+
+
+irond Release 0.2.4 - 12.10.11
+
+* Adapt the construction of PollResults to what will be expected
+  from the Specification. Most recent metadata comes last in PollResult.
+  This involved quite some changes.
+
+* Refactor the horrible SubscriptionService while changing the ordering
+  of metadata.
+
+* Update log4j httpcore libraries
+
+* Bugfix: Searcher failed if two different links produced the same
+           hashCode()
+
+* Bugfix: Searcher would not traverse links already traveled, even if the
+          depth was smaller than in the first round. This could occur
+	  occur with circles in the MAP graph.
+
+* Bugfix: Remove illegal subscription update optimization.
+
+
+irond Release 0.2.3 - 06.07.11
+
+* Bugfix: Setting max-poll-result-size was only possible for a
+          MAPC while creating its first session.
+
+* Bugfix: Exceeding the max-size of a single subscription does
+          not lead to removal of all subscriptions of a MAPC, but
+	  only of those, that actually exceeded their max-size.
+
+* Bugfix: After PollResultsTooBig occurred, no pollResults would
+          be sent to the MAPC until a new session would be
+	  established.
+
+* Bugfix: Unmarshalling of the XML request could result in a
+          ClassCastException if the document didn't start with
+	  the Envelope.
+
+* Bugfix: Link.equals() was not symmetric.
+
+* Bugfix: Do not set the session-id of a MAPC as name attribute
+          in the searchResult.
+
+* Bugfix: Race condition: a MAPC could create a new session with a
+          channel attached which was closed during the new session
+	  call.
+
+* Small Performance Improvement:
+  - Remove some manual string parsing and use Transformer properties
+    for W3cXmlMetadata.
+
+  - Replace newDocumentBuilder() calls in the unmarshalling process
+    with ThreadLocal variables.
+
+* Another channel behavior change: Send AccessDenied error whenever
+  a MAPC uses an old channel.
+
+* Print a warning if Content-Length field was not found. Things
+  will most likely break.
+
+* Set an errorString for errorResults contained in pollResults.
+
+
+irond Release 0.2.2 - 16.05.2011
+
+* Sizes of SearchResults and PollResults are now determined during
+  creation of results, e.g. during a search. For SearchResults the
+  size was checked after the comlete result was marshalled.
+
+* Size limits given by MAPCs are honored now, hopefully.
+
+* Remove unused namespace declarations on metadata objects.
+
+* Refactoring to handle PollResults as Events in comparison to
+  processing them during the callback. Should improve performance a
+  bit when multiple MAPC are subject to new PollResults after a
+  single publish operation.
+
+* Defer the marshalling of responses until all critical IF-MAP logic is
+  done. Allows for parallel marshalling of responses and should result
+  in better performance when multiple clients access the MAPS in
+  parallel.
+
+* Refactoring to remove instanceof checks from the EventProcessor class.
+  Either by using double-dispatch, or moving them in a more responsible
+  class.
+
+* Return purgePublisherReceived even if the publisher in question didn't
+  exist.
+
+* Racing in SessionTimer could lead to a situation where a timed out
+  session was not removed.
+
+* Renaming of the Marshalling/Unmarshalling classes.
+
+* Search Algorithm: Return on identifiers/links which have been visited
+  before. Avoids traversing cycles over and over again.
+
+* Use JAXB XML Validation in order to detect bogus requests. Requires
+  schema documents in the folder schema/ to be available.
+
+* Renamed InvalidSessionId back to InvalidSessionID as the schema defines
+  it.
+
+
+irond Release 0.2.1 - 21.04.2011
+
+* ip-address validation fixed. Negative and zero leading bytes were allowed
+
+* Validation of hip-hit identieties. Simple IPv6 checks
+
+* Remove unknown ifmap-* prefixes from metadata when MAPCs send them
+
+* More or less random session-id's 
+
+* Check if namespace declaration for filter strings are given
+  (still no real filter syntax validation)
+
+* Treat device identifier with aik-name as deprecated and respond with
+  an InvalidIdentifier error message if a MAPC makes use of the aik-name
+
+* Fixed the 'a single ExecutorServer per Timer' bug
+
+* Fixed horrible memoryleak in relation with unmarshalling
+
+* Changed key-pair for irond (new keystore + new certificate)
+
+* Build a publisher-id for an unknown MAPC only using the common name (CN)
+  of the certificate or the basic authentication username
+
+* Fixed sanity check which backfired on us when deleting metadata which
+  was added in the same publish request
+
+* Fixed timer bugs
+
+* InvalidSessionID -> InvalidSessionId renaming
+
+* Better detection of failing channels, either SSRC or ARC
+
+* Fixed search algorithm. Failed when identifiers had multiple links
+  attached.
+
+* Restored channel/session management to the behavior of the 0.1.x
+  versions. MAPC are allowed to change their SSRC/ARC without closing
+  the old one. Usage of the old channel is not allowed.
+
+* SearchResultTooBig -> SearchResultsTooBig renaming
+
+* If MAPC tries to use session-id of another MAPC send him
+  InvalidSessionId, not AccessDenied
+
+* Support for gzip requests and replies. Pretty ugly.
+
+* Simple authorization model:
+  - authorization.properties allows for the configuration of
+    read-only clients. (see README)
+
+* Add synchronization for Events other than RequestChannelEvents
+  (This went undetected, for us at least...)
+
+* Tons of refactoring
+  - Use ExecutorService implementations where possible (now everywhere?)
+  - Unify authentication and certificate-based authenticaton 
+  - ChannelThread refactoring (still a mess...)
+
+
+irond Release 0.2.0 - 09.02.2011
+
+* Rewritten communication layer based on irond-0.1.x

@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="ifmapPresentation" resourceRoot="" soapui-version="3.0.1" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="Service" type="wsdl" bindingName="{http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl}Service" soapVersion="1_2" anonymous="optional" definition="file:/home/awelzel/ifmap/svn/trunk/xml-schemas/modded/ifmap-2.0.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/home/awelzel/ifmap/svn/trunk/xml-schemas/modded/ifmap-2.0.wsdl"><con:part><con:url>file:/home/awelzel/ifmap/svn/trunk/xml-schemas/modded/ifmap-2.0.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl" xmlns:ifmapwsdl="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ifmap="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <wsdl:types>
+    <xsd:schema>
+      <xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" schemaLocation="ifmap-base-2.0v17.xsd"/>
+      <!--<xsd:import namespace="http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2" schemaLocation="ifmap-metadata-2.0v8.xsd"></xsd:import>-->
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="Response">
+    <wsdl:part name="response" element="ifmap:response"/>
+  </wsdl:message>
+  <wsdl:message name="PublishRequest">
+    <wsdl:part name="request" element="ifmap:publish"/>
+  </wsdl:message>
+  <wsdl:message name="SearchRequest">
+    <wsdl:part name="request" element="ifmap:search"/>
+  </wsdl:message>
+  <wsdl:message name="SubscribeRequest">
+    <wsdl:part name="request" element="ifmap:subscribe"/>
+  </wsdl:message>
+  <wsdl:message name="PollRequest">
+    <wsdl:part name="request" element="ifmap:poll"/>
+  </wsdl:message>
+  <wsdl:message name="PurgePublisherRequest">
+    <wsdl:part name="request" element="ifmap:purgePublisher"/>
+  </wsdl:message>
+  <wsdl:message name="NewSessionRequest">
+    <wsdl:part name="request" element="ifmap:newSession"/>
+  </wsdl:message>
+  <wsdl:message name="RenewSessionRequest">
+    <wsdl:part name="request" element="ifmap:renewSession"/>
+  </wsdl:message>
+  <wsdl:message name="AttachSessionRequest">
+    <wsdl:part name="request" element="ifmap:attachSession"/>
+  </wsdl:message>
+  <wsdl:message name="EndSessionRequest">
+    <wsdl:part name="request" element="ifmap:endSession"/>
+  </wsdl:message>
+  <wsdl:message name="DumpRequest">
+    <wsdl:part name="request" element="ifmap:dump"/>
+  </wsdl:message>
+  <wsdl:portType name="IfmapPortType">
+    <wsdl:operation name="publish">
+      <wsdl:input message="ifmapwsdl:PublishRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <wsdl:input message="ifmapwsdl:SearchRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <wsdl:input message="ifmapwsdl:SubscribeRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="poll">
+      <wsdl:input message="ifmapwsdl:PollRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="purgePublisher">
+      <wsdl:input message="ifmapwsdl:PurgePublisherRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="newSession">
+      <wsdl:input message="ifmapwsdl:NewSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="attachSession">
+      <wsdl:input message="ifmapwsdl:AttachSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="renewSession">
+      <wsdl:input message="ifmapwsdl:RenewSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="endSession">
+      <wsdl:input message="ifmapwsdl:EndSessionRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+    <wsdl:operation name="dump">
+      <wsdl:input message="ifmapwsdl:DumpRequest"/>
+      <wsdl:output message="ifmapwsdl:Response"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Service" type="ifmapwsdl:IfmapPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="publish">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="poll">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="purgePublisher">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="newSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attachSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="renewSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="endSession">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="dump">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body parts="request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IfmapService">
+    <wsdl:documentation>IF-MAP Service</wsdl:documentation>
+    <wsdl:port name="IfmapPort" binding="ifmapwsdl:Service">
+      <soap:address location="https://localhost:8444/axis2/services/IfmapService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/home/awelzel/ifmap/svn/trunk/xml-schemas/modded/ifmap-base-2.0v17.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="http://www.trustedcomputinggroup.org/2010/IFMAP/2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+  <!--18.02.10 aw - Some modifications to get the wsdl2java
+       tool generating better code. Additionally removed
+       minOccurs and maxOccurs in the UpdateType-->
+  <!--top-level elements represent all the possible
+       requests and responses-->
+  <xsd:element name="publish" type="PublishRequestType"/>
+  <xsd:element name="search" type="SearchRequestType"/>
+  <xsd:element name="subscribe" type="SubscribeRequestType"/>
+  <xsd:element name="poll" type="PollRequestType"/>
+  <xsd:element name="purgePublisher" type="PurgePublisherRequestType"/>
+  <xsd:element name="newSession" type="NewSessionRequestType"/>
+  <xsd:element name="attachSession">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="sessionAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="renewSession" type="renewSessionType"/>
+  <xsd:element name="endSession" type="endSessionType"/>
+  <!--Tobias Ruhe's Dump Request-->
+  <xsd:element name="dump" type="DumpRequestType"/>
+  <xsd:element name="response" type="ResponseType"/>
+  <xsd:complexType name="renewSessionType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <xsd:complexType name="endSessionType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--AccessRequestType Identifier represents an endpoint
+       which is attempting to gain entry to the network-->
+  <xsd:complexType name="AccessRequestType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--DeviceType Identifier represents a physical asset
+       which is attempting to gain entry to the network-->
+  <xsd:complexType name="DeviceType">
+    <xsd:choice>
+      <xsd:element name="aik-name" type="xsd:string"/>
+      <xsd:element name="name" type="xsd:string"/>
+    </xsd:choice>
+  </xsd:complexType>
+  <!--IdentityType Identifier represents an end-user-->
+  <xsd:complexType name="IdentityType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="aik-name"/>
+          <xsd:enumeration value="distinguished-name"/>
+          <xsd:enumeration value="dns-name"/>
+          <xsd:enumeration value="email-address"/>
+          <xsd:enumeration value="hip-hit"/>
+          <xsd:enumeration value="kerberos-principal"/>
+          <xsd:enumeration value="trusted-platform-module"/>
+          <xsd:enumeration value="username"/>
+          <xsd:enumeration value="sip-uri"/>
+          <xsd:enumeration value="tel-uri"/>
+          <xsd:enumeration value="other"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="other-type-definition" type="xsd:string"/>
+  </xsd:complexType>
+  <!--IPAddressType Identifier represents a single IP address-->
+  <xsd:complexType name="IPAddressType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+    <xsd:attribute name="type">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="IPv4"/>
+          <xsd:enumeration value="IPv6"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--MACAddressType Identifier represents an Ethernet MAC address-->
+  <xsd:complexType name="MACAddressType">
+    <xsd:attribute name="administrative-domain" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--MetadataListType is a container for metadata within
+       other elements-->
+  <xsd:complexType name="MetadataListType">
+    <xsd:sequence>
+      <xsd:any minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--FilterType is a subset of XPath-->
+  <xsd:simpleType name="FilterType">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:complexType name="NewSessionRequestType">
+    <xsd:attribute name="max-poll-result-size" type="xsd:integer" use="optional"/>
+  </xsd:complexType>
+  <xsd:attributeGroup name="validationAttributes">
+    <xsd:attribute name="validation" use="optional">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="BaseOnly"/>
+          <xsd:enumeration value="MetadataOnly"/>
+          <xsd:enumeration value="All"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="sessionAttributes">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+  </xsd:attributeGroup>
+  <!--SessionRequestType is stateful session handling-->
+  <xsd:complexType name="SessionRequestType">
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--UpdateType is the type for requests that update metadata-->
+  <xsd:complexType name="UpdateType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="lifetime" default="session">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="session"/>
+          <xsd:enumeration value="forever"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--Just a copy of UpdateType to produce better code when using
+       JAXBRI code generation. getUpdate or getDelete was created,
+       but no getNotify-->
+  <xsd:complexType name="NotifyType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType"/>
+    </xsd:sequence>
+    <xsd:attribute name="lifetime" default="session">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="session"/>
+          <xsd:enumeration value="forever"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!--DeleteType is the type for the delete element of
+       a publish request, and specifies which metadata
+       to delete.-->
+  <xsd:complexType name="DeleteType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="filter" type="FilterType" use="optional"/>
+  </xsd:complexType>
+  <!--PublishRequestType updates or deletes metadata-->
+  <xsd:complexType name="PublishRequestType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="update" type="UpdateType"/>
+        <xsd:element name="notify" type="NotifyType"/>
+        <xsd:element name="delete" type="DeleteType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--SearchType specifies the parameters for a search, and is used
+       for the search element as well as the update sub-element of a
+       subscribe element-->
+  <xsd:complexType name="SearchType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="1">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="match-links" type="FilterType"/>
+    <xsd:attribute name="max-depth" type="xsd:unsignedInt"/>
+    <xsd:attribute name="terminal-identifier-type" type="xsd:string"/>
+    <xsd:attribute name="max-size" type="xsd:unsignedInt"/>
+    <xsd:attribute name="result-filter" type="FilterType"/>
+  </xsd:complexType>
+  <!--SearchRequestType queries the server for matching
+       metadata-->
+  <xsd:complexType name="SearchRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="SearchType">
+        <xsd:attributeGroup ref="sessionAttributes"/>
+        <xsd:attributeGroup ref="validationAttributes"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!--DeleteSearchRequestType is for removing subscriptions-->
+  <xsd:complexType name="DeleteSearchRequestType">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <!--SubscribeRequestType is for managing subscriptions-->
+  <xsd:complexType name="SubscribeRequestType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="update">
+          <xsd:complexType>
+            <xsd:complexContent>
+              <xsd:extension base="SearchType">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+              </xsd:extension>
+            </xsd:complexContent>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="delete" type="DeleteSearchRequestType"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--PollRequestType is for polling for notification of
+       metadata changes that match subscriptions-->
+  <xsd:complexType name="PollRequestType">
+    <xsd:attributeGroup ref="validationAttributes"/>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--PurgePublisherRequestType is for removing all metadata
+       published by a particular publisher-->
+  <xsd:complexType name="PurgePublisherRequestType">
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string"/>
+    <xsd:attributeGroup ref="sessionAttributes"/>
+  </xsd:complexType>
+  <!--ResultItemType is for search or poll results showing
+       metadata attached to identifiers and links-->
+  <xsd:complexType name="ResultItemType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="1" maxOccurs="2">
+        <xsd:element name="access-request" type="AccessRequestType"/>
+        <xsd:element name="identity" type="IdentityType"/>
+        <xsd:element name="ip-address" type="IPAddressType"/>
+        <xsd:element name="mac-address" type="MACAddressType"/>
+        <xsd:element name="device" type="DeviceType"/>
+      </xsd:choice>
+      <xsd:element name="metadata" type="MetadataListType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--SearchResultType contains the identifiers and links
+       along with associated metadata-->
+  <xsd:complexType name="SearchResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="UpdateResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="DeleteResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--Adding artifical SearchResults to generate better code 12.06.10 aw-->
+  <xsd:complexType name="NotifyResultType">
+    <xsd:sequence>
+      <xsd:element name="resultItem" type="ResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--PollResultType contains a searchResult for each
+       subscription that had changes since the last poll-->
+  <xsd:complexType name="PollResultType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="searchResult" type="SearchResultType"/>
+        <xsd:element name="updateResult" type="UpdateResultType"/>
+        <xsd:element name="deleteResult" type="DeleteResultType"/>
+        <xsd:element name="notifyResult" type="NotifyResultType"/>
+        <xsd:element name="errorResult" type="ErrorResultType"/>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!--ErrorResultType indicates the cause of an error-->
+  <xsd:complexType name="ErrorResultType">
+    <xsd:sequence>
+      <xsd:element name="errorString" type="xsd:string"/>
+    </xsd:sequence>
+    <xsd:attribute name="errorCode" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="AccessDenied"/>
+          <xsd:enumeration value="Failure"/>
+          <xsd:enumeration value="InvalidIdentifier"/>
+          <xsd:enumeration value="InvalidIdentifierType"/>
+          <xsd:enumeration value="IdentifierTooLong"/>
+          <xsd:enumeration value="InvalidMetadata"/>
+          <xsd:enumeration value="InvalidSchemaVersion"/>
+          <xsd:enumeration value="InvalidSessionID"/>
+          <xsd:enumeration value="MetadataTooLong"/>
+          <xsd:enumeration value="SearchResultsTooBig"/>
+          <xsd:enumeration value="PollResultsTooBig"/>
+          <xsd:enumeration value="SystemError"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+  <!--SessionResultType is for stateful session handling-->
+  <xsd:complexType name="SessionResultType">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  <xsd:complexType name="NewSessionResultType">
+    <xsd:attribute name="session-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string" use="required"/>
+    <xsd:attribute name="max-poll-result-type" type="xsd:integer" use="optional"/>
+  </xsd:complexType>
+  <!--ResponseType encapsulates results from all the different
+       requests-->
+  <xsd:complexType name="ResponseType">
+    <xsd:choice>
+      <xsd:element name="errorResult" type="ErrorResultType"/>
+      <xsd:element name="pollResult" type="PollResultType"/>
+      <xsd:element name="searchResult" type="SearchResultType"/>
+      <xsd:element name="subscribeReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="publishReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="purgePublisherReceived">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="newSessionResult" type="NewSessionResultType"/>
+      <xsd:element name="attachSessionResult" type="SessionResultType"/>
+      <xsd:element name="renewSessionResult">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="endSessionResult">
+        <xsd:complexType/>
+      </xsd:element>
+      <xsd:element name="dumpResult" type="DumpResponseType"/>
+    </xsd:choice>
+    <xsd:attributeGroup ref="validationAttributes"/>
+  </xsd:complexType>
+  <!--metadataAttributes specifies attributes on metadata which are
+       used by MAP servers.
+
+       ifmap-publisher-id and ifmap-timestamp are added to all metadata by the
+       server before storage in the database. MAP clients MUST NOT
+       include ifmap-publisher-id or ifmap-timestamp in published metadata.
+
+       cardinality is used by the MAP client to indicate to the server
+       whether the metadata can have multiple values.
+
+       anyAttribute enables metadata elements which include the
+       ifmap:metadataAttributes attributeGroup to add new attributes
+       for use with future versions of IF-MAP.-->
+  <xsd:attributeGroup name="metadataAttributes">
+    <xsd:attribute name="ifmap-publisher-id" type="xsd:string"/>
+    <xsd:attribute name="ifmap-timestamp" type="xsd:dateTime"/>
+    <xsd:anyAttribute/>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="singleValueMetadataAttributes">
+    <xsd:attributeGroup ref="metadataAttributes"/>
+    <xsd:attribute name="ifmap-cardinality" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="singleValue"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="multiValueMetadataAttributes">
+    <xsd:attributeGroup ref="metadataAttributes"/>
+    <xsd:attribute name="ifmap-cardinality" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="multiValue"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <!--12.08.10 aw - Modifications to add Tobias Ruhe's
+  	dump operation-->
+  <xsd:complexType name="DumpRequestType">
+    <xsd:complexContent>
+      <xsd:restriction base="xsd:anyType">
+        <xsd:attributeGroup ref="sessionAttributes"/>
+        <xsd:attribute name="identifier" type="xsd:string"/>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="DumpResponseType">
+    <xsd:complexContent>
+      <xsd:restriction base="xsd:anyType">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="access-request" type="AccessRequestType"/>
+          <xsd:element name="identity" type="IdentityType"/>
+          <xsd:element name="ip-address" type="IPAddressType"/>
+          <xsd:element name="mac-address" type="MACAddressType"/>
+          <xsd:element name="device" type="DeviceType"/>
+        </xsd:choice>
+        <xsd:attribute name="last-update" type="xsd:string"/>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:8443</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="attachSession" bindingOperationName="attachSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:attachSession session-id="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/attachSessionRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="dump" bindingOperationName="dump" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:dump session-id="?" identifier="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/dumpRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="endSession" bindingOperationName="endSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:endSession session-id="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/endSessionRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="newSession" bindingOperationName="newSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:newSession max-poll-result-size="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/newSessionRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="poll" bindingOperationName="poll" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:poll validation="?" session-id="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/pollRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="publish" bindingOperationName="publish" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:publish session-id="?" validation="?">
+         <!--You have a CHOICE of the next 3 items at this level-->
+         <update lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+            <metadata>
+               <!--You may enter ANY elements at this point-->
+            </metadata>
+         </update>
+         <notify lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+            <metadata>
+               <!--You may enter ANY elements at this point-->
+            </metadata>
+         </notify>
+         <delete filter="?">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+         </delete>
+      </ns:publish>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/publishRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="purgePublisher" bindingOperationName="purgePublisher" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:purgePublisher ifmap-publisher-id="?" session-id="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/purgePublisherRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="renewSession" bindingOperationName="renewSession" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:renewSession session-id="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/renewSessionRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="search" bindingOperationName="search" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:search match-links="?" max-depth="?" terminal-identifier-type="?" max-size="?" result-filter="?" session-id="?" validation="?">
+         <!--You have a CHOICE of the next 5 items at this level-->
+         <access-request administrative-domain="?" name="?"/>
+         <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+         <ip-address administrative-domain="?" value="?" type="?"/>
+         <mac-address administrative-domain="?" value="?"/>
+         <device>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <aik-name>?</aik-name>
+            <name>?</name>
+         </device>
+      </ns:search>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/searchRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="subscribe" bindingOperationName="subscribe" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:subscribe session-id="?" validation="?">
+         <!--You have a CHOICE of the next 2 items at this level-->
+         <update match-links="?" max-depth="?" terminal-identifier-type="?" max-size="?" result-filter="?" name="?">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request administrative-domain="?" name="?"/>
+            <identity administrative-domain="?" name="?" type="?" other-type-definition="?"/>
+            <ip-address administrative-domain="?" value="?" type="?"/>
+            <mac-address administrative-domain="?" value="?"/>
+            <device>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <aik-name>?</aik-name>
+               <name>?</name>
+            </device>
+         </update>
+         <delete name="?"/>
+      </ns:subscribe>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.trustedcomputinggroup.org/2010/IFMAP/2/ifmap.wsdl/IfmapPortType/subscribeRequest"/></con:call></con:operation></con:interface><con:testSuite name="Presentation"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Case1" searchProperties="true" id="06239cc2-dd60-40a8-854a-416c28f201d6"><con:settings/><con:testStep type="request" name="newSession"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>newSession</con:operation><con:request name="newSession"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:newSession max-poll-result-size="1234"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="cpid1"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>sid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>newSession</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns2:response[1]/newSessionResult[1]/@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>publish</con:targetStep><con:targetPath>declare namespace ns='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns:publish[1]/@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="publish"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>publish</con:operation><con:request name="publish"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:publish session-id="1436A2B98578C91BCEF5A131B170BD66" validation="?">
+         <!--You have a CHOICE of the next 3 items at this level-->
+         <update lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <access-request name="AR100"/>
+            <mac-address value="11:22:33:44:55:66"/>
+            <metadata>
+		<armac ifmap-cardinality="singleValue"/>
+	    </metadata>
+         </update>
+         
+         
+      </ns:publish>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="cpId2"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>sid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>newSession</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns2:response[1]/newSessionResult[1]/@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>publish2</con:targetStep><con:targetPath>declare namespace ns='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns:publish[1]/@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="publish2"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>publish</con:operation><con:request name="publish2"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:publish session-id="1436A2B98578C91BCEF5A131B170BD66" validation="?">
+         <!--You have a CHOICE of the next 3 items at this level-->
+         <update lifetime="session">
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <mac-address value="11:22:33:44:55:66"/>
+	    <ip-address value="192.168.1.166"/>
+            <metadata>
+		<macip ifmap-cardinality="singleValue"/>
+	    </metadata>
+         </update>
+         
+         
+      </ns:publish>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="cpId5"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>sid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>newSession</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns2:response[1]/newSessionResult[1]/@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>searchEx</con:targetStep><con:targetPath>declare namespace ns='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns:search[1]/@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="searchEx"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>search</con:operation><con:request name="searchEx"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:search max-depth="5" session-id="1436A2B98578C91BCEF5A131B170BD66">
+       	<access-request name="AR100"/>
+      </ns:search>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="cpId4"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>sid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>newSession</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns2:response[1]/newSessionResult[1]/@session-id</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>endSession</con:targetStep><con:targetPath>declare namespace ns='http://www.trustedcomputinggroup.org/2010/IFMAP/2';
+//ns:endSession[1]/@session-id</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="endSession"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>Service</con:interface><con:operation>endSession</con:operation><con:request name="endSession"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8443</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://www.trustedcomputinggroup.org/2010/IFMAP/2">
+   <soap:Header/>
+   <soap:Body>
+      <ns:endSession session-id="1436A2B98578C91BCEF5A131B170BD66"/>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:credentials><con:username>test</con:username><con:password>test</con:password><con:domain/></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:xmlTemplates/><con:xmlTemplates/><con:xmlTemplates/><con:parameters/></con:reporting></con:soapui-project>

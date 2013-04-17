@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:base-id="http://www.trustedcomputinggroup.org/2012/IFMAP-IDENTIFIER/1" xmlns="http://trust.inform.fh-hannover.de/NETWORK-IDENTITY" targetNamespace="http://trust.inform.fh-hannover.de/2012/NETWORK-IDENTITY-EXAMPLE/1">
+	<xsd:import namespace="http://www.trustedcomputinggroup.org/2012/IFMAP-IDENTIFIER/1" schemaLocation="ifmap-identifier-2.1v1.xsd"/>
+	<xsd:element name="network">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="base-id:IdentifierType">
+					<xsd:attribute name="address" type="xsd:string" use="required"/>
+					<xsd:attribute name="netmask" type="xsd:string" use="required"/>
+					<xsd:attribute name="type" use="required">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="IPv4"/>
+								<xsd:enumeration value="IPv6"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

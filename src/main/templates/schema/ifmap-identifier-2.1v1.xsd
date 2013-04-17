@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.trustedcomputinggroup.org/2012/IFMAP-IDENTIFIER/1" targetNamespace="http://www.trustedcomputinggroup.org/2012/IFMAP-IDENTIFIER/1">
+	<xsd:complexType name="IdentifierType">
+		<!-- All extended identifier types MUST extend the IdentifierType complexType as defined by this specification.
+			If the administrative-domain is not used, it MUST be set to an empty string in an extended identifier instance.-->
+		<xsd:attribute name="administrative-domain" type="xsd:string" use="required"/>
+	</xsd:complexType>
+</xsd:schema>
