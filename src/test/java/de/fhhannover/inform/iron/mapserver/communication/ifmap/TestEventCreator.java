@@ -47,6 +47,8 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
 
 import java.io.ByteArrayInputStream;
 
+import org.junit.Ignore;
+
 import de.fhhannover.inform.iron.mapserver.communication.ChannelIdentifier;
 import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.communication.bus.messages.BadChannelEvent;
@@ -60,6 +62,7 @@ import de.fhhannover.inform.iron.mapserver.communication.bus.messages.RequestCha
  * @author aw
  *
  */
+@Ignore
 public class TestEventCreator {
 
 	public static RequestChannelEvent createRequest(ClientIdentifier clId, ChannelIdentifier chId, boolean first,
