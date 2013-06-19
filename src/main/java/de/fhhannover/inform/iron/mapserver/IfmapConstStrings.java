@@ -150,13 +150,13 @@ public class IfmapConstStrings {
 	private final static String ATTR_OH = "=\"\"";
 	
 	
-	private final static String ADOM_ATTR = " administrative-domain";
-	private final static String OTHER_TYPE_DEF_ATTR = " other-type-definition";
-	private final static String NAME_ATTR = " name";
-	private final static String VALUE_ATTR = " value";
-	private final static String TYPE_ATTR = " type";
-	private final static String NAME_ELEM = "name";
-	private final static String ERR_CODE_ATTR = " errorCode";
+	public final static String ADOM_ATTR = " administrative-domain";
+	public final static String OTHER_TYPE_DEF_ATTR = " other-type-definition";
+	public final static String NAME_ATTR = " name";
+	public final static String VALUE_ATTR = " value";
+	public final static String TYPE_ATTR = " type";
+	public final static String NAME_ELEM = "name";
+	public final static String ERR_CODE_ATTR = " errorCode";
 	
 	/**
 	 * the byte count overhead for the administrativeDomain, if set
