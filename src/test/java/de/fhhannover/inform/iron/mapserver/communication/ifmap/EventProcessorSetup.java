@@ -52,6 +52,7 @@ import de.fhhannover.inform.iron.mapserver.binding.ResultMarshallerFactory;
 import de.fhhannover.inform.iron.mapserver.communication.bus.Queue;
 import de.fhhannover.inform.iron.mapserver.communication.bus.messages.ActionSeries;
 import de.fhhannover.inform.iron.mapserver.communication.bus.messages.Event;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.DataModelService;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactoryImpl;
@@ -63,6 +64,10 @@ import de.fhhannover.inform.iron.mapserver.provider.SchemaProvider;
 import de.fhhannover.inform.iron.mapserver.provider.SchemaProviderImpl;
 import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
+import de.fhhannover.inform.iron.mapserver.stubs.IfmapPepStub;
+
+
+
 
 public class EventProcessorSetup {
 	
@@ -76,6 +81,8 @@ public class EventProcessorSetup {
 		ResultMarshaller marshaller;
 		SessionTimerFactory timerFac;
 		SchemaProvider schemaProv = null;
+		IfmapPep pep = new IfmapPepStub();
+		
 		try {
 			schemaProv = new SchemaProviderImpl(serverConf);
 		} catch (ProviderInitializationException e1) {
@@ -88,7 +95,7 @@ public class EventProcessorSetup {
 		marshaller = ResultMarshallerFactory.newResultMarshaller();
 		
 		timerFac = new SessionTimerFactory(eventQueue, serverConf);
-		mDms = DataModelService.newInstance(serverConf);
+		mDms = DataModelService.newInstance(serverConf, pep);
 		
 		eventProc = new EventProcessor(eventQueue, 1, 1);
 		eventProc.setActionQueue(actionQueue);
