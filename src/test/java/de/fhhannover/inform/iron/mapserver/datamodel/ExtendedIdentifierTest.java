@@ -44,14 +44,17 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * limitations under the License.
  * #L%
  */
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
+import de.fhhannover.inform.iron.mapserver.stubs.IfmapPepStub;
 
 
 /**
@@ -128,7 +131,8 @@ public class ExtendedIdentifierTest {
 	
 	@BeforeClass
 	public static void before() {
-		DataModelService.newInstance(DummyDataModelConf.getDummyConf());
+		IfmapPep pep = new IfmapPepStub();
+		DataModelService.newInstance(DummyDataModelConf.getDummyConf(), pep);
 	}
 
 	@Test(expected=InvalidIdentifierException.class)
