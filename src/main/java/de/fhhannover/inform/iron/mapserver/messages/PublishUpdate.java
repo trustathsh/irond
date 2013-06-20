@@ -78,6 +78,21 @@ public class PublishUpdate extends SubPublishRequest {
  
 	private MetadataLifeTime lifetime;
 	private List<Metadata> metadataList;
+
+	protected PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml,
+			MetadataLifeTime lt, PublishRequestType type) throws RequestCreationException {
+		
+		super(ident1, ident2, type);
+		
+		if (ml == null)
+			throw new RequestCreationException("Metadata List is null");
+		
+		if (ml.size() == 0) {
+			throw new RequestCreationException("Metadata List is empty");
+		}
+		this.metadataList = ml;
+		this.lifetime = lt;
+	}
 	
 	/**
 	 * Create a PublishUpdate object (PublishUpdateRequest) with every
@@ -91,16 +106,7 @@ public class PublishUpdate extends SubPublishRequest {
 	 */
 	PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml,
 			MetadataLifeTime lt) throws RequestCreationException {
-		super(ident1, ident2);
-		
-		if (ml == null)
-			throw new RequestCreationException("Metadata List is null");
-		
-		if (ml.size() == 0) {
-			throw new RequestCreationException("Metadata List is empty");
-		}
-		this.metadataList = ml;
-		this.lifetime = lt;
+		this(ident1, ident2, ml, lt, PublishRequestType.UPDATE);
 	}
 	
 	/**

@@ -84,7 +84,7 @@ public class PublishDelete extends SubPublishRequest {
 	 */
 	PublishDelete(Identifier ident1, Identifier ident2, Filter f)
 		throws RequestCreationException {
-		super(ident1, ident2);
+		super(ident1, ident2, PublishRequestType.DELETE);
 		filter = f;
 	}
 	
@@ -98,7 +98,7 @@ public class PublishDelete extends SubPublishRequest {
 	 */
 	PublishDelete(Identifier ident, Filter f) 
 		throws RequestCreationException {
-		super(ident);
+		super(ident, PublishRequestType.DELETE);
 		filter = f;
 	}
 	

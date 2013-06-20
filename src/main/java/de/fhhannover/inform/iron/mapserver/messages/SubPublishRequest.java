@@ -47,6 +47,7 @@ package de.fhhannover.inform.iron.mapserver.messages;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.RequestCreationException;
+import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
  * SubPublishRequest
@@ -59,32 +60,33 @@ import de.fhhannover.inform.iron.mapserver.exceptions.RequestCreationException;
  * @author aw, vp
  * @version 0.1
  */
-
-/* 
- * created: 19.11.09
- * changes:
- *  22.11.09 vp - Added methods:
- * 		setIdent1(), setIdent2()
- *  28.11.09 aw - Class should be abstract, created constructor
- *  05.12.09 aw - indentation, added publisher.
- *  22.12.09 aw - Exception with message added.
- *  30.04.10 aw - Removed reference to publisher, does not belong here
- */
-abstract public class SubPublishRequest {
+public abstract class SubPublishRequest {
+	
+	public enum PublishRequestType {
+		UPDATE,
+		DELETE,
+		NOTIFY
+	}
  
-	private Identifier ident1;
-	private Identifier ident2;
+	private Identifier mIdent1;
+	private Identifier mIdent2;
+	private PublishRequestType mType;
 	
 	/**
-	 * Constructor when two identifiers are available;
-	 * If one is null we set ident1 to the one that is *not* null.
+	 * Constructor a {@link SubPublishRequest} from two {@link Identifier}s.
+	 * 
+	 * Implementation note: If one {@link Identifier} is null, mIdent1 will
+	 *                      always be non-null.
 	 * 
 	 * @param ident1
 	 * @param ident2
 	 * @throws RequestCreationException 
 	 */
-	public SubPublishRequest(Identifier ident1, Identifier ident2) throws
-											RequestCreationException {
+	public SubPublishRequest(Identifier ident1, Identifier ident2, PublishRequestType type)
+			throws RequestCreationException {
+
+		NullCheck.check(type, "type is null");
+		
 		if (ident1 == null && ident2 == null) {
 			throw new RequestCreationException("Both identifiers null");
 		} else if (ident1 == null || ident2 == null) {
@@ -93,34 +95,32 @@ abstract public class SubPublishRequest {
 				ident2 = null;
 			}
 		}
-		this.ident1 = ident1;
-		this.ident2 = ident2;
+		
+		mIdent1 = ident1;
+		mIdent2 = ident2;
+		mType = type;
 	}
 	
 	/**
-	 * Constructing a SubPublishRequest from only one identifier.
+	 * Construct a {@link SubPublishRequest} from a single {@link Identifier}.
 	 * 
 	 * @param ident
 	 * @throws RequestCreationException 
 	 */
-	public SubPublishRequest(Identifier ident) throws RequestCreationException {
-		this(ident, null);
-	}
-	
-	public void setIdent1(Identifier ident1){
-		this.ident1 = ident1;
+	public SubPublishRequest(Identifier ident, PublishRequestType type) throws RequestCreationException {
+		this(ident, null, type);
 	}
 	
 	public Identifier getIdent1() {
-		return ident1;
-	}
-	
-	public void setIdent2(Identifier ident2){
-		this.ident2 = ident2;
+		return mIdent1;
 	}
 	
 	public Identifier getIdent2() {
-		return ident2;
+		return mIdent2;
+	}
+	
+	public PublishRequestType getType() {
+		return mType;
 	}
 }
  

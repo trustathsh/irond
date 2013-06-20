@@ -49,6 +49,7 @@ import java.util.List;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataLifeTime;
 import de.fhhannover.inform.iron.mapserver.exceptions.RequestCreationException;
 
 /**
@@ -79,7 +80,7 @@ public class PublishNotify extends PublishUpdate {
 	 */
 	public PublishNotify(Identifier i1, Identifier i2, List<Metadata> ml)
 			throws RequestCreationException {
-		super(i1, i2, ml);
+		super(i1, i2, ml, MetadataLifeTime.session, PublishRequestType.NOTIFY);
 	}
 	public PublishNotify(Identifier i1, List<Metadata> ml)
 			throws RequestCreationException {
