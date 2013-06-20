@@ -125,8 +125,8 @@ public interface SearchHandler {
 	 */
 	public void onEnd();
 
+	/**
+	 * Called before the next depth starts.
+	 */
 	public void nextDepth();
-
-	public void depthOver();
-
 }

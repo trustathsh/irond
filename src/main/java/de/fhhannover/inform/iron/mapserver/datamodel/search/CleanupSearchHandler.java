@@ -126,11 +126,6 @@ class CleanupSearchHandler implements SearchHandler {
 		// nothing
 	}
 
-	@Override
-	public void depthOver() {
-		// nothing
-	}
-
 	private void cleanGraphElement(GraphElement ge) {
 		SubscriptionEntry entry = ge.getRemovedSubscriptionEntry(mSubscription);
 		

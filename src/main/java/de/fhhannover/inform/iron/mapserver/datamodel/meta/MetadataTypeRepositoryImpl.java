@@ -140,6 +140,6 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 	}
 	
 	private String key(String name, String ns) {
-		return ns + ":" + name;
+		return ns + "#" + name;
 	}
 }

@@ -46,10 +46,13 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  */
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
+import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
@@ -57,59 +60,45 @@ import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
-import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
-class ContinueSearchHandler implements SearchHandler {
+class ContinueSearchHandler extends AbstractSearchHandler {
 
 	private static final Logger sLogger = LoggingProvider.getTheLogger();
 	private static final String sName = "ContinueSearchHandler";
 
-	private final Identifier mStartIdent;
 	private final Subscription mSubscription;
-	private final Filter mMatchLinksFilter;
-	private final Filter mResultFilter;
-	private int mMaxDepth;
-	private int mCurDepth;
-	private final TerminalIdentifiers mTermIdents;
-	private final Set<GraphElement> mVisitedGraphElements;
 	private final Set<MetadataHolder> mNewMetadata;
 	private final Set<Node> mStarters;
 	private final String mName;
 	
-	ContinueSearchHandler(Identifier start, int depth, Subscription sub,
-			Set<GraphElement> visitedGraphElement, Set<MetadataHolder> newMeta,
-			Set<Node> starters) {
-		NullCheck.check(start, "start identifier is null");
-		NullCheck.check(visitedGraphElement, "visisted graph elements is null");
+	ContinueSearchHandler(
+			Identifier start,
+			int depth,
+			Subscription sub,
+			Map<GraphElement, List<MetadataHolder>> visitedElements,
+			Set<MetadataHolder> newMeta,
+			Set<Node> starters,
+			Publisher pub,
+			IfmapPep pep) {
+		super(sub.getSearchRequest(), start, visitedElements, depth, pub, pep);
+		
 		NullCheck.check(newMeta, "newMeta is null");
 		NullCheck.check(starters, "nextContPoints is null");
-		SearchRequest sreq = sub.getSearchRequest();
-		mStartIdent = start;
 		mSubscription = sub;
-		mCurDepth = depth;
-		mMaxDepth = sreq.getMaxDepth();
-		mMatchLinksFilter = sreq.getMatchLinksFilter();
-		mResultFilter = sreq.getResultFilter();
-		mTermIdents = sreq.getTerminalIdentifiers();
-		mVisitedGraphElements = visitedGraphElement;
 		mNewMetadata = newMeta;
 		mStarters = starters;
 		mName = sName + "[" + sub.getName() + "]";
 	}
 
 	@Override
-	public Identifier getStartIdentifier() {
-		return mStartIdent;
-	}
-
-	@Override
 	public void onStart() {
+		super.onStart();
 		if (SearchHandler.SEARCH_HANDLER_DEBUG)
 			sLogger.trace(mName + ": Starting for " + mSubscription + " at "
-					+ mStartIdent);
+					+ getStartIdentifier());
 	}
 
 	@Override
@@ -120,26 +109,28 @@ class ContinueSearchHandler implements SearchHandler {
 	@Override
 	public boolean travelLinksOf(Node cur) {
 		
-		
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-			if (mCurDepth >= mMaxDepth)
+			if (getCurrentDepth() >= getMaxDepth())
 				sLogger.trace(mName + ": max-depth reached at " + cur);
 		
-			if (mTermIdents.contains(cur.getIdentifier()))
+			if (getTerminalIdentifiers().contains(cur.getIdentifier()))
 				sLogger.trace(mName + ": terminal identifier at " + cur);
 		}
 		
-		return mCurDepth < mMaxDepth && !mTermIdents.contains(cur.getIdentifier());
+		return getCurrentDepth()< getMaxDepth()
+				&& !getTerminalIdentifiers().contains(cur.getIdentifier());
 	}
 
 	@Override
 	public boolean travelLink(Link l) {
 		SubscriptionEntry entry = l.getSubscriptionEntry(mSubscription);
 		SubscriptionEntry remEntry = l.getRemovedSubscriptionEntry(mSubscription);
-		int countMatching;
+		List<MetadataHolder> newMatching;
+		List<MetadataHolder> nextMatching;
+		
 	
 		if (entry != null && remEntry != null && entry != remEntry)
-			throw new SystemErrorException("IF A REMOVED ENTRY EXISTS IT SHOULD BE REUSED");
+			throw new SystemErrorException("removed entries should be reused");
 		
 		if (remEntry != null) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
@@ -150,29 +141,33 @@ class ContinueSearchHandler implements SearchHandler {
 		}
 		
 		// might be a circle search?
-		if (entry != null && entry.getDepth() <= mCurDepth)
+		if (entry != null && entry.getDepth() <= getCurrentDepth())
 			return false;
 
 		// There might be some metadata from before here.
 		if (entry != null && entry.getMetadataHolder().size() > 0)
 			return true;
 		
-		// We can try to use the old entry if one exists:
+		// We can try to use the metedata of the old entry if one exists:
 		if (remEntry != null && remEntry.getMetadataHolder().size() > 0)
 			return true;
 
-		// Just check whether there is some new Metadata that matches
-		if (l.getMetadataHolderNew(mMatchLinksFilter).size() > 0)
-			return true;
+		// Just check whether there is some new Metadata that matches,
+		// assuming this is always a subset of the Next metadata
+		newMatching = l.getMetadataHolderNew(getMatchLinksFilter());
+		
+		// Only for what the client is authorized
+		newMatching = authorized(newMatching);
 	
-		// Decide based on whether this link contains any interesting metadata
-		// for us. This is more heavy then the previous things used
-		countMatching = l.getMetadataHolderNext(mMatchLinksFilter).size();
-		
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
-			sLogger.trace(mName + ": Travelling " + l + "=" + (countMatching > 0));
-		
-		return countMatching > 0;
+		if (newMatching.size() > 0)
+			return true;
+
+		// Only now check whether there is metadata that would match in
+		// the next graph state.
+		nextMatching = l.getMetadataHolderNext(getMatchLinksFilter());
+		nextMatching = authorized(nextMatching);
+	
+		return nextMatching.size() > 0;
 	}
 
 	@Override
@@ -191,24 +186,28 @@ class ContinueSearchHandler implements SearchHandler {
 		//
 		if (entry == null) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-				sLogger.trace(mName + ": Travelling to " + nextNode + 
+				sLogger.trace(mName + ": Traversing to " + nextNode + 
 						" as no entry is there for " + mSubscription);
 			}
 			
 			return true;
 		}
-		if (entry.getDepth() > mCurDepth + 1) {
+		
+		// If there's a greater depth than we would reach we want to travel
+		// there.
+		if (entry.getDepth() > getCurrentDepth() + 1) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-				sLogger.trace(mName + ": Travelling to " + nextNode 
-						+ " as current depth is " + mCurDepth
+				sLogger.trace(mName + ": Traversing to " + nextNode 
+						+ " as current depth is " + getCurrentDepth()
 						+ " and there it is  " + entry.getDepth());
 			}
 			
 			return true;
 		}
 	
-		// We have restart the search at nodes where it'll result in lower 
-		if (entry.getDepth() < mCurDepth - 1) {
+		// We have to restart the search at nodes where it'll result in
+		// a lower depth.
+		if (entry.getDepth() < getCurrentDepth() - 1) {
 			
 			if (SearchHandler.SEARCH_HANDLER_DEBUG)
 				sLogger.trace(mName + ": Found new continue starter at " + nextNode);
@@ -224,7 +223,6 @@ class ContinueSearchHandler implements SearchHandler {
 		return false;
 	}
 
-
 	@Override
 	public void afterNode(Node cur) {
 		// NOTHING
@@ -236,26 +234,13 @@ class ContinueSearchHandler implements SearchHandler {
 			sLogger.trace(mName + ": Finished " + mSubscription);
 	}
 
-	@Override
-	public void nextDepth() {
-		mCurDepth++;
-		
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
-			sLogger.trace(mName + ": Depth is now " + mCurDepth);
-	}
-	
-	@Override
-	public void depthOver() {
-		// NOTHING
-	}
-	
 	private void visitGraphElementGeneric(GraphElement ge) {
 		SubscriptionEntry entry = ge.getSubscriptionEntry(mSubscription);
 		SubscriptionEntry remEntry = ge.getRemovedSubscriptionEntry(mSubscription);
 		List<MetadataHolder> toAdd = null;
 
 		if (SearchHandler.SEARCH_HANDLER_DEBUG)
-			sLogger.trace(mName + ": Visiting " + ge + " at depth " + mCurDepth);
+			sLogger.trace(mName + ": Visiting " + ge + " at depth " + getCurrentDepth());
 		
 		if (entry == null) {
 			if (remEntry != null) {
@@ -270,23 +255,28 @@ class ContinueSearchHandler implements SearchHandler {
 				
 				if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 					sLogger.trace(mName + ": Creating new entry on " + ge
-							+ " with depth " + mCurDepth);
+							+ " with depth " + getCurrentDepth());
 				}
 				
 				entry = new SubscriptionEntry(mSubscription);
 				
 				if (ge instanceof Node) {
-					toAdd = ge.getMetadataHolder(mResultFilter);
+					toAdd = ge.getMetadataHolder(getResultFilter());
 				} else if (ge instanceof Link) {
 					List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
-					toAdd = ge.getMetadataHolder(mMatchLinksFilter);
+					toAdd = ge.getMetadataHolder(getMatchLinksFilter());
 					
 					for (MetadataHolder mh : toAdd)
-						if (mh.getMetadata().matchesFilter(mResultFilter))
+						if (mh.getMetadata().matchesFilter(getResultFilter()))
 							tmp.add(mh);
 					
 					toAdd = tmp;
 				}
+			
+				
+				// Only authorized stuff
+				toAdd = authorized(toAdd);
+				
 				if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 					sLogger.trace(mName + ": Adding " + toAdd.size()
 							+ " metadata objects to entry of " + ge);
@@ -300,7 +290,7 @@ class ContinueSearchHandler implements SearchHandler {
 		}
 	
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-			sLogger.trace(mName + ": Setting depth to " + mCurDepth
+			sLogger.trace(mName + ": Setting depth to " + getCurrentDepth()
 					+ " for entry on " + ge);
 		}
 	
@@ -310,8 +300,7 @@ class ContinueSearchHandler implements SearchHandler {
 		if (toAdd != null)
 			mNewMetadata.addAll(toAdd);
 		
-		entry.setDepth(mCurDepth);
-		mVisitedGraphElements.add(ge);
+		entry.setDepth(getCurrentDepth());
+		getVisitedElements().put(ge, null);
 	}
-
 }

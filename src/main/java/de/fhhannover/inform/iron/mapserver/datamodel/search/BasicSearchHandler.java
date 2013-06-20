@@ -45,23 +45,19 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.log4j.Logger;
-
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
+import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
-import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
@@ -72,66 +68,46 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  * @since 0.3.0
  * @author aw
  */
-class BasicSearchHandler implements SearchHandler {
-	private static Logger sLogger = LoggingProvider.getTheLogger();
+class BasicSearchHandler extends AbstractSearchHandler {
 	private static final String sName = "BasicSearchHandler";
 	
-	private final Identifier mStartIdent;
-	private final int mMaxDepth;
 	private final int mMaxResultSize;
-	private final TerminalIdentifiers mTermIdentTypes;
-	private final Filter mMatchLinksFilter;
-	private final Filter mResultFilter;
 	private final boolean mIgnoreSize;
-	private long mStartTime;
-	private long mEndTime;
-	private int mCurDepth;
-	private final Map<GraphElement, List<MetadataHolder>> mVisitedElements;
 	private final int mAddBytes;
 	private final DataModelServerConfigurationProvider mConf;
 	private final ModifiableSearchResult mResult;
 	
-	BasicSearchHandler(SearchRequest sreq, ModifiableSearchResult sres, 
-			DataModelServerConfigurationProvider conf, int add, boolean ignoreSize) {
-		NullCheck.check(sreq, "sreq is null");
+	BasicSearchHandler(
+			SearchRequest sreq,
+			ModifiableSearchResult sres, 
+			DataModelServerConfigurationProvider conf,
+			int add, boolean ignoreSize,
+			Publisher pub,
+			IfmapPep pep) {
+		super(sreq, pub, pep);
 		NullCheck.check(sres, "sres is null");
 		NullCheck.check(conf, "conf is null");
 		mAddBytes = add;
 		mIgnoreSize = ignoreSize;
 		mConf = conf;
-		mMaxDepth = sreq.getMaxDepth();
-		
-		if (!sreq.maxSizeGiven()) {
-			mMaxResultSize = mConf.getDefaultMaxSearchResultSize();
-		} else {
-			mMaxResultSize = sreq.getMaxResultSize();
-		}
-	
-		mStartIdent = sreq.getStartIdentifier();
-		mTermIdentTypes = sreq.getTerminalIdentifiers();
-		mMatchLinksFilter = sreq.getMatchLinksFilter();
-		mResultFilter = sreq.getResultFilter();
-		mVisitedElements = new HashMap<GraphElement, List<MetadataHolder>>();
-		
 		mResult = sres;
-	}
-
-	@Override
-	public Identifier getStartIdentifier() {
-		return mStartIdent;
+		
+		if (!sreq.maxSizeGiven())
+			mMaxResultSize = mConf.getDefaultMaxSearchResultSize();
+		else
+			mMaxResultSize = sreq.getMaxResultSize();
 	}
 
 	@Override
 	public void onStart() {
+		super.onStart();
 		sLogger.debug(sName + ": starting search with parameters:");
-		sLogger.debug("\tstartIdent=" + mStartIdent);
-		sLogger.debug("\tmaxDepth=" + mMaxDepth);
+		sLogger.debug("\tstartIdent=" + getStartIdentifier());
+		sLogger.debug("\tmaxDepth=" + getMaxDepth());
 		sLogger.debug("\tmaxSize=" + sizeString());
-		sLogger.debug("\tmatch-links-filter=" + mMatchLinksFilter);
-		sLogger.debug("\tresult-filter=" + mResultFilter);
-		sLogger.debug("\tterminal-identifier-types=" + mTermIdentTypes);
-		mCurDepth = 0;
-		mStartTime = System.currentTimeMillis();
+		sLogger.debug("\tmatch-links-filter=" + getMatchLinksFilter());
+		sLogger.debug("\tresult-filter=" + getResultFilter());
+		sLogger.debug("\tterminal-identifier-types=" + getTerminalIdentifiers());
 	}
 	
 	@Override
@@ -142,26 +118,29 @@ class BasicSearchHandler implements SearchHandler {
 
 	@Override
 	public boolean travelLinksOf(Node cur) {
-		return mCurDepth < mMaxDepth && !mTermIdentTypes.contains(cur.getIdentifier());
+		return getCurrentDepth()< getMaxDepth() 
+				&& !getTerminalIdentifiers().contains(cur.getIdentifier());
 	}
 
 	@Override
 	public boolean travelLink(Link l) {
-		List<MetadataHolder> matchingMetadata;
-		// fast path out.
+		List<MetadataHolder> matching;
+		
+		// Fast path out.
 		if (wasVisited(l))
 			return false;
 	
-		// costly, cache the result.
-		matchingMetadata = l.getMetadataHolderInGraph(mMatchLinksFilter);
-		mVisitedElements.put(l, matchingMetadata);
+		// Matching and authorization is costly, cache the result.
+		matching = authorized(l.getMetadataHolderInGraph(getMatchLinksFilter()));
+			
+		getVisitedElements().put(l, matching);
 		
-		return matchingMetadata.size() > 0;
+		return matching.size() > 0;
 	}
 
 	@Override
 	public void onLink(Link l) throws SearchResultsTooBigException {
-		List<MetadataHolder> matchingMetadata = mVisitedElements.get(l);
+		List<MetadataHolder> matchingMetadata = getVisitedElements().get(l);
 		if (matchingMetadata == null || matchingMetadata.size() == 0)
 			throw new SystemErrorException("on link which never asked for?");
 		
@@ -178,7 +157,6 @@ class BasicSearchHandler implements SearchHandler {
 		return false;
 	}
 
-
 	@Override
 	public void afterNode(Node cur) {
 		// nothing
@@ -186,44 +164,37 @@ class BasicSearchHandler implements SearchHandler {
 
 	@Override
 	public void onEnd() {
-		mEndTime = System.currentTimeMillis();
+		super.onEnd();
 		sLogger.debug(sName + ": search finished:");
 		sLogger.debug("\ttime=" + usedTime());
 		sLogger.debug("\tused=" + usedBytesString());
 	}
-	
-	@Override
-	public void nextDepth() {
-		mCurDepth++;
-	}
 
-	@Override
-	public void depthOver() {
-		//mCurDepth--;
-	}
 	private String usedTime() {
-		return (mEndTime - mStartTime) + "";
+		return (getEndTime() - getStartTime()) + "";
 	}
 
 	/**
 	 * Put everything of this {@link Node} into a {@link SearchResult}.
 	 * 
-	 * @param node
+	 * @param n
 	 */
-	private void appendToResult(Node node) {
+	private void appendToResult(Node n) {
+		List<MetadataHolder> mhlist =  n.getMetadataHolderInGraph(getResultFilter());
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 		
-		for (MetadataHolder mh : node.getMetadataHolderInGraph(mResultFilter))
-			toAdd.add(mh.getMetadata());
+		for (MetadataHolder mh : authorized(mhlist))
+				toAdd.add(mh.getMetadata());
 		
-		appendToResult(node, toAdd);
+		appendToResult(n, toAdd);
 	}
-	
 
 	/**
 	 * In the case of a {@link Link}, we only need to take the {@link Metadata}
-	 * objects we got by using the {@link #mMatchLinksFilter} and that match on
-	 * the {@link #mResultFilter}.
+	 * objects we got by using the {@link #mMatchLinksFilter} and match these
+	 * with the {@link #mResultFilter}.
+	 * 
+	 * NOTE: Authorization already took place here!
 	 * 
 	 * @param link
 	 * @param matchLinksMd
@@ -232,27 +203,21 @@ class BasicSearchHandler implements SearchHandler {
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 		
 		for (MetadataHolder mh : matchLinksMd)
-			if (mh.getMetadata().matchesFilter(mResultFilter))
+			if (mh.getMetadata().matchesFilter(getResultFilter()))
 				toAdd.add(mh.getMetadata());
 		
 		appendToResult(link, toAdd);
 	}
 		
-	/**
-	 * Helper to simply add the {@link Metadata} objects to the result.
-	 * 
-	 * @param ge
-	 * @param toAdd
-	 */
 	private void appendToResult(GraphElement ge, List<Metadata> toAdd) {
 		mResult.addMetadata(ge, toAdd);
 	}
 	private void appendToBeVisited(GraphElement ge) {
-		mVisitedElements.put(ge, null);
+		getVisitedElements().put(ge, null);
 	}
 
 	private boolean wasVisited(GraphElement ge) {
-		return mVisitedElements.containsKey(ge);
+		return getVisitedElements().containsKey(ge);
 	}
 
 	private void throwIfTooBig() throws SearchResultsTooBigException {
@@ -261,20 +226,10 @@ class BasicSearchHandler implements SearchHandler {
 					mMaxResultSize, curByteCount());
 	}
 
-	/**
-	 * Simple helper to check if the result grew too big.
-	 * 
-	 * @return true if the result has grown too big already
-	 */
 	private boolean resultIsTooBig() {
 		return (!mIgnoreSize && curByteCount() > mMaxResultSize);
 	}
 
-	/**
-	 * Simple helper to get the current size of the result.
-	 * 
-	 * @return
-	 */
 	private int curByteCount() {
 			return mResult.getByteCount() + mAddBytes;
 	}

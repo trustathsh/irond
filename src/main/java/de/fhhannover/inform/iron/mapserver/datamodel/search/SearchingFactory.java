@@ -45,8 +45,11 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
@@ -80,11 +83,12 @@ public interface SearchingFactory {
 	public SearchHandler newBasicSearchHandler(
 			DataModelServerConfigurationProvider conf, SearchRequest request,
 			ModifiableSearchResult result, int additionalBytes,
-			boolean ignoreSize);
+			boolean ignoreSize, Publisher pub, IfmapPep pep);
 
 	public SearchHandler newContinueSearchHandler(Identifier start, int depth,
-			Subscription sub, Set<GraphElement> visitedGraphElement,
-			Set<MetadataHolder> newMeta, Set<Node> starters);
+			Subscription sub, Map<GraphElement, List<MetadataHolder>> visitedGraphElement,
+			Set<MetadataHolder> newMeta, Set<Node> starters, Publisher pub,
+			IfmapPep pep);
 
 	public SearchHandler newDeleteSearchHandler(Identifier start, int depth,
 			Subscription sub, Set<MetadataHolder> newMeta,

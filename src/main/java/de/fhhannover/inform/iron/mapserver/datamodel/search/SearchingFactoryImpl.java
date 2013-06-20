@@ -45,8 +45,11 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
@@ -71,9 +74,9 @@ public class SearchingFactoryImpl implements SearchingFactory {
 	public SearchHandler newBasicSearchHandler(
 			DataModelServerConfigurationProvider conf, SearchRequest request,
 			ModifiableSearchResult result, int additionalBytes,
-			boolean ignoreSize) {
+			boolean ignoreSize, Publisher pub, IfmapPep pep) {
 		return new BasicSearchHandler(request, result, conf, additionalBytes,
-				ignoreSize);
+				ignoreSize, pub, pep);
 	}
 
 	public static SearchingFactory newInstance() {
@@ -108,10 +111,11 @@ public class SearchingFactoryImpl implements SearchingFactory {
 
 	@Override
 	public SearchHandler newContinueSearchHandler(Identifier start, int depth,
-			Subscription sub, Set<GraphElement> visitedGraphElement,
-			Set<MetadataHolder> newMeta, Set<Node> starters) {
+			Subscription sub, Map<GraphElement, List<MetadataHolder>> visitedGraphElement,
+			Set<MetadataHolder> newMeta, Set<Node> starters,
+			Publisher pub, IfmapPep pep) {
 		return new ContinueSearchHandler(start, depth, sub, visitedGraphElement,
-				newMeta, starters);
+				newMeta, starters, pub, pep);
 	}
 
 	@Override

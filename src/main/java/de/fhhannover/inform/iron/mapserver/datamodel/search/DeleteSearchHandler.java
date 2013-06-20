@@ -162,11 +162,6 @@ class DeleteSearchHandler implements SearchHandler {
 			sLogger.trace(mName + ": Depth is now " + mCurDepth);
 	}
 
-	@Override
-	public void depthOver() {
-		//
-	}
-
 	private void cleanGraphElement(GraphElement ge) {
 		SubscriptionEntry entry = ge.getSubscriptionEntry(mSubscription);
 		if (entry == null) {

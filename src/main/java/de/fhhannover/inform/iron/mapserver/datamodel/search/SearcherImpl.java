@@ -167,7 +167,6 @@ class SearcherImpl implements Searcher {
 		for (Node next : nextNodes)
 			ret.addAll(traverse(next));
 		
-		mHandler.depthOver();
 		return ret;
 	}
 }
