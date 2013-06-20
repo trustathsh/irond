@@ -500,13 +500,13 @@ public class ChannelThread implements Runnable {
 	}
 	
 	private InputStream uncompress(InputStream is) throws IOException {
-		int ret = 0;
+		int c = 0;
 		// wrap to uncompress
 		is = new GZIPInputStream(is, is.available());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
-		while ((ret = is.read()) >= 0)
-			baos.write(ret);
+		while ((c = is.read()) >= 0)
+			baos.write(c);
 			
 		baos.close();
 		is.close();

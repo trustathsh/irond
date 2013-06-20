@@ -108,7 +108,6 @@ public class BasicChannelAuth extends ChannelAuth {
 			throw new ChannelAuthException("Bad username/password");
 		} else {
 			ClientIdentifier newClId = new ClientIdentifier(user);
-
 			// this checks, whether the username is the same as given on the
 			// first call. If this is the first call, set the mClientId field
 			// appropriately.

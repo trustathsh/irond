@@ -68,14 +68,13 @@ import de.fhhannover.inform.iron.mapserver.utils.Digests;
 public class CertificateChannelAuth extends ChannelAuth {
 
 	private ClientIdentifier mClientId;
-	
+
 	public CertificateChannelAuth(Socket socket) {
 		super(socket);
 	}
 	
 	@Override
-	public void authenticate(HttpRequest request) throws ChannelAuthException
-	{	
+	public void authenticate(HttpRequest request) throws ChannelAuthException {	
 		// Extract the DN name only on the first call of this method.
 		// Further calls are simply nops.
 		if (mClientId == null) {
