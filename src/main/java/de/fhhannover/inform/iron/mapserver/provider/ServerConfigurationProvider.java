@@ -45,17 +45,18 @@ package de.fhhannover.inform.iron.mapserver.provider;
  * #L%
  */
 
+import java.util.Collection;
+
 import de.fhhannover.inform.iron.mapserver.communication.http.ActionProcessor;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.EventProcessor;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPepHandler.PdpType;
+import de.fhhannover.inform.iron.mapserver.provider.RoleMapperProvider.RoleMapperType;
 
 
 /**
  * Interface to get configuration information about the server.
  *
- * TODO: Extend this interface with whatever you need.
- * 
  * @author aw
- * 
  */
 public interface ServerConfigurationProvider extends DataModelServerConfigurationProvider {
 	
@@ -86,7 +87,7 @@ public interface ServerConfigurationProvider extends DataModelServerConfiguratio
 	public String getKeyStoreFileName();
 	
 	/**
-	 * @return passwort of the keystore
+	 * @return password of the keystore
 	 */
 	public String getKeyStorePasswort();
 	
@@ -155,5 +156,76 @@ public interface ServerConfigurationProvider extends DataModelServerConfiguratio
 	 * @return all schema files to be loaded to do XML validation
 	 */
 	public String[] getSchemaFileNames();
+	
+	/**
+	 * @return {@link PepType} to be used.
+	 */
+	public PdpType getPdpType();
+	
+	/**
+	 * @return if the used {@link PdpType} is {@link PdpType#local}, then
+	 * a {@link String} to the policy file. If {@link PdpType#remote} a
+	 * {@link String} describing the location of the remote PDP.
+	 * 
+	 */
+	public String getPdpParameters();
+
+	/**
+	 * @return whether we are doing a policy dry run.
+	 */
+	public boolean isPdpDryRun();
+
+	/**
+	 * @return should we log the raw XACML logs?
+	 */
+	public boolean isPdpDecisionRequestRawLog();
+
+	/**
+	 * @return should we log the raw XACML logs?
+	 */
+	public boolean isEnablePdpCache();
+	
+	/**
+	 * @return the time in seconds decision requests results are to be
+	 * cached.
+	 */
+	public int getPdpCacheTtl();
+
+	/**
+	 * @return the maximum number of cached entries in the PDP cache.
+	 */
+	public long getPdpCacheMaxEntries();
+
+	/**
+	 * This value corresponds to the number of parallel connections to an
+	 * external PDP. However, it also corresponds to the number of parallel
+	 * requests to an internal PDP, which might end up being really
+	 * computationally intensive.
+	 * 
+	 * @return the number of threads to use for PDP.
+	 */
+	public int getPdpThreads();
+
+	/**
+	 * @return a list of {@link String} instances indicating which top-level
+	 *		   metadata attributes to include.
+	 */
+	public Collection<String> getPdpSelectedMetadataAttributes();
+
+	/**
+	 * @return a list of {@link String} instances indicating which top-level
+	 *		   metadata attributes to include.
+	 */
+	public Collection<String> getPdpSelectedIdentifierAttributes();
+
+	/**
+	 * @return the type of {@link RoleMapperProvider} to be used
+	 */
+	public RoleMapperType getRoleMapperType();
+	
+	/**
+	 * @return
+	 */
+	public String getRoleMapperParams();
 }
 

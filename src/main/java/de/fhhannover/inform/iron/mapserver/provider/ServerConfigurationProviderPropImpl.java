@@ -45,13 +45,21 @@ package de.fhhannover.inform.iron.mapserver.provider;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationException;
-import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.transform.stream.StreamSource;
+
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPepHandler.PdpType;
+import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationException;
+import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
+import de.fhhannover.inform.iron.mapserver.provider.RoleMapperProvider.RoleMapperType;
+import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 
 /**
  * Implements the ServerConfigurationProvider, which reads the server-properties
@@ -130,7 +138,10 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 
 	private static final String XML_SCHEMA_KEY = PROP_PREFIX + "xml.schema.";
 	private static final String XML_SCHEMA_DEFAULT_VALUE = "schema/soap12.xsd";
-
+	
+	private static final String PDP_TYPE_KEY = PROP_PREFIX + "pdp.type";
+	private static final String PDP_TYPE_DEFAULT_VALUE = "permit";
+	
 	private static final String XML_EXTENDED_IDENTIFIER_URI_KEY = PROP_PREFIX + "ifmap.strict.identity.extended.schema.uri.";
 	private static final String XML_EXTENDED_IDENTIFIER_FILE_KEY = PROP_PREFIX + "ifmap.strict.identity.extended.schema.file.";
 	
@@ -161,6 +172,40 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_KEY = PROP_PREFIX + "ifmap.strict.identity.extended.lockdown";
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_DEFAULT = "false";
 
+	private static final String PDP_PARAMS_KEY = PROP_PREFIX + "pdp.parameter";
+	private static final String PDP_PARAMS_DEFAULT = "";
+	
+	private static final String PDP_DRY_RUN_KEY = PROP_PREFIX + "pdp.dryrun";
+	private static final String PDP_DRY_RUN_DEFAULT = "false";
+
+	private static final String PDP_RAWLOG_KEY = PROP_PREFIX + "pdp.rawlog";
+	private static final String PDP_RAWLOG_DEFAULT = "false";
+
+	private static final String PDP_CACHETTL_KEY = PROP_PREFIX + "pdp.cache.ttl";
+	private static final String PDP_CACHETTL_DEFAULT = "30";
+
+	private static final String PDP_CACHEENABLE_KEY = PROP_PREFIX + "pdp.cache.enable";
+	private static final String PDP_CACHEENABLEL_DEFAULT = "true";
+
+	private static final String PDP_CACHEMAXENTRIES_KEY = PROP_PREFIX + "pdp.cache.maxentries";
+	private static final String PDP_CACHEMAXENTRIES_DEFAULT = "1024";
+
+	private static final String PDP_THREADS_KEY = PROP_PREFIX + "pdp.threads";
+	private static final String PDP_THREADS_DEFAULT = "4";
+
+	private static final String PDP_SELECTED_METADATA_ATTR = PROP_PREFIX + "pdp.metadata.attr";
+	private static final String PDP_SELECTED_METADATA_ATTR_DEFAULT = "";
+
+	private static final String PDP_SELECTED_IDENTIFIER_ATTR = PROP_PREFIX + "pdp.identifier.attr";
+	private static final String PDP_SELECTED_IDENTIFIER_ATTR_DEFAULT = "";
+
+	private static final String ROLE_MAPPER_TYPE_KEY = PROP_PREFIX + "rolemapper.type";
+	private static final String ROLE_MAPPER_TYPE_DEFAULT = "properties";
+
+	private static final String ROLE_MAPPER_PARAMS_KEY = PROP_PREFIX + "rolemapper.params";
+	private static final String ROLE_MAPPER_PARAMS_DEFAULT = "roles.properties";
+
+	
 	private PropertiesReaderWriter mProperties;
 	
 	public ServerConfigurationProviderPropImpl(String filename) throws ProviderInitializationException{
@@ -488,5 +533,95 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 		}
 		
 		return fileNames.toArray(new String[fileNames.size()]);
+	}
+
+	@Override
+	public PdpType getPdpType() {
+		// throws exception in case there's something we don't expect
+		return PdpType.valueOf(getOrSetDefaultAndGet(PDP_TYPE_KEY,
+				PDP_TYPE_DEFAULT_VALUE));
+	}
+
+	@Override
+	public String getPdpParameters() {
+		return getOrSetDefaultAndGet(PDP_PARAMS_KEY, PDP_PARAMS_DEFAULT);
+	}
+
+	@Override
+	public boolean isPdpDryRun() {
+		return new Boolean(getOrSetDefaultAndGet(PDP_DRY_RUN_KEY,
+												 PDP_DRY_RUN_DEFAULT));
+	}
+	
+	@Override
+	public boolean isPdpDecisionRequestRawLog() {
+		return new Boolean(getOrSetDefaultAndGet(PDP_RAWLOG_KEY,
+												 PDP_RAWLOG_DEFAULT));
+	}
+
+	@Override
+	public boolean isEnablePdpCache() {
+		return new Boolean(getOrSetDefaultAndGet(PDP_CACHEENABLE_KEY,
+												 PDP_CACHEENABLEL_DEFAULT));
+	}
+	
+	@Override
+	public int getPdpCacheTtl() {
+		return Integer.parseInt(getOrSetDefaultAndGet(PDP_CACHETTL_KEY,
+													  PDP_CACHETTL_DEFAULT));
+	}
+
+	@Override
+	public long getPdpCacheMaxEntries() {
+		return Integer.parseInt(getOrSetDefaultAndGet(PDP_CACHEMAXENTRIES_KEY,
+													  PDP_CACHEMAXENTRIES_DEFAULT));
+	}
+
+	@Override
+	public int getPdpThreads() {
+		return Integer.parseInt(getOrSetDefaultAndGet(PDP_THREADS_KEY,
+													  PDP_THREADS_DEFAULT));
+	}
+
+	@Override
+	public RoleMapperType getRoleMapperType() {
+		return RoleMapperType.valueOf(getOrSetDefaultAndGet(ROLE_MAPPER_TYPE_KEY,
+									 ROLE_MAPPER_TYPE_DEFAULT));
+	}
+
+	@Override
+	public String getRoleMapperParams() {
+		return getOrSetDefaultAndGet(ROLE_MAPPER_PARAMS_KEY,
+									 ROLE_MAPPER_PARAMS_DEFAULT);
+	}
+
+
+
+	@Override
+	public Collection<String> getPdpSelectedMetadataAttributes() {
+		String attrs = getOrSetDefaultAndGet(PDP_SELECTED_METADATA_ATTR,
+											 PDP_SELECTED_METADATA_ATTR_DEFAULT);
+		
+		if (attrs == null)
+			throw new SystemErrorException("config: no selected attribute values");
+		
+		String attrsArray[] = attrs.split(",");
+		
+		return Collections.unmodifiableCollection(Arrays.asList(attrsArray));
+	}
+
+
+
+	@Override
+	public Collection<String> getPdpSelectedIdentifierAttributes() {
+		String attrs = getOrSetDefaultAndGet(PDP_SELECTED_IDENTIFIER_ATTR,
+											 PDP_SELECTED_IDENTIFIER_ATTR_DEFAULT);
+		
+		if (attrs == null)
+			throw new SystemErrorException("config: no selected attribute values");
+		
+		String attrsArray[] = attrs.split(",");
+		
+		return Collections.unmodifiableCollection(Arrays.asList(attrsArray));
 	}
 }
