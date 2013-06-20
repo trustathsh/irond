@@ -55,5 +55,12 @@ public interface RoleMapperProvider {
 		properties,
 	}
 	
+	/**
+	 * Provide roles in the form of {@link String} objects for the client
+	 * identified by the given {@link ClientIdentifier}.
+	 * 
+	 * @param clientId
+	 * @return
+	 */
 	public List<String> getRolesOf(ClientIdentifier clientId);
 }

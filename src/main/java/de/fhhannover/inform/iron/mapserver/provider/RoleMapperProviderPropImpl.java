@@ -56,10 +56,13 @@ import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationExce
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 
 /**
+ * Provide roles for users from a properties file.
  * 
  * @author aw
  */
 public class RoleMapperProviderPropImpl implements RoleMapperProvider {
+
+	private PropertiesReaderWriter mProperties;
 	
 	public RoleMapperProviderPropImpl(ServerConfigurationProvider mServerConf) throws ProviderInitializationException {
 		try {
@@ -68,8 +71,6 @@ public class RoleMapperProviderPropImpl implements RoleMapperProvider {
 			throw new ProviderInitializationException(e.getMessage());
 		}
 	}
-
-	private PropertiesReaderWriter mProperties;
 
 	@Override
 	public List<String> getRolesOf(ClientIdentifier clientId) {
@@ -81,10 +82,8 @@ public class RoleMapperProviderPropImpl implements RoleMapperProvider {
 		
 		String groups = mProperties.getProperty(clString);
 		
-		if (groups == null) {
-			System.err.println("No entry for: "  + clientId.getUserameOrCertFingerPrint());
+		if (groups == null)
 			return new ArrayList<String>();
-		}
 		
 		return Collections.unmodifiableList(Arrays.asList(groups.split(",")));
 	}
