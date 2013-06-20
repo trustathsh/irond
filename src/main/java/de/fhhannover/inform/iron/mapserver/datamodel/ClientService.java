@@ -50,10 +50,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
+import de.fhhannover.inform.iron.mapserver.exceptions.AccessDeniedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
+import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 
 /**
@@ -72,12 +76,14 @@ class ClientService {
 	private static final Logger sLogger = LoggingProvider.getTheLogger();
 	private static final String sName = "ClientService";
 
-	private PublisherRep publisherRep;
-	private SubscriptionService subService;
+	private final PublisherRep publisherRep;
+	private final SubscriptionService subService;
+	private final IfmapPep mPep;
 	
-	ClientService(PublisherRep pr, SubscriptionService subServ) {
-		publisherRep = pr;
+	ClientService(DataModelParams params, SubscriptionService subServ) {
+		publisherRep = params.pubRep;
 		subService = subServ;
+		mPep = params.pep;
 	}
 	
 	/**
@@ -88,13 +94,15 @@ class ClientService {
 	 * @throws RunningSessionException newSession is called, the publisher exists
 	 * 			but had never received an end session call
 	 */
-	void newSession(String sessionId, String publisherId, Integer mprs) {
-		if (mprs == null)
-			mprs = new Integer(DataModelService.getServerConfiguration().getDefaultMaxPollResultSize());
-		sLogger.trace(sName + ": newSession for " + publisherId 
-				+ " and maxPollResultSize=" + mprs + " bytes");
-	
-		publisherRep.addPublisher(publisherId, sessionId, mprs);
+	void newSession(String sId, String pId, Integer mprs, ClientIdentifier clId) {
+		if (mprs == null) {
+			DataModelServerConfigurationProvider conf = 
+					DataModelService.getServerConfiguration();
+			mprs = conf.getDefaultMaxPollResultSize();
+		}
+		
+		sLogger.trace(sName + ": newSession for " + pId  + " mprs=" + mprs);
+		publisherRep.addPublisher(pId, sId, mprs, clId);
 	}
 	 
 	/**
@@ -139,34 +147,39 @@ class ClientService {
 	 * @param request
 	 * @return
 	 * @throws PurgePublisherNoAllowedException 
+	 * @throws AccessDeniedException 
 	 * @throws ResponseCreationException 
 	 */
-	void purgePublisher(String sessionId, String publisherId) throws PurgePublisherNoAllowedException {
+	void purgePublisher(String sessionId, String publisherId) throws PurgePublisherNoAllowedException, AccessDeniedException {
 		List<MetadataHolder> changes = new ArrayList<MetadataHolder>();
-		Publisher requestor = publisherRep.getPublisherBySessionId(sessionId);
-		Publisher toPurge = publisherRep.getPublisherByPublisherIdUnsafe(publisherId);
-	
-		// Check if allowed to do so... TODO: Move this one layer up?
+		Publisher purger = publisherRep.getPublisherBySessionId(sessionId);
+		Publisher purgee = publisherRep.getPublisherByPublisherIdUnsafe(publisherId);
+
+		
+		// FIXME: With content authorization, this is pretty much obsolete.
 		if (DataModelService.getServerConfiguration().getPurgePublisherIsRestricted()) {
-			if (!requestor.getPublisherId().equals(publisherId)) {
+			if (!purger.getPublisherId().equals(publisherId)) {
 				sLogger.warn(sName + ": purgePublisher not allowed");
 				throw new PurgePublisherNoAllowedException("Not allowed to" +
 						" purge metadata! of a different publisher");
 			}
 		}
 		
+		if (!mPep.isAuthorized(purger, publisherId))
+			throw new AccessDeniedException("not allowed");
+		
 		// If we don't know about the publisher, log a warning, but don't throw
 		// an exception.
-		if (toPurge == null) {
-			sLogger.warn(sName + ": " + requestor + " tried purging non-existing"
+		if (purgee == null) {
+			sLogger.warn(sName + ": " + purger + " tried purging non-existing"
 					+ " publisher-id=" + publisherId);
 			return;
 		}
 		
-		changes.addAll(toPurge.getSessionMetadata());
-		changes.addAll(toPurge.getForeverMetadata());
-		sLogger.debug(sName + ": " + requestor + " is purging " + changes.size()
-				+ " metadata objects of " + toPurge);
+		changes.addAll(purgee.getSessionMetadata());
+		changes.addAll(purgee.getForeverMetadata());
+		sLogger.debug(sName + ": " + purger + " is purging " + changes.size()
+				+ " metadata objects of " + purgee);
 		
 		setStateDeleted(changes);
 		subService.commitChanges(changes);

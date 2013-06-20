@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 import java.util.Collections;
 import java.util.List;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SubscriptionState;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
@@ -86,19 +87,23 @@ public class Publisher {
 	private final List<MetadataHolder> mForeverMetadata;
 	
 	private SubscriptionState mSubscriptionState;
+
+	// Data about authentication used
+	private ClientIdentifier mClientIdent;
 	
-	public Publisher(String publisherId, String sessionId, Integer mprs) {
+	public Publisher(String pId, String sId, Integer mprs, ClientIdentifier clId) {
 		
-		NullCheck.check(publisherId, "publisherId is null");
-		NullCheck.check(sessionId, "sessionId is null");
-		LengthCheck.checkMin(publisherId, 1, "publisherId length bad");
-		LengthCheck.checkMin(sessionId, 1, "sessionId length bad");
+		NullCheck.check(pId, "publisher-id is null");
+		NullCheck.check(sId, "session-id is null");
+		LengthCheck.checkMin(pId, 1, "publisher-id length bad");
+		LengthCheck.checkMin(sId, 1, "session-id length bad");
 		
 		mSubscriptionState = new SubscriptionState();
 		mSessionMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
 		mForeverMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
-		mPublisherId = publisherId;
-		mSessionId = sessionId;
+		mPublisherId = pId;
+		mSessionId = sId;
+		mClientIdent = clId;
 		
 		mSubscriptionState.setMaxPollResultSize(mprs);
 	}
@@ -165,6 +170,10 @@ public class Publisher {
 	
 	public String getPublisherId() {
 			return mPublisherId;
+	}
+
+	public ClientIdentifier getClientIdentifier() {
+			return mClientIdent;
 	}
 	
 	public String getSessionId() {

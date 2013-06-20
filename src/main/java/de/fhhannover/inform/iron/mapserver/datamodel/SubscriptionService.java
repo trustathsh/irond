@@ -46,6 +46,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  */
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,6 +54,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
@@ -102,12 +104,12 @@ public class SubscriptionService {
 	private static String sName = "SubscriptionService";
 	
 	// FIXME
-	private static final DataModelServerConfigurationProvider mConf = 
-		DataModelService.getServerConfiguration();
+	private final DataModelServerConfigurationProvider mConf;
 	
 	private final PublisherRep publisherRep;
 	private final GraphElementRepository mGraph;
 	private final SearchingFactory mSearchFac;
+	private final IfmapPep mPep;
 	
 	private SubscriptionObserver mObserver;
 
@@ -117,10 +119,12 @@ public class SubscriptionService {
 	
 	private long mLogicalTimeStamp;
 
-	SubscriptionService(GraphElementRepository graph, PublisherRep pRep, SearchingFactory sFac) {
-		mGraph = graph;
-		publisherRep = pRep;
-		mSearchFac = sFac;
+	public SubscriptionService(DataModelParams params) {
+		mGraph = params.graph;
+		publisherRep = params.pubRep;
+		mSearchFac = params.searchFac;
+		mPep = params.pep;
+		mConf = params.conf;
 		mChangedSubscriptions = 
 			CollectionHelper.provideMapFor(Subscription.class, SubscriptionChangeState.class);
 		mChangedPublishers = CollectionHelper.provideSetFor(Publisher.class);
@@ -128,7 +132,7 @@ public class SubscriptionService {
 		
 		mLogicalTimeStamp = 0;
 	}
-	
+
 	/**
 	 * Handling of a {@link SubscriptionRequest} which is forwarded by the
 	 * {@link DataModelService}.
@@ -256,7 +260,8 @@ public class SubscriptionService {
 	 */
 	private ModifiableSearchResult runInitialSearch(Subscription sub) throws SearchResultsTooBigException {
 		
-		Set<GraphElement> visitedGraphElement = CollectionHelper.provideSetFor(GraphElement.class);
+		Map<GraphElement, List<MetadataHolder>> visitedGraphElement = 
+				new HashMap<GraphElement, List<MetadataHolder>>();
 		Set<MetadataHolder> newMeta = CollectionHelper.provideSetFor(MetadataHolder.class);
 		Set<Node> starters = CollectionHelper.provideSetFor(Node.class);
 		ModifiableSearchResult initSres = mSearchFac.newCopySearchResult(sub.getName());
@@ -269,12 +274,14 @@ public class SubscriptionService {
 				sub,
 				visitedGraphElement,
 				newMeta,
-				starters);
+				starters,
+				sub.getPublisherReference(),
+				mPep);
 		
 		Searcher searcher = mSearchFac.newSearcher(mGraph, handler);
 		searcher.runSearch();
 		
-		for (GraphElement ge : visitedGraphElement) {
+		for (GraphElement ge : visitedGraphElement.keySet()) {
 			initSres.addGraphElement(ge);
 			
 			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder())
@@ -305,7 +312,7 @@ public class SubscriptionService {
 	 *	 because of the "new state" of the subscription.
 	 *       As mentioned above, currently only the old state of subscriptions
 	 *       is used.
-	 *       
+	 *
 	 * @param changedMetadata
 	 * @throws ResponseCreationException 
 	 */
@@ -436,7 +443,8 @@ public class SubscriptionService {
 		SearchHandler handler = null;
 		Searcher searcher = null;
 		// FIXME: unused here!
-		Set<GraphElement> unusedVisited = CollectionHelper.provideSetFor(GraphElement.class);
+		Map<GraphElement, List<MetadataHolder>> unusedVisited = 
+				new HashMap<GraphElement, List<MetadataHolder>>();
 		
 	
 		// prepare for the first run
@@ -456,7 +464,9 @@ public class SubscriptionService {
 						sub,
 						unusedVisited,
 						added,
-						nextStarters);
+						nextStarters,
+						sub.getPublisherReference(),
+						mPep);
 				
 				searcher = mSearchFac.newSearcher(mGraph, handler);
 				searcher.runSearch();
@@ -480,8 +490,6 @@ public class SubscriptionService {
 				mh.setState(MetadataState.UNCHANGED);
 				break;
 			case DELETED:
-				// all references should be gone anyway
-				break;
 			case REPLACED:
 				// all references should be gone anyway
 				break;
@@ -515,22 +523,26 @@ public class SubscriptionService {
 		List<MetadataHolder> toRemove = CollectionHelper.provideListFor(MetadataHolder.class);
 		
 		for (MetadataHolder mh : mChangedMetadata) {
-			if (mh.isNotify()) {
-				ge = mh.getGraphElement();
+			
+			// skip non-notify
+			if (!mh.isNotify())
+				continue;
+			
+			ge = mh.getGraphElement();
+			
+			for (SubscriptionEntry entry : ge.getSubscriptionEntries()) {
+				sub = entry.getSubscription();
+				subcs = getSubChangeState(sub);
 				
-				for (SubscriptionEntry entry : ge.getSubscriptionEntries()) {
-					sub = entry.getSubscription();
-					
-					if (matchesOnSubscription(ge, mh.getMetadata(), sub)) {
-						subcs = getSubChangeState(sub);
-						subcs.mNotifyMetadataHolders.add(mh);
-					}
-				}
-				toRemove.add(mh);
-				ge.removeMetadataHolder(mh);
-				mh.getPublisher().removeMetadataHolder(mh);
+				if (matchesOnSubscription(mh, sub))
+					subcs.mNotifyMetadataHolders.add(mh);
 			}
+			
+			toRemove.add(mh);
+			ge.removeMetadataHolder(mh);
+			mh.getPublisher().removeMetadataHolder(mh);
 		}
+		
 		mChangedMetadata.removeAll(toRemove);
 	}
 
@@ -548,25 +560,8 @@ public class SubscriptionService {
 				if (!mh.getMetadata().isSingleValue())
 					throw new SystemErrorException("REPLACED not singleValue");
 				
-				// Sanity Check: If we have replaced metadata, make sure
-				// there is metadata in state NEW of the same type on the
-				// same graph element.
-				if (mConf.isSanityChecksEnabled()) {
-					MetadataType type = mh.getMetadata().getType();
-					GraphElement ge = mh.getGraphElement();
-					List<MetadataHolder> mhs = ge.getMetadataHolder(type);
-					List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
-					
-					for (MetadataHolder mh2 : mhs)
-						if (mh2.isNew())
-							tmp.add(mh2);
-				
-					// We checked singleValue before and expect a single
-					// NEW one
-					if (tmp.size() != 1)
-						throw new SystemErrorException("REPLACED metadata, "
-								+ "but NEW metadata size=" + tmp.size());
-				}
+				if (mConf.isSanityChecksEnabled())
+					replaceSanitize(mh);
 
 				// Forget about it;
 				mh.getGraphElement().removeMetadataHolder(mh);
@@ -578,7 +573,33 @@ public class SubscriptionService {
 			}
 		}
 	}
+	
+	/**
+	 * Sanity Check: If we have replaced metadata, make sure there is metadata
+	 * in state NEW of the same type on the same graph element, and there is
+	 * only one such metadata object!
+	 * 
+	 * @param mh
+	 */
+	private void replaceSanitize(MetadataHolder mh) {
+		MetadataType type = mh.getMetadata().getType();
+		GraphElement ge = mh.getGraphElement();
+		List<MetadataHolder> mhs = ge.getMetadataHolder(type);
+		List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
+		
+		for (MetadataHolder mh2 : mhs)
+			if (mh2.isNew())
+				tmp.add(mh2);
+	
+		// We checked singleValue before and expect a single NEW one
+		if (tmp.size() != 1)
+			throw new SystemErrorException("metadata replaced by " + tmp.size());
+	}
 
+	/**
+	 * 
+	 * @param mh
+	 */
 	private void addMetadataHolder(MetadataHolder mh) {
 		Subscription sub;
 		SubscriptionChangeState subcs;
@@ -588,9 +609,9 @@ public class SubscriptionService {
 		// check if one happens to match.
 		for (SubscriptionEntry entry : ge.getSubscriptionEntries()) {
 			sub = entry.getSubscription();
+			subcs = getSubChangeState(sub);
 			
-			if (matchesOnSubscription(ge, mh.getMetadata(), sub)) {
-				subcs = getSubChangeState(sub);
+			if (matchesOnSubscription(mh, sub)) {
 				entry.addMetadataHolder(mh);
 				subcs.mAddedMetadataHolders.add(mh);
 			}
@@ -608,10 +629,10 @@ public class SubscriptionService {
 		
 		for (SubscriptionEntry entry : ge.getSubscriptionEntries()) {
 			sub = entry.getSubscription();
+			subcs = getSubChangeState(sub);
 			mhlist = entry.getMetadataHolder();
 			
 			if (mhlist.contains(mh)) {
-				subcs = getSubChangeState(sub);
 				// remove this MetadataHoder from the entry.
 				entry.removeMetadataHolder(mh);
 				// put into deleted for this subscription
@@ -626,7 +647,14 @@ public class SubscriptionService {
 		// remove reference from publisher
 		mh.getPublisher().removeMetadataHolder(mh);
 	}
+
 	
+	/**
+	 * Somebody, please, add some documentation...
+	 * 
+	 * @param ge
+	 * @param mh
+	 */
 	private void checkForAddedSubGraph(GraphElement ge, MetadataHolder mh) {
 		
 		// Not possible for nodes
@@ -686,9 +714,10 @@ public class SubscriptionService {
 	private void addToContinueStarterIfMatching(MetadataHolder mh, Subscription sub, Node n) {
 		Filter matchLinksFilter = sub.getSearchRequest().getMatchLinksFilter();
 		SubscriptionChangeState subcs = getSubChangeState(sub);
-		
-		if (mh.getMetadata().matchesFilter(matchLinksFilter))
-				subcs.mContinueStarter.add(n);
+		Publisher pub = sub.getPublisherReference();
+	
+		if (isAuthorizedAndMatching(pub, mh, matchLinksFilter))
+			subcs.mContinueStarter.add(n);
 	}
 
 	private void checkForDeletedSubGraph(GraphElement ge, SubscriptionEntry entry,
@@ -706,6 +735,7 @@ public class SubscriptionService {
 		Node n2 = l.getNode2();
 		Node greaterDepth = null;
 		Subscription sub = entry.getSubscription();
+		Publisher pub = sub.getPublisherReference();
 		Filter matchLinks = sub.getSearchRequest().getMatchLinksFilter();
 		SubscriptionEntry e1 = n1.getSubscriptionEntry(sub);
 		SubscriptionEntry e2 = n2.getSubscriptionEntry(sub);
@@ -720,10 +750,11 @@ public class SubscriptionService {
 		if (entry.getMetadataHolder().size() > 0)
 			return;
 	
-		// There is NEW metadata which will take over, thank god, we do not
-		// delete the subscription in this case.
-		if (ge.getMetadataHolderNew(matchLinks).size() > 0)
-			return;
+		// There is NEW metadata which will take over. We do not delete the
+		// the subscription in this case.
+		for (MetadataHolder mh : ge.getMetadataHolderNew(matchLinks))
+			if (isAuthorized(pub, mh))
+				return;
 	
 		// We don't need a rerun if the depth of both is the same, then
 		// n1 and n2 are reached on different ways through the graph and
@@ -780,16 +811,48 @@ public class SubscriptionService {
 		return ge instanceof Node;
 	}
 	
-	private boolean matchesOnSubscription(GraphElement ge, Metadata m, Subscription sub) {
+	private boolean matchesOnSubscription(MetadataHolder mh, Subscription sub) {
 		Filter lFilter = sub.getSearchRequest().getMatchLinksFilter();
 		Filter rFilter = sub.getSearchRequest().getResultFilter();
+		GraphElement ge = mh.getGraphElement();
+		boolean res = false;
+	
+		// would it be included in the result at all?
+		res = isAuthorizedAndMatching(sub.getPublisherReference(), mh, rFilter);
+	
+		// Links need to match the match-links-filter as well?
+		if (res && isLink(ge))
+			res &= mh.getMetadata().matchesFilter(lFilter);
 		
-		if (ge instanceof Node)
-			return m.matchesFilter(rFilter);
-		else if (ge instanceof Link)
-			return (m.matchesFilter(lFilter) && m.matchesFilter(rFilter));
-		else
-			throw new SystemErrorException("GraphElement not Link nor Identifier");
+		return res;
+	}
+
+	/**
+	 * Check if {@link Publisher} is allowed to see {@link Metadata} and if
+	 * the {@link Filter} matches.
+	 * 
+	 * TODO:
+	 * I don't know which way is better, first do XACML or first do the
+	 * filter matching.
+	 *
+	 * On a different note, we could try to do both in parallel, as
+	 * they are completely independent. Though, for a allow-all or
+	 * allow-nothing the overhead might not be worth it.
+	 * 
+	 * @param pub
+	 * @param metadata
+	 * @param matchLinksFilter
+	 * @return
+	 */
+	private boolean isAuthorizedAndMatching(Publisher pub, MetadataHolder mh, Filter f) {
+		Metadata md = mh.getMetadata();
+		return isAuthorized(pub, mh) && md.matchesFilter(f);
+	}
+
+	private boolean isAuthorized(Publisher pub, MetadataHolder mh) {
+		List<MetadataHolder> param = CollectionHelper.provideListFor(MetadataHolder.class);
+		param.add(mh);
+		return mPep.isSearchAuthorized(pub, param).size() > 0;
 	}
 
 	/**

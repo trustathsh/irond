@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 import org.apache.log4j.Logger;
 
 import de.fhhannover.inform.iron.mapserver.IfmapConstStrings;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.ModifiableSearchResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchHandler;
@@ -77,17 +78,17 @@ class SearchService {
 	private final SearchingFactory mSearchingFactory;
 	private final int mAdd;
 	private final DataModelServerConfigurationProvider mConf;
+	private final IfmapPep mPep;
 
-	
-	SearchService(GraphElementRepository graph, PublisherRep pRep,
-			SearchingFactory sresFac, DataModelServerConfigurationProvider conf) {
-		mGraph = graph;
-		mPublisherRep = pRep;
-		mSearchingFactory = sresFac;
+	SearchService(DataModelParams params) {
+		mGraph = params.graph;
+		mPublisherRep = params.pubRep;
+		mSearchingFactory = params.searchFac;
+		mConf = params.conf;
+		mPep = params.pep;
 		mAdd = IfmapConstStrings.SRES_MIN_CNT;
-		mConf = conf;
 	}
-	
+
 	/**
 	 * Here the search is processed with the help
 	 * of a searcher and a builder object who really do the hard work together.
@@ -104,7 +105,7 @@ class SearchService {
 		
 		ModifiableSearchResult res = mSearchingFactory.newCopySearchResult();
 		SearchHandler handler = mSearchingFactory.newBasicSearchHandler(mConf,
-				req, res, mAdd, false);
+				req, res, mAdd, false, p, mPep);
 		Searcher searcher = mSearchingFactory.newSearcher(mGraph, handler);
 		searcher.runSearch();
 		return res;

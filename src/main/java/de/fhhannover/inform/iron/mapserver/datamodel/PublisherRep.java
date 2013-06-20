@@ -46,12 +46,15 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  */
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchPublisherException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 
 /**
  * Repository which stores Publishers
@@ -61,20 +64,20 @@ import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
  */
 class PublisherRep {
 	
-	private static Logger logger;
+	private static Logger sLogger;
+
+	private final Map<String, Publisher> mPublishers;
+	private final Map<String, Publisher> mSessions;
 	
 	static {
-		logger = LoggingProvider.getTheLogger();
+		sLogger = LoggingProvider.getTheLogger();
 	}
 	
 	PublisherRep() {
-		publishers = new HashMap<String, Publisher>();
-		sessions = new HashMap<String, Publisher>();
+		mPublishers = CollectionHelper.provideMapFor(String.class, Publisher.class);
+		mSessions = new HashMap<String, Publisher>();
 	}
  
-	private HashMap<String, Publisher> publishers;
-	private HashMap<String, Publisher> sessions;
-	 
 	/**
 	 * Get a publisher with the given publisherId
 	 * 
@@ -84,11 +87,12 @@ class PublisherRep {
 	 * the given sessionId, but someone did something wrong in this case...
 	 */
 	Publisher getPublisherByPublisherId(String id) {
-		Publisher ret = publishers.get(id);
-		if (ret == null) {
-			throw new NoSuchPublisherException("No Publisher with publisher-id=" + id);
-		}
-		return publishers.get(id);
+		Publisher ret = mPublishers.get(id);
+		
+		if (ret == null)
+			throw new NoSuchPublisherException("no publisher with id=" + id);
+		
+		return ret;
 	}
 	
 	/**
@@ -100,7 +104,7 @@ class PublisherRep {
 	 *	 none was found.
 	 */
 	Publisher getPublisherByPublisherIdUnsafe(String id) {
-		return publishers.get(id);
+		return mPublishers.get(id);
 	}
 	 
 	/**
@@ -112,7 +116,7 @@ class PublisherRep {
 	 * this a sessionId.
 	 */
 	Publisher getPublisherBySessionId(String id) {
-		Publisher ret = sessions.get(id);
+		Publisher ret = mSessions.get(id);
 		if (ret == null)
 			throw new NoSuchPublisherException("Publisher with session-id=" + id +
 					" does not exist");
@@ -126,35 +130,37 @@ class PublisherRep {
 	 * object. If the publisher still has an open
 	 * session throw an RunningSessionException
 	 * 
-	 * @param publisherId
-	 * @param sessionId
+	 * @param pId publisher-id
+	 * @param sId session-id
 	 * @return
 	 * @throws RunningSessionException
 	 * @throws PublisherConstructionException
 	 */
-	void addPublisher(String publisherId, String sessionId, Integer maxPollResSize) {
+	void addPublisher(String pId, String sId, Integer mprs, ClientIdentifier clId) {
 		
-		logger.trace("Adding new Publisher: sessionid=" + sessionId + 
-				" publisherid=" + publisherId);
+		sLogger.trace("Adding new Publisher: sessionid=" + sId + 
+				" publisherid=" + pId);
 		
-		Publisher p = publishers.get(publisherId);	
+		Publisher p = mPublishers.get(pId);	
 		
 		if (p != null) {
-			if (p.getSessionId() != null && sessions.containsKey(p.getSessionId()))
-				throw new SystemErrorException("Session for " + p.getPublisherId() 
-						+ " was not closed!");
 			
-			logger.trace("Reusing existing publisher object...");
-			p.getSubscriptionState().setMaxPollResultSize(maxPollResSize);
+			// Sanity Check: Never should addPublisher() be called for clients
+			// with existing sessions.
+			if (p.getSessionId() != null && mSessions.containsKey(p.getSessionId()))
+				throw new SystemErrorException("Session for " + pId + " not closed");
+			
+			sLogger.trace("Reusing existing publisher object...");
+			p.getSubscriptionState().setMaxPollResultSize(mprs);
 			
 		} else {
-			logger.trace("Creating new Publisher...");
-			p = new Publisher(publisherId, sessionId, maxPollResSize);
-			publishers.put(publisherId, p);
+			sLogger.trace("Creating new Publisher...");
+			p = new Publisher(pId, sId, mprs, clId);
+			mPublishers.put(pId, p);
 		}
 		
-		p.setSessionId(sessionId);		
-		sessions.put(sessionId, p);
+		p.setSessionId(sId);		
+		mSessions.put(sId, p);
 	}
 	 
 	/**
@@ -164,23 +170,23 @@ class PublisherRep {
 	 */
 	void removePublisherByPubliherId(String id) {
 		if (id != null) {
-			Publisher pub = publishers.get(id);
+			Publisher pub = mPublishers.get(id);
 			if (pub != null) {
 				String sessionid = pub.getSessionId();
 				if(sessionid != null && sessionid.length() > 0) {
-					Publisher pub2 = sessions.get(sessionid);
+					Publisher pub2 = mSessions.get(sessionid);
 					if  (pub2 != null) {
-						sessions.remove(sessionid);
+						mSessions.remove(sessionid);
 					}
 				}
-				publishers.remove(id);
+				mPublishers.remove(id);
 			}
 		}
 	 
 	}
 
 	void removePublisherSession(String sessionId) {
-		sessions.remove(sessionId);
+		mSessions.remove(sessionId);
 	}
 }
  

@@ -47,6 +47,8 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 
 import java.util.Collection;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
@@ -57,14 +59,13 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.PollResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactoryImpl;
+import de.fhhannover.inform.iron.mapserver.exceptions.AccessDeniedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.AlreadyObservedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoPollResultAvailableException;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchSubscriptionException;
-import de.fhhannover.inform.iron.mapserver.exceptions.ParameterException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PollResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
-import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.DumpResult;
@@ -87,7 +88,7 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 public class DataModelService implements SubscriptionNotifier {
 	
 	/**
-	 * this static fields represents the current serverConfiguration to
+	 * This static field represents the current serverConfiguration to
 	 * be used.
 	 * Necessary for the case sensitive settings and the purge publisher
 	 * operation.
@@ -95,40 +96,38 @@ public class DataModelService implements SubscriptionNotifier {
 	 * FIXME: This is currently overridden by each newInstance() call.
 	 * Not really what we want, but I don't see a way around this right now.
 	 */
-	private static DataModelServerConfigurationProvider sServerConfiguration;
+	private static DataModelServerConfigurationProvider sServerConf;
 	
 	private final PublishService publishService;
 	private final ClientService clientService;
 	private final SearchService searchService;
-	private final SubscriptionService	subscriptionService;
-	private final PublisherRep publisherRep;
+	private final SubscriptionService	subService;
+	private final PublisherRep mPublisherRep;
 	private final GraphElementRepository mGraph;
 	private final MetadataHolderFactory mMetaHolderFac;
 	private final SearchingFactory mSearchingFac;
+	private final IfmapPep mPep;
 	
-	private DataModelService() {
+	private DataModelService(IfmapPep pep) {
 	
-		publisherRep = new PublisherRep();
-		
+		mPublisherRep = new PublisherRep();
 		mGraph = GraphElementRepositoryImpl.newInstance();
 		mMetaHolderFac = MetadataHolderFactoryImpl.newInstance();
 		mSearchingFac = SearchingFactoryImpl.newInstance();
+		mPep = pep;
+		
+		DataModelParams params = new DataModelParams(mPep, sServerConf,
+				mGraph, mPublisherRep, mMetaHolderFac, mSearchingFac);
 
-		searchService = new SearchService(mGraph, publisherRep, mSearchingFac,
-				sServerConfiguration);
-		
-		subscriptionService = new SubscriptionService(mGraph, publisherRep,
-				mSearchingFac);
-		
-		publishService = new PublishService(publisherRep, mGraph,
-				mMetaHolderFac, subscriptionService, sServerConfiguration);
-		
-		clientService = new ClientService(publisherRep, subscriptionService);
+		searchService = new SearchService(params);
+		subService = new SubscriptionService(params);
+		publishService = new PublishService(params, subService);
+		clientService = new ClientService(params, subService);
 	}
  
 	
 	/**
-	 * Returns a <b>new </b> {@link DataModelService} instance.
+	 * Returns a <b>new</b> {@link DataModelService} instance.
 	 * 
 	 * Note:
 	 * Calling this twice gives two completely independent DataModels. Might
@@ -136,23 +135,26 @@ public class DataModelService implements SubscriptionNotifier {
 	 * 
 	 * @return a <b>new</b> instance of a {@link DataModelService} instance
 	 */
-	public static DataModelService newInstance(DataModelServerConfigurationProvider serverConf) {
+	public static DataModelService newInstance(
+			DataModelServerConfigurationProvider serverConf,
+			IfmapPep pep) {
 		NullCheck.check(serverConf, "serverConf is null");
-		sServerConfiguration = serverConf;
+		NullCheck.check(pep, "pep is null");
+		sServerConf = serverConf;
 		
-		return new DataModelService();
+		return new DataModelService(pep);
 	}
 	
 	public static DataModelServerConfigurationProvider getServerConfiguration() {
-		if (sServerConfiguration == null)
+		if (sServerConf == null)
 			throw new SystemErrorException("DataModelService: ServerConfiguration"
 					+ " not initialized");
 		
-		return sServerConfiguration;
+		return sServerConf;
 	}
 
 	public static void setServerConfiguration(DataModelServerConfigurationProvider prov) {
-		sServerConfiguration = prov;
+		sServerConf = prov;
 	}
 	
 	/**
@@ -161,14 +163,30 @@ public class DataModelService implements SubscriptionNotifier {
 	 *
 	 * @param PublishRequest
 	 * @return publishReceived
-	 * @throws ParameterException 
-	 * @throws NotSupportedException 
-	 * @throws InvalidMetadataException 
-	 * @throws ResponseCreationException 
+	 * @throws InvalidMetadataException
+	 * @throws AccessDeniedException
 	 */
-	synchronized public void publish(PublishRequest request) throws InvalidMetadataException {
+	synchronized public void publish(PublishRequest request) throws InvalidMetadataException, AccessDeniedException {
 		checkNull(request);
+		Publisher pub = getPublisher(request);
+		
+		if (!mPep.isAuthorized(pub, request, mGraph))
+			throw new AccessDeniedException("not allowed");
+		
+		
 		publishService.publish(request);
+	}
+
+
+	/**
+	 * Helper to get the {@link Publisher} object for this
+	 * 
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private Publisher getPublisher(PublishRequest request) {
+		return mPublisherRep.getPublisherBySessionId(request.getSessionId());
 	}
 
 
@@ -178,16 +196,20 @@ public class DataModelService implements SubscriptionNotifier {
 	}
 	 
 	synchronized public void purgePublisher(String sessionId, String publisherId)
-											throws PurgePublisherNoAllowedException {
+											throws PurgePublisherNoAllowedException,
+											AccessDeniedException {
 		checkNull(sessionId);
 		checkNull(publisherId);
 		clientService.purgePublisher(sessionId, publisherId);
 	}
 	
-	synchronized public void newSession(String sessionId, String publisherId, Integer mprs) {
+	synchronized public void newSession(String sessionId, String publisherId,
+									    Integer mprs,
+									    ClientIdentifier clientId) {
 		checkNull(sessionId);
 		checkNull(publisherId);
-		clientService.newSession(sessionId, publisherId, mprs);
+		checkNull(clientId);
+		clientService.newSession(sessionId, publisherId, mprs, clientId);
 	}
 	 
 	synchronized public void endSession(String sessionId) {
@@ -209,32 +231,53 @@ public class DataModelService implements SubscriptionNotifier {
 			idents.add(n.getIdentifier());
 		
 		result.setIdentifier(idents);
-		result.setLastUpdateTime(subscriptionService.getLogicalTimeStamp());
+		result.setLastUpdateTime(subService.getLogicalTimeStamp());
 		return result;
 	}
 	
 	synchronized public void subscribe(SubscribeRequest request) throws NoSuchSubscriptionException {
 		checkNull(request);
-		subscriptionService.subscribe(request);
+		
+		subService.subscribe(request);
 	}
 
 	@Override
 	synchronized public PollResult getPollResultFor(String sessionId)
 			throws NoPollResultAvailableException, PollResultsTooBigException {
 		checkNull(sessionId);
-		return subscriptionService.getPollResultFor(sessionId);
+		return subService.getPollResultFor(sessionId);
 	}
 
 	@Override
 	synchronized public void registerSubscriptionObserver(SubscriptionObserver subObs)
 			throws AlreadyObservedException {
 		checkNull(subObs);
-		subscriptionService.setSubscriptionObserver(subObs);
+		subService.setSubscriptionObserver(subObs);
 	}
 	
 	private void checkNull(Object obj) throws NullPointerException {
-		if (obj == null) {
-			throw new NullPointerException("null was given");
-		}
+		NullCheck.check(obj, "null was given");
 	}
+}
+
+class DataModelParams {
+	
+	public DataModelParams(IfmapPep pep,
+			DataModelServerConfigurationProvider conf,
+			GraphElementRepository graph, PublisherRep pubRep,
+			MetadataHolderFactory metaHolderFac, SearchingFactory searchFac) {
+		
+		this.pep = pep;
+		this.conf = conf;
+		this.graph = graph;
+		this.pubRep = pubRep;
+		this.metaHolderFac = metaHolderFac;
+		this.searchFac = searchFac;
+	}
+	final IfmapPep pep;
+	final DataModelServerConfigurationProvider conf;
+	final GraphElementRepository graph;
+	final PublisherRep pubRep;
+	final MetadataHolderFactory metaHolderFac;
+	final SearchingFactory searchFac;
 }

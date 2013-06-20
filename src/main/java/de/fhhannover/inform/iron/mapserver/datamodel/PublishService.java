@@ -84,22 +84,20 @@ class PublishService {
 	private final static Logger sLogger = LoggingProvider.getTheLogger();
 	private final static String sName = "PublishService";
 	
-	private PublisherRep mPublisherRep;
-	private GraphElementRepository mGraph;
-	private SubscriptionService mSubService;
-	private MetadataHolderFactory mMetaHolderFac;
-	private DataModelServerConfigurationProvider mConf;
+	private final PublisherRep mPublisherRep;
+	private final GraphElementRepository mGraph;
+	private final SubscriptionService mSubService;
+	private final MetadataHolderFactory mMetaHolderFac;
+	private final DataModelServerConfigurationProvider mConf;
 	
-	PublishService(PublisherRep pRep, GraphElementRepository graphRep,
-			MetadataHolderFactory metaHolderFac, SubscriptionService subServ,
-			DataModelServerConfigurationProvider conf) {
-		mPublisherRep = pRep;
-		mGraph = graphRep;
-		mMetaHolderFac = metaHolderFac;
-		mSubService	= subServ;
-		mConf = conf;
+	public PublishService(DataModelParams params, SubscriptionService subService) {
+		mPublisherRep = params.pubRep;
+		mGraph = params.graph;
+		mMetaHolderFac = params.metaHolderFac;
+		mSubService	= subService;
+		mConf = params.conf;
 	}
-	
+
 	/**
 	 * Go through the whole PublishRequest and dispatch the elements to
 	 * the corresponding process* methods
@@ -110,30 +108,26 @@ class PublishService {
 	void publish(PublishRequest req) throws InvalidMetadataException {
 		List<SubPublishRequest> list = req.getSubPublishRequestList();
 		String sId = req.getSessionId();
-		String pId = null;
-		sLogger.trace(sName + ": processing publishRequest for sessionid " + sId);
+		Publisher pub = mPublisherRep.getPublisherBySessionId(sId);
+		String pId = pub.getPublisherId();
+		List<MetadataHolder> changes = 
+					CollectionHelper.provideListFor(MetadataHolder.class);
 		
-		Publisher publisher = mPublisherRep.getPublisherBySessionId(sId);
-		pId = publisher.getPublisherId();
-		
-		sLogger.trace(sName + ": " + publisher + " with " + list.size() + " requests");
-	
-		List<MetadataHolder> changes = CollectionHelper.provideListFor(MetadataHolder.class);
+		sLogger.trace(sName + ": process publishRequest for session " + sId);
 		
 		for (SubPublishRequest sreq : list) {
 			if (sreq instanceof PublishNotify)
-				processPublishNotify(publisher, (PublishNotify) sreq, changes);
+				processPublishNotify(pub, (PublishNotify) sreq, changes);
 			else if (sreq instanceof PublishUpdate)
-				processPublishUpdate(publisher, (PublishUpdate)sreq, changes);
+				processPublishUpdate(pub, (PublishUpdate)sreq, changes);
 			else if (sreq instanceof PublishDelete)
-				processPublishDelete(publisher, (PublishDelete)sreq, changes);
+				processPublishDelete(pub, (PublishDelete)sreq, changes);
 			else
 				throw new SystemErrorException("Unknown SubPublishRequest implementation");
 		}
 		
-		
-		// set timestamp and publisher id _now_ and set references to 
-		// GraphElements and Publishers...
+		// Set timestamp of metadata and publisher-id _now_ and set
+		// references to GraphElements and Publishers...
 		String timeNow = Iso8601DateTime.getTimeNow();
 		for (MetadataHolder mh : changes) {
 			Metadata m = mh.getMetadata();
@@ -142,8 +136,6 @@ class PublishService {
 				addOperationalAttributes(m, timeNow, pId);
 		}
 	
-		// FIXME!!
-		//mdentifierRep.setTimestamp(System.currentTimeMillis());
 		mSubService.commitChanges(changes);
 	}
 			
