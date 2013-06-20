@@ -45,10 +45,17 @@ package de.fhhannover.inform.iron.mapserver;
  * #L%
  */
 
+import java.util.List;
+
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.log4j.Logger;
+
 import de.fhhannover.inform.iron.mapserver.binding.RequestUnmarshaller;
 import de.fhhannover.inform.iron.mapserver.binding.RequestUnmarshallerFactory;
 import de.fhhannover.inform.iron.mapserver.binding.ResultMarshaller;
 import de.fhhannover.inform.iron.mapserver.binding.ResultMarshallerFactory;
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.communication.bus.Queue;
 import de.fhhannover.inform.iron.mapserver.communication.bus.messages.ActionSeries;
 import de.fhhannover.inform.iron.mapserver.communication.bus.messages.Event;
@@ -58,29 +65,48 @@ import de.fhhannover.inform.iron.mapserver.communication.http.ChannelRep;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.EventProcessor;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.PollResultAvailableCallback;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionTimerFactory;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPepFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.DataModelService;
 import de.fhhannover.inform.iron.mapserver.datamodel.SubscriptionObserver;
-import de.fhhannover.inform.iron.mapserver.datamodel.meta.*;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactory;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactoryImpl;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepository;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.exceptions.AlreadyObservedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ServerInitialException;
-import de.fhhannover.inform.iron.mapserver.provider.*;
-import javax.xml.bind.Unmarshaller;
-import org.apache.log4j.Logger;
+import de.fhhannover.inform.iron.mapserver.provider.AuthorizationProvider;
+import de.fhhannover.inform.iron.mapserver.provider.AuthorizationProviderImpl;
+import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProvider;
+import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProviderPropImpl;
+import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.provider.PublisherIdGenerator;
+import de.fhhannover.inform.iron.mapserver.provider.PublisherIdGeneratorImpl;
+import de.fhhannover.inform.iron.mapserver.provider.PublisherIdProvider;
+import de.fhhannover.inform.iron.mapserver.provider.PublisherIdProviderPropImpl;
+import de.fhhannover.inform.iron.mapserver.provider.RandomSessionIdProvider;
+import de.fhhannover.inform.iron.mapserver.provider.RoleMapperProvider;
+import de.fhhannover.inform.iron.mapserver.provider.RoleMapperProviderPropImpl;
+import de.fhhannover.inform.iron.mapserver.provider.SchemaProvider;
+import de.fhhannover.inform.iron.mapserver.provider.SchemaProviderImpl;
+import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
+import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProviderPropImpl;
+import de.fhhannover.inform.iron.mapserver.provider.SessionIdProvider;
 
 /**
  * Entry point to run the IF-MAP Server implementation.
  * Dependencies are resolved here.
  * 
  * @author aw
- *
  */
 public class Main {
 	
 	/**
 	 * The name of the default configuration file.
 	 */
-	private static String MAIN_CONFIGURATION_FILE = "ifmap.properties";
+	private static final String MAIN_CONFIGUARTION_FILE = "ifmap.properties";
 	
 	/**
 	 * Our static logger instance
@@ -111,7 +137,7 @@ public class Main {
 	/**
 	 * represents the {@link ServerConfigurationProvider} instance to be used.
 	 */
-	private ServerConfigurationProvider mServerConfig;
+	private ServerConfigurationProvider mServerConf;
 	
 	/**
 	 * represents the {@link PublisherIdProvider} instance to be used.
@@ -188,36 +214,49 @@ public class Main {
 	 * The {@link SchemaProvider} used by the {@link Unmarshaller}.
 	 */
 	private SchemaProvider mSchemaProvider;
-	
-	
+
+	/**
+	 * The {@link IfmapPep} used by the {@link DataModelService}.
+	 */
+	private IfmapPep mPep;
+
+	/**
+	 * Used to map a {@link ClientIdentifier} to a {@link List} of roles.
+	 */
+	private RoleMapperProvider mClientRoleProvider;
+
+	/**
+	 * Main entry point.
+	 * 
+	 * @throws ServerInitialException
+	 */
 	public Main() throws ServerInitialException {
-		init(MAIN_CONFIGURATION_FILE);
+		init();
 	}
 	
-	public Main(String filename) throws ServerInitialException {
-		init(filename);
-	}
-	
-	private void init(String filename) throws ServerInitialException {
+	private void init() throws ServerInitialException {
 		
 		try {
-			mServerConfig = new ServerConfigurationProviderPropImpl(filename);
-			mPublisherIdProvider = new PublisherIdProviderPropImpl(mServerConfig);
+			mServerConf = new ServerConfigurationProviderPropImpl(MAIN_CONFIGUARTION_FILE);
+			mPublisherIdProvider = new PublisherIdProviderPropImpl(mServerConf);
 			mPublisherIdGenerator = new PublisherIdGeneratorImpl();
 			mSessionIdProvider = new RandomSessionIdProvider();
-			mBasicAuthProvider = new BasicAuthProviderPropImpl(mServerConfig);
-			mAuthroizationProv = new AuthorizationProviderImpl(mServerConfig);
-			mSchemaProvider = new SchemaProviderImpl(mServerConfig);
+			mBasicAuthProvider = new BasicAuthProviderPropImpl(mServerConf);
+			mAuthroizationProv = new AuthorizationProviderImpl(mServerConf);
+			mSchemaProvider = new SchemaProviderImpl(mServerConf);
+			
+			// This should dispatch between different RoleMappers, actually...
+			mClientRoleProvider = new RoleMapperProviderPropImpl(mServerConf);
 		} catch (ProviderInitializationException e) {
 			throw new ServerInitialException("A Provider could not be initialized: " +
 					e.getMessage());
 		}
 		
 		// processor and queue part
-		int eventForwarders = mServerConfig.getEventProcessorForwardersCount();
-		int eventWorkers = mServerConfig.getEventProcessorWorkersCount();
-		int actionForwarders = mServerConfig.getActionProcessorForwardersCount();
-		int actionWorkers = mServerConfig.getActionProcessorWorkersCount();
+		int eventForwarders = mServerConf.getEventProcessorForwardersCount();
+		int eventWorkers = mServerConf.getEventProcessorWorkersCount();
+		int actionForwarders = mServerConf.getActionProcessorForwardersCount();
+		int actionWorkers = mServerConf.getActionProcessorWorkersCount();
 		mEventQueue = new Queue<Event>();
 		mActionQueue = new Queue<ActionSeries>();
 		mEventProcessor = new EventProcessor(mEventQueue, eventWorkers, eventForwarders);
@@ -225,14 +264,16 @@ public class Main {
 		mChannelRep = new ChannelRep();
 
 		mMetadataTypeReop = MetadataTypeRepositoryImpl.newInstance();
-		mMetadataFactory = MetadataFactoryImpl.newInstance(mMetadataTypeReop, mServerConfig);
+		mMetadataFactory = MetadataFactoryImpl.newInstance(mMetadataTypeReop, mServerConf);
 		mRequestUnmarshaller = RequestUnmarshallerFactory.newRequestUnmarshaller(
 				mMetadataFactory, mSchemaProvider);
 		mResultMarshaller = ResultMarshallerFactory.newResultMarshaller();
 
-		mDataModelService = DataModelService.newInstance(mServerConfig);
+		mPep = IfmapPepFactory.newInstance(mServerConf, mClientRoleProvider);
 		
-		mSessionTimerFactory = new SessionTimerFactory(mEventQueue, mServerConfig);
+		mDataModelService = DataModelService.newInstance(mServerConf, mPep);
+		
+		mSessionTimerFactory = new SessionTimerFactory(mEventQueue, mServerConf);
 		
 		mCallback = new PollResultAvailableCallback(mEventQueue);
 		
@@ -242,7 +283,7 @@ public class Main {
 		mEventProcessor.setSessionIdProv(mSessionIdProvider);
 		mEventProcessor.setRequestUnmarshaller(mRequestUnmarshaller);
 		mEventProcessor.setResultMarshaller(mResultMarshaller);
-		mEventProcessor.setServerConfiguration(mServerConfig);
+		mEventProcessor.setServerConfiguration(mServerConf);
 		mEventProcessor.setDataModel(mDataModelService);
 		mEventProcessor.setSessionTimerFactory(mSessionTimerFactory);
 		mEventProcessor.setPublisherIdGenerator(mPublisherIdGenerator);
@@ -259,7 +300,7 @@ public class Main {
 		mActionProcessor.setChannelRepository(mChannelRep);
 		mActionProcessor.setEventQueue(mEventQueue);
 		
-		mChannelAcceptor = new ChannelAcceptor(mServerConfig,
+		mChannelAcceptor = new ChannelAcceptor(mServerConf,
 				mEventQueue, mChannelRep, mBasicAuthProvider);
 		
 		mChannelAcceptor.setUp();
@@ -275,12 +316,7 @@ public class Main {
 	public static void main(String[] args) {
 		sLogger.info("Starting irond version 0.3.5...");
 		try {
-			Main main;
-			if (args.length == 1) {
-				main = new Main(args[0]);
-			} else {
-				main = new Main();
-			}
+			Main main = new Main();
 			main.goForIt();
 			sLogger.info("irond is running :-)");
 		} catch (ServerInitialException e) {
