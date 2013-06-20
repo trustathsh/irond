@@ -45,19 +45,18 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * #L%
  */
 
-import java.math.BigInteger;
-
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchPublisherException;
 
 public class PublisherRepTest extends TestCase {
 	
 	PublisherRep pubrep;
-	BigInteger defaultMaxPollSize = new BigInteger("2111");
+	ClientIdentifier cl = new ClientIdentifier("some user");
 	
 	@Before
 	public void setUp() {
@@ -72,7 +71,7 @@ public class PublisherRepTest extends TestCase {
 	
 	@Test
 	public void testGetAddPublisher() {
-		pubrep.addPublisher("110:111", "4711", null);
+		pubrep.addPublisher("110:111", "4711", null, cl);
 		Publisher x = null;
 		try {
 			x = pubrep.getPublisherBySessionId("4711");
@@ -105,7 +104,7 @@ public class PublisherRepTest extends TestCase {
 	
 	@Test
 	public void testRemovePublisher() {
-		pubrep.addPublisher("110:112", "4712", null);
+		pubrep.addPublisher("110:112", "4712", null, cl);
 		pubrep.removePublisherByPubliherId("110:112");
 		
 		Publisher x = null;

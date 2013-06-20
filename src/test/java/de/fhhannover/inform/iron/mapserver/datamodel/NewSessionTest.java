@@ -50,7 +50,10 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
 import de.fhhannover.inform.iron.mapserver.messages.RequestFactory;
+import de.fhhannover.inform.iron.mapserver.stubs.IfmapPepStub;
 
 public class NewSessionTest extends TestCase {
 	RequestFactory rf = RequestFactory.getInstance();
@@ -61,14 +64,16 @@ public class NewSessionTest extends TestCase {
 	
 	@Before
 	public void setUp() {
-		dms = DataModelService.newInstance(DummyDataModelConf.getDummyConf());
-	}
+		IfmapPep pep = new IfmapPepStub();
+		dms = DataModelService.newInstance(DummyDataModelConf.getDummyConf(), pep);
+	;}
 	
 	@Test
 	public void testNewSession() {
-		dms.newSession(sessionId, publisherId, null);
+		ClientIdentifier cl = new ClientIdentifier("some user");
+		dms.newSession(sessionId, publisherId, null, cl);
 		try {
-			dms.newSession(sessionId, publisherId, null);
+			dms.newSession(sessionId, publisherId, null, cl);
 			fail();
 		} catch (RuntimeException e) {
 			// TODO: That should be a more specific one, like ServerErrorException

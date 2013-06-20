@@ -45,10 +45,15 @@ package de.fhhannover.inform.iron.mapserver.provider;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
-import de.fhhannover.inform.iron.mapserver.exceptions.StorePublisherIdException;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.transform.stream.StreamSource;
+
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
+import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPepHandler.PdpType;
+import de.fhhannover.inform.iron.mapserver.exceptions.StorePublisherIdException;
+import de.fhhannover.inform.iron.mapserver.provider.RoleMapperProvider.RoleMapperType;
 
 public class StubProvider {
 	
@@ -86,7 +91,6 @@ public class StubProvider {
 			}
 		};
 	}
-
 
 	public static ServerConfigurationProvider getServerConfStub(final int timeout) {
 		return getServerConfStub(timeout, null, null, 1000, 1000, true);
@@ -288,6 +292,67 @@ public class StubProvider {
 			public boolean isSanityChecksEnabled() {
 				// we are running tests, so this should be fine
 				return true;
+			}
+
+			@Override
+			public PdpType getPdpType() {
+				return PdpType.permit;
+			}
+
+			@Override
+			public String getPdpParameters() {
+				return "";
+			}
+
+			@Override
+			public boolean isPdpDryRun() {
+				return false;
+			}
+
+			@Override
+			public boolean isPdpDecisionRequestRawLog() {
+				return false;
+			}
+
+			@Override
+			public boolean isEnablePdpCache() {
+				return false;
+			}
+
+			@Override
+			public int getPdpCacheTtl() {
+				return 4;
+			}
+
+			@Override
+			public long getPdpCacheMaxEntries() {
+				return 4;
+			}
+
+			@Override
+			public int getPdpThreads() {
+				// TODO Auto-generated method stub
+				return 1;
+			}
+
+			@Override
+			public RoleMapperType getRoleMapperType() {
+				return RoleMapperType.properties;
+			}
+
+			@Override
+			public String getRoleMapperParams() {
+				return "";
+			}
+
+			@Override
+			public List<String> getPdpSelectedMetadataAttributes() {
+				return new ArrayList<String>();
+			}
+
+			@Override
+			public List<String> getPdpSelectedIdentifierAttributes() {
+				return new ArrayList<String>();
 			}
 		};
 	}
