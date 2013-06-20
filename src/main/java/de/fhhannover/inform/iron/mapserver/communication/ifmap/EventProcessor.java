@@ -136,10 +136,8 @@ public class EventProcessor extends Processor<Event> {
 	
 	private static final String sName = "EventProcessor";
 	
-	private static Logger sLogger;
-	static {
-		sLogger = LoggingProvider.getTheLogger();
-	}
+	private static Logger sLogger = LoggingProvider.getTheLogger();
+	private static Logger sRawLogger = LoggingProvider.getRawRequestLogger();
 	
 	/**
 	 * A queue where we can put in stuff
@@ -1129,7 +1127,9 @@ public class EventProcessor extends Processor<Event> {
 		mSessionRep.map(session, channelId);
 		mSessionRep.map(session, sessionId);
 		
-		mDataModel.newSession(sessionId, publisherId, request.getMaxPollResultSize());
+		mDataModel.newSession(sessionId, publisherId,
+							  request.getMaxPollResultSize(),
+							  clientId);
 		
 		return session;
 	}
@@ -1338,21 +1338,20 @@ public class EventProcessor extends Processor<Event> {
 	private synchronized void logRaw(ClientIdentifier clientId, ChannelIdentifier chId,
 			InputStream is, boolean isRequest) {
 		
-		Logger rawLogger = LoggingProvider.getRawRequestLogger();
 		int ret;
 		StringBuilder sb = new StringBuilder();
 	
-		rawLogger.info(String.format("%s %s on channel %s",
+		sRawLogger.info(String.format("%s %s on channel %s",
 				isRequest ?  "Request from" : "Response to",
 				clientId, chId));
 		
-		// HACK, we rely on the InputStream being reset() able
+		// HACK, we rely on the InputStream being reset()able
 		try {
 			is.mark(is.available());
 			while ((ret = is.read()) >= 0)
 				sb.append((char)ret);
 			is.reset();
-			rawLogger.info(sb.toString());
+			sRawLogger.info(sb.toString());
 		} catch (IOException e) {
 			sLogger.warn(sName + ": Could not do raw request logging :(");
 		}
