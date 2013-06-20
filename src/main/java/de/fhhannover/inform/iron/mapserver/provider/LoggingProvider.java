@@ -65,4 +65,12 @@ public class LoggingProvider {
 	public static Logger getRawRequestLogger() {
 		return Logger.getLogger("de.fhhannover.inform.irond.rawrequests");
 	}
+
+	public static Logger getDecisionRequestLogger() {
+		return Logger.getLogger("de.fhhannover.inform.irond.pdprequests");
+	}
+
+	public static Logger getRawDecisionRequestLogger() {
+		return Logger.getLogger("de.fhhannover.inform.irond.pdprequests.raw");
+	}
 }
