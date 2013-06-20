@@ -92,7 +92,7 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  * 
  * @author aw
  */
-public class IfmapPepImpl implements IfmapPep {
+class IfmapPepImpl implements IfmapPep {
 	
 	private static final Logger sLogger = LoggingProvider.getDecisionRequestLogger();
 	private static final String sName = "PEP";
@@ -111,7 +111,7 @@ public class IfmapPepImpl implements IfmapPep {
 	private final ExecutorService mExecutor;
 	
 	
-	private IfmapPepImpl(ServerConfigurationProvider conf, RoleMapperProvider roleProv) throws ServerInitialException {
+	IfmapPepImpl(ServerConfigurationProvider conf, RoleMapperProvider roleProv) throws ServerInitialException {
 		NullCheck.check(conf, "conf is null");
 		NullCheck.check(roleProv, "roleProv is null");
 		mPdpType = conf.getPdpType();
@@ -138,19 +138,6 @@ public class IfmapPepImpl implements IfmapPep {
 		mHandler = tmp;
 	}
 	
-	/**
-	 * Factory method.
-	 * 
-	 * @param conf
-	 * @param roleProv
-	 * @return
-	 * @throws ServerInitialException
-	 */
-	public static IfmapPepImpl newInstance(ServerConfigurationProvider conf,
-			RoleMapperProvider roleProv) throws ServerInitialException {
-		return new IfmapPepImpl(conf, roleProv);
-	}
-	
 	@Override
 	public boolean isAuthorized(Publisher pub, PublishRequest req,
 			GraphElementRepository graph) {
@@ -161,8 +148,7 @@ public class IfmapPepImpl implements IfmapPep {
 		
 		return quickWait(futures);
 	}
-
-			
+	
 	private void startPublishDecisionRequest(List<Future<DecisionResult>> results,
 			PublishRequest req, Publisher pub, GraphElementRepository graph) {
 		
