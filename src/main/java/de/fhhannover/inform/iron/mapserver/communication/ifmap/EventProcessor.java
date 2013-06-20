@@ -302,17 +302,17 @@ public class EventProcessor extends Processor<Event> {
 			
 		// catch, handle, return, don't do anything special!
 		} catch (InvalidIdentifierException e) {
-			sLogger.warn(sName + ": Invalid identifier from " + clientId + " :" + e.getMessage());
+			sLogger.warn(sName + ": Invalid identifier from " + clientId + ": " + e.getMessage());
 			deferErrorResult(channelId, clientId, ErrorCode.InvalidIdentifier,
 					e.getMessage());
 			return;
 		} catch (InvalidMetadataException e) {
-			sLogger.warn(sName + ": Invalid metadata from " + clientId + " :" + e.getMessage());
+			sLogger.warn(sName + ": Invalid metadata from " + clientId + ": " + e.getMessage());
 			deferErrorResult(channelId, clientId, ErrorCode.InvalidMetadata,
 					e.getMessage());
 			return;
 		} catch (InvalidFilterException e) {
-			sLogger.warn(sName + ": Invalid filter from " + clientId + " :" + e.getMessage());
+			sLogger.warn(sName + ": Invalid filter from " + clientId + ": " + e.getMessage());
 			deferErrorResult(channelId, clientId, ErrorCode.Failure, e.getMessage());
 			return;
 		} catch (UnmarshalException e) {

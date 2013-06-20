@@ -93,9 +93,9 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 			mTypes.put(key, type);
 			sLogger.trace(sName +": new MetadataType " + key + " - " + card);
 		} else if (type.getCardinality() != card) {
-			sLogger.warn(sName + ": Inconsisten cardinality for " + key
+			sLogger.warn(sName + ": Inconsistent cardinality for " + key
 					+ ", known=" + type.getCardinality() + ", new=" + card);
-			throw new InvalidMetadataException("Inconsisten cardinality for "
+			throw new InvalidMetadataException("Inconsistent cardinality for "
 					+ key + ", known=" + type.getCardinality() + ", new=" + card);
 		}
 		return type;
@@ -125,7 +125,7 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 	/**
 	 * For the set of standard metadata, the cardinalities are known.
 	 * Create types for these when the class is first created.
-	 * This way standard metadata cannot be publish with a inconsisten
+	 * This way standard metadata cannot be publish with a inconsistent
 	 * ifmap-cardinality value.
 	 */
 	private void initializeStandardMetadataCardinalities() {
