@@ -118,10 +118,10 @@ class SunXacmlGlue {
 		return ret;
 	}
 	
-	static InputStream request2Is(RequestType rt) throws JAXBException {
+	static InputStream request2Is(RequestType reqType) throws JAXBException {
 		
 		ObjectFactory of = new ObjectFactory();
-		JAXBElement<RequestType> jaxbReqType = of.createRequest(rt);
+		JAXBElement<RequestType> jaxbReqType = of.createRequest(reqType);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		sMarshaller.get().marshal(jaxbReqType, baos);
