@@ -90,6 +90,48 @@ irond.xml.schema.0=schema/soap12.xsd
 # work.
 # irond.xml.schema.1=schema/somethingelse.xsd
 
+# TThe following parameters are related to MAP content auth functionality.
+
+# The type of PDP to use. Possible values are permit, deny, local and remote.
+irond.pdp.type=permit
+# This parameter is used for the remote and local PDPs. For a remote PDP it
+# specifies the URL to use, for example http://localhost:8080. For a local
+# PDP it specifies the policy file to be used.
+irond.pdp.parameter=
+
+# Whether internal caching of the outcome of decision request to the PDP
+# is enabled.
+irond.pdp.cache.enable=true
+# If caching is enabled, specifies the time in seconds until a cached
+# outcome of a decsision request expires.
+irond.pdp.cache.ttl=30
+# If caching is enabled, specifies the maximum number of entries in the
+# cache. Eviction is LRU.
+irond.pdp.cache.maxentries=1024
+
+# How many threads to allocate for decision requests. For an internal PDP,
+# this basically describes the ammount of concurrency when multiple decision
+# requests are needed for a single IF-MAP request. For a remote PDP, it is
+# the number of connections opened. Note, a remote PDP might still be single
+# threaded. For the permit and deny options, this should be set to 1.
+irond.pdp.threads=4
+
+# Only log the result of a decision request, but do not enforce it.
+irond.pdp.dryrun=false
+
+# Which top-level attributes of identifiers and metadata to include in a
+# decision request as a comma separated list.
+irond.pdp.identifier.attr=
+irond.pdp.metadata.attr=
+
+# Wether the raw requests to a remote PDP are supposed to be logged. See
+# the pdprequests.raw logger in log4j.properties.
+irond.pdp.rawlog=false
+
+# The file used to map clients and their roles. The format of this file is:
+<basic_auth_user|cert_fingerprint>=role[,role]
+irond.rolemapper.params=roles.properties
+
 # irond works with two queues. The number of forwarder and worker
 # threads to be used for event and action processing can be
 # configured here.
