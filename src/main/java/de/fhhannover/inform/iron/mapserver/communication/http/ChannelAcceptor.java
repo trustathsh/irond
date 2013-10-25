@@ -68,6 +68,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.ServerInitialException;
 import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * Opens sockets for the basic-authentication and certificate-based authentication.
@@ -164,7 +165,7 @@ public class ChannelAcceptor {
 	 * @param basicAuthProvider
 	 */
 	public ChannelAcceptor(ServerConfigurationProvider serverConf, Queue<Event> eventQueue,
-			ChannelRep channelRep, BasicAuthProvider basicAuthProvider) {
+			ChannelRep channelRep, BasicAuthProvider basicAuthProvider, TrustService trustService) {
 		
 		NullCheck.check(serverConf, "serverConf is null");
 		NullCheck.check(eventQueue, "eventQueue is null");
@@ -175,8 +176,8 @@ public class ChannelAcceptor {
 		mEventQueue = eventQueue;
 		mChannelRep = channelRep;
 		
-		mBasicAuthFactory = new BasicChannelAuthFactory(basicAuthProvider);
-		mCertificateAuthFactory = new CertificateChannelAuthFactory();
+		mBasicAuthFactory = new BasicChannelAuthFactory(basicAuthProvider, trustService);
+		mCertificateAuthFactory = new CertificateChannelAuthFactory(trustService);
 		mInitialized = false;
 	}
 	

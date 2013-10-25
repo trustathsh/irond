@@ -1,4 +1,4 @@
-package de.fhhannover.inform.iron.mapserver.datamodel.meta;
+package de.fhhannover.inform.iron.mapserver.utils;
 
 /*
  * #%L
@@ -45,79 +45,40 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
-import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
-
-/**
- * A {@link MetadataHolder} encapsulates a real {@link Metadata} object and
- * offers access to the {@link Publisher} instance, {@link GraphElement}
- * instance, time-stamp and further administrative attributes.
- * 
- * @since 0.3.0
- * @author aw
- *
- */
-public interface MetadataHolder {
+public class CommonNameDistiller {
 	
-	/**
-	 * @return the {@link Metadata} instance that is encapsulated by this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Metadata getMetadata();
-	
-	/**
-	 * @return the {@link GraphElement} instance this {@link MetadataHolder}
-	 * 			instance is attached to.
-	 */
-	public GraphElement getGraphElement();
-	
-	/**
-	 * @return the {@link Publisher} instance indicating who published this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Publisher getPublisher();
-	
-	/**
-	 * @return the state this {@link MetadataHolder} instance is in.
-	 */
-	public MetadataState getState();
+	private static final String CN_ATTR = "CN=";
 
 	/**
-	 * Set the sate of this {@link MetadataHolder} instance.
-	 * @param state
-	 */
-	public void setState(MetadataState state);
-	
-	public boolean isNotify();
-	
-	public boolean isNew();
-	
-	public boolean isDeleted();
-	
-	public boolean isUnchanged();
-	
-	/**
-	 * @return the lifetime of the attached {@link Metadata} object.
-	 */
-	public MetadataLifeTime getLifetime();
-	
-	/**
-	 * TrustService
+	 * From the issuer name, extract the Common name
 	 * 
-	 * Diese Methode gibt den {@link TrustToken} zurück.
-	 * 
+	 * @param dn
 	 * @return
 	 */
-	public TrustToken getTrustToken();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode setzt den {@link TrustToken}.
-	 * 
-	 * @param tt
-	 */
-	public void setTrustToken(TrustToken tt);
+	public static String getCommonName(String dn) {
+		StringBuffer ret = new StringBuffer();
+
+		int cnIdx = dn.indexOf(CN_ATTR);
+
+		if (cnIdx > -1) {
+			cnIdx += CN_ATTR.length();
+			String cn = dn.substring(cnIdx);
+			ret.append(cutOffAtFirstComma(cn));
+		}
+
+		if (ret.length() == 0)
+			ret.append("CommonName");
+
+		// return result, replace spaces with underscores
+		return ret.toString().replace(' ', '_');
+	}
+
+	private static String cutOffAtFirstComma(String str) {
+		int commaIdx = str.indexOf(',');
+		if (commaIdx > -1) {
+			return str.substring(0, commaIdx);
+		}
+		return str;
+	}
 
 }

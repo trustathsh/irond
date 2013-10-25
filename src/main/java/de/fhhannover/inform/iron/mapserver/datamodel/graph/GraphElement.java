@@ -50,6 +50,7 @@ import java.util.List;
 import de.fhhannover.inform.iron.mapserver.datamodel.SearchAble;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataType;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription;
@@ -222,4 +223,15 @@ public interface GraphElement extends SearchAble {
 	 * 			{@link GraphElement} object.
 	 */
 	public void removeAllRemovedSubscriptionEntries();
+
+	/**
+	 * TrustService
+	 * 
+	 * TTI - Diese Methode wird benötigt, um feststellen zu können, ob ein
+	 * {@link GraphElement} Metadaten vom Typ Unchanged hat. Diese Methode wird
+	 * von der {@link Node#isConnected()} Methode verwendet.
+	 * 
+	 * @return
+	 */
+	public boolean hasUnchangedMetadataHolder();
 }

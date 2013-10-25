@@ -1,4 +1,4 @@
-package de.fhhannover.inform.iron.mapserver.datamodel;
+package de.fhhannover.inform.iron.mapserver.trust.utils;
 
 /*
  * #%L
@@ -45,61 +45,54 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * #L%
  */
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import de.fhhannover.inform.iron.mapserver.communication.ChannelIdentifier;
+import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.Session;
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepository;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactoryImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepository;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepositoryImpl;
-import de.fhhannover.inform.iron.mapserver.messages.RequestFactory;
 import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
 
-public class NewSessionTest extends TestCase {
-	RequestFactory rf = RequestFactory.getInstance();
-	DataModelService dms;
-	
-	String sessionId = "1111";
-	String publisherId = "2222";
-	
-	@Before
-	public void setUp() {
-		MetadataTypeRepository types = MetadataTypeRepositoryImpl.newInstance();
-		MetadataFactory metaFactory = MetadataFactoryImpl.newInstance(types, null);
-		TrustService trustService = new TrustServiceImpl(new SessionRepositoryImpl(),
-				metaFactory);
-		dms = DataModelService.newInstance(DummyDataModelConf.getDummyConf(), trustService);
-	}
-	
-	@Test
-	public void testNewSession() {
-		dms.newSession(sessionId, publisherId, null);
-		try {
-			dms.newSession(sessionId, publisherId, null);
-			fail();
-		} catch (RuntimeException e) {
-			// TODO: That should be a more specific one, like ServerErrorException
-		}
+public class TrustTester {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		MetadataTypeRepository mt = MetadataTypeRepositoryImpl.newInstance();
+		MetadataFactory mf = MetadataFactoryImpl.newInstance(mt, null);
+		SessionRepository sr = new SessionRepositoryImpl();
+		TrustService trustService = new TrustServiceImpl(sr, mf);
 		
-		try {
-			dms.endSession(sessionId);
-		} catch (RuntimeException e) {
-			fail();
-			// TODO: That should be a more specific one, like ServerErrorException
-		}
+		Session s = new Session(new ClientIdentifier("user"), "user-id");
+		ChannelIdentifier ci = new ChannelIdentifier("ip", 12, 1);
+		s.setSessionId("123");
+		s.setSsrc(ci);
+		sr.store(s);
+		sr.map(s, "123");
+		sr.map(s, ci);
+		
+		Session s1 = new Session(new ClientIdentifier("user1"), "user-id1");
+		ChannelIdentifier ci1 = new ChannelIdentifier("ip1", 24, 2);
+		s.setSessionId("456");
+		s.setSsrc(ci1);
+		sr.store(s1);
+		sr.map(s1, "456");
+		sr.map(s1, ci1);
+		
+		trustService.addSpForMapc(s.getSsrc(), "certAuth", OperationType.PROCESS_MAPC);
+		trustService.addSpForMapc(s.getSsrc(), "certAuth", OperationType.TRANSMIT_MAPC_MAPS);
+		trustService.addSpForMaps("certAuth");
+		
+		TrustToken tt = trustService.getP1TT("123", "user");
+		System.out.println(trustService.getP2TTI("456", tt));
+		trustService.removeAllSprOfMapc("123");
+		trustService.removeAllSprOfMapc("456");
 	}
 
-	@Test
-	public void testRemoveWithoutNew() {
-		try {
-			dms.endSession(sessionId);
-			fail();
-		} catch (RuntimeException e) {
-			// TODO: That should be a more specific one, like ServerErrorException
-		}
-	}
 }

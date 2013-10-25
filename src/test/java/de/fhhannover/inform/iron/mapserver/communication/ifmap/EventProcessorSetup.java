@@ -63,6 +63,8 @@ import de.fhhannover.inform.iron.mapserver.provider.SchemaProvider;
 import de.fhhannover.inform.iron.mapserver.provider.SchemaProviderImpl;
 import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
 
 public class EventProcessorSetup {
 	
@@ -88,9 +90,14 @@ public class EventProcessorSetup {
 		marshaller = ResultMarshallerFactory.newResultMarshaller();
 		
 		timerFac = new SessionTimerFactory(eventQueue, serverConf);
-		mDms = DataModelService.newInstance(serverConf);
 		
-		eventProc = new EventProcessor(eventQueue, 1, 1);
+		SessionRepository sessionRepo = new SessionRepositoryImpl();
+		
+		TrustService trustService = new TrustServiceImpl(sessionRepo, mfac);
+		
+		mDms = DataModelService.newInstance(serverConf, trustService);
+		
+		eventProc = new EventProcessor(eventQueue, sessionRepo, 1, 1);
 		eventProc.setActionQueue(actionQueue);
 		eventProc.setPublisherIdProv(StubProvider.getPublisherIdProvStub());
 		eventProc.setSessionIdProv(StubProvider.getSessionIdProvStub());

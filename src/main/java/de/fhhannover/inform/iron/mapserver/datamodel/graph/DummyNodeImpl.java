@@ -49,6 +49,7 @@ import java.util.Collection;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 class DummyNodeImpl extends DummyGraphElement implements Node {
@@ -136,5 +137,29 @@ class DummyNodeImpl extends DummyGraphElement implements Node {
 	@Override
 	public String toString() {
 		return "dnode{" + getIdentifier() + "}";
+	}
+
+	@Override
+	public TrustToken getTrustToken() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setTrustToken(TrustToken tt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isConnected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasUnchangedMetadataHolder() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1,4 +1,4 @@
-package de.fhhannover.inform.iron.mapserver.datamodel.meta;
+package de.fhhannover.inform.iron.mapserver.trust.domain;
 
 /*
  * #%L
@@ -45,79 +45,33 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
-import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
-
-/**
- * A {@link MetadataHolder} encapsulates a real {@link Metadata} object and
- * offers access to the {@link Publisher} instance, {@link GraphElement}
- * instance, time-stamp and further administrative attributes.
- * 
- * @since 0.3.0
- * @author aw
- *
- */
-public interface MetadataHolder {
+public class SecurityProperty {
 	
-	/**
-	 * @return the {@link Metadata} instance that is encapsulated by this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Metadata getMetadata();
+	private String mPropertyName;
 	
-	/**
-	 * @return the {@link GraphElement} instance this {@link MetadataHolder}
-	 * 			instance is attached to.
-	 */
-	public GraphElement getGraphElement();
+	private int mRating;
 	
-	/**
-	 * @return the {@link Publisher} instance indicating who published this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Publisher getPublisher();
+	private String mPropertyDefinition;
 	
-	/**
-	 * @return the state this {@link MetadataHolder} instance is in.
-	 */
-	public MetadataState getState();
-
-	/**
-	 * Set the sate of this {@link MetadataHolder} instance.
-	 * @param state
-	 */
-	public void setState(MetadataState state);
+	public SecurityProperty(String propertyName, int rating) {
+		mPropertyName = propertyName;
+		setRating(rating);
+	}
 	
-	public boolean isNotify();
+	public String getPropertyName() {
+		return mPropertyName;
+	}
 	
-	public boolean isNew();
+	public String getPropertyDefinition() {
+		return mPropertyDefinition;
+	}
 	
-	public boolean isDeleted();
+	public int getRating() {
+		return mRating;
+	}
 	
-	public boolean isUnchanged();
+	public void setRating(int rating) {
+		mRating = rating;
+	}
 	
-	/**
-	 * @return the lifetime of the attached {@link Metadata} object.
-	 */
-	public MetadataLifeTime getLifetime();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode gibt den {@link TrustToken} zurück.
-	 * 
-	 * @return
-	 */
-	public TrustToken getTrustToken();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode setzt den {@link TrustToken}.
-	 * 
-	 * @param tt
-	 */
-	public void setTrustToken(TrustToken tt);
-
 }

@@ -47,6 +47,7 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
 
 import java.net.Socket;
 
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
@@ -58,9 +59,15 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  */
 public class CertificateChannelAuthFactory implements ChannelAuthFactory {
 
+	private final TrustService mTrustService;
+
+	public CertificateChannelAuthFactory(TrustService trustService) {
+		mTrustService = trustService;
+	}
+	
 	@Override
 	public ChannelAuth createChannelAuth(Socket socket) {
 		NullCheck.check(socket, "socket is null");
-		return new CertificateChannelAuth(socket);
+		return new CertificateChannelAuth(socket, mTrustService);
 	}
 }

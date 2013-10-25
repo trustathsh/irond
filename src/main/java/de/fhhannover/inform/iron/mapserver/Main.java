@@ -45,6 +45,9 @@ package de.fhhannover.inform.iron.mapserver;
  * #L%
  */
 
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+
 import de.fhhannover.inform.iron.mapserver.binding.RequestUnmarshaller;
 import de.fhhannover.inform.iron.mapserver.binding.RequestUnmarshallerFactory;
 import de.fhhannover.inform.iron.mapserver.binding.ResultMarshaller;
@@ -57,6 +60,8 @@ import de.fhhannover.inform.iron.mapserver.communication.http.ChannelAcceptor;
 import de.fhhannover.inform.iron.mapserver.communication.http.ChannelRep;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.EventProcessor;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.PollResultAvailableCallback;
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepository;
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionTimerFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.DataModelService;
 import de.fhhannover.inform.iron.mapserver.datamodel.SubscriptionObserver;
@@ -65,8 +70,16 @@ import de.fhhannover.inform.iron.mapserver.exceptions.AlreadyObservedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ServerInitialException;
 import de.fhhannover.inform.iron.mapserver.provider.*;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
+import de.fhhannover.inform.iron.mapserver.utils.CommonNameDistiller;
+
 import javax.xml.bind.Unmarshaller;
+
 import org.apache.log4j.Logger;
+
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 /**
  * Entry point to run the IF-MAP Server implementation.
@@ -189,6 +202,9 @@ public class Main {
 	 */
 	private SchemaProvider mSchemaProvider;
 	
+	private TrustService mTrustService;
+	private SessionRepository mSessionRepository;
+	
 	
 	public Main() throws ServerInitialException {
 		init(MAIN_CONFIGURATION_FILE);
@@ -220,21 +236,34 @@ public class Main {
 		int actionWorkers = mServerConfig.getActionProcessorWorkersCount();
 		mEventQueue = new Queue<Event>();
 		mActionQueue = new Queue<ActionSeries>();
-		mEventProcessor = new EventProcessor(mEventQueue, eventWorkers, eventForwarders);
+		mSessionRepository = new SessionRepositoryImpl();
+		mEventProcessor = new EventProcessor(mEventQueue, mSessionRepository,
+				eventWorkers, eventForwarders);
 		mActionProcessor = new ActionProcessor(mActionQueue, actionWorkers, actionForwarders);
 		mChannelRep = new ChannelRep();
 
 		mMetadataTypeReop = MetadataTypeRepositoryImpl.newInstance();
 		mMetadataFactory = MetadataFactoryImpl.newInstance(mMetadataTypeReop, mServerConfig);
+		
+		mTrustService = new TrustServiceImpl(mSessionRepository,
+				mMetadataFactory);
+		
 		mRequestUnmarshaller = RequestUnmarshallerFactory.newRequestUnmarshaller(
 				mMetadataFactory, mSchemaProvider);
 		mResultMarshaller = ResultMarshallerFactory.newResultMarshaller();
 
-		mDataModelService = DataModelService.newInstance(mServerConfig);
+		mDataModelService = DataModelService.newInstance(mServerConfig, mTrustService);
 		
 		mSessionTimerFactory = new SessionTimerFactory(mEventQueue, mServerConfig);
 		
 		mCallback = new PollResultAvailableCallback(mEventQueue);
+		
+		/*
+		 * TrustService
+		 * 
+		 */
+		checkMapsCertificate(mServerConfig, mTrustService);
+		setSignalHandler();
 		
 		// initialize the event processor...
 		mEventProcessor.setActionQueue(mActionQueue);
@@ -260,7 +289,7 @@ public class Main {
 		mActionProcessor.setEventQueue(mEventQueue);
 		
 		mChannelAcceptor = new ChannelAcceptor(mServerConfig,
-				mEventQueue, mChannelRep, mBasicAuthProvider);
+				mEventQueue, mChannelRep, mBasicAuthProvider, mTrustService);
 		
 		mChannelAcceptor.setUp();
 	}
@@ -288,4 +317,33 @@ public class Main {
 			sLogger.error(e.getMessage());
 		}
 	}
+
+	private void checkMapsCertificate(ServerConfigurationProvider serverConf,
+			TrustService trustService) {
+		try {
+			KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+			char[] password = serverConf.getTrustStorePasswort().toCharArray();
+			java.io.FileInputStream fis = new java.io.FileInputStream(
+					serverConf.getTrustStoreFileName());
+			ks.load(fis, password);
+			X509Certificate x509 = (X509Certificate) ks.getCertificate("irond");
+			String ca = x509.getIssuerDN().getName();
+			if (CommonNameDistiller.getCommonName(ca).equals("tpmca"))
+				mTrustService.addSpForMaps("certSignedByTpmCa");
+
+			fis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setSignalHandler() {
+		Signal.handle(new Signal("HUP"), new SignalHandler() {
+			public void handle(Signal sig) {
+				mTrustService.reloadSpFile();
+				System.out.println("SpFile neu geladen");
+			}
+		});
+	}
+
 }

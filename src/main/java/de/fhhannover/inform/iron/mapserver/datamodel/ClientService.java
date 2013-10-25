@@ -55,6 +55,9 @@ import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
 
 /**
  * This class is responsible to handle newSession, endSession and purgePublisher.
@@ -74,10 +77,14 @@ class ClientService {
 
 	private PublisherRep publisherRep;
 	private SubscriptionService subService;
-	
-	ClientService(PublisherRep pr, SubscriptionService subServ) {
+
+	private TrustService mTrustService;
+
+	ClientService(PublisherRep pr, SubscriptionService subServ,
+			TrustService trustService) {
 		publisherRep = pr;
 		subService = subServ;
+		mTrustService = trustService;
 	}
 	
 	/**
@@ -95,6 +102,13 @@ class ClientService {
 				+ " and maxPollResultSize=" + mprs + " bytes");
 	
 		publisherRep.addPublisher(publisherId, sessionId, mprs);
+
+		/*
+		 * TrustService
+		 * 
+		 * Mappt die Session-ID des MAP-Clients auf den passenden Client-Identifier.
+		 */
+		((TrustServiceImpl)mTrustService).mapSessionIdToClientIdentifier(sessionId);
 	}
 	 
 	/**
@@ -131,6 +145,9 @@ class ClientService {
 		
 		setStateDeleted(changes);
 		subService.commitChanges(changes);
+
+		// TrustService
+		mTrustService.removeAllSprOfMapc(sessionId);
 	}
 
 	/**
@@ -161,6 +178,17 @@ class ClientService {
 			sLogger.warn(sName + ": " + requestor + " tried purging non-existing"
 					+ " publisher-id=" + publisherId);
 			return;
+		}
+
+		/* 
+		 * TrustService
+		 * 
+		 * 
+		 * 
+		 */
+		TrustToken tt = mTrustService.getP1TT(sessionId, publisherId);
+		for (MetadataHolder mh : toPurge.getForeverMetadata()) {
+			mh.setTrustToken(tt);
 		}
 		
 		changes.addAll(toPurge.getSessionMetadata());

@@ -58,6 +58,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolderFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataLifeTime;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
+import de.fhhannover.inform.iron.mapserver.exceptions.AccessDeniedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.PublishDelete;
@@ -67,6 +68,10 @@ import de.fhhannover.inform.iron.mapserver.messages.PublishUpdate;
 import de.fhhannover.inform.iron.mapserver.messages.SubPublishRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
+import de.fhhannover.inform.iron.mapserver.trust.utils.TrustConstStrings;
+import de.fhhannover.inform.iron.mapserver.trust.utils.TrustTokenIdGenerator;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
 
@@ -89,15 +94,17 @@ class PublishService {
 	private SubscriptionService mSubService;
 	private MetadataHolderFactory mMetaHolderFac;
 	private DataModelServerConfigurationProvider mConf;
+	private TrustService mTrustService;
 	
 	PublishService(PublisherRep pRep, GraphElementRepository graphRep,
 			MetadataHolderFactory metaHolderFac, SubscriptionService subServ,
-			DataModelServerConfigurationProvider conf) {
+			DataModelServerConfigurationProvider conf, TrustService trustService) {
 		mPublisherRep = pRep;
 		mGraph = graphRep;
 		mMetaHolderFac = metaHolderFac;
 		mSubService	= subServ;
 		mConf = conf;
+		mTrustService = trustService;
 	}
 	
 	/**
@@ -105,9 +112,11 @@ class PublishService {
 	 * the corresponding process* methods
 	 *
 	 * @param req
-	 * @throws InvalidMetadataException 
+	 * @throws InvalidMetadataException
+	 * @throws AccessDeniedException
 	 */
-	void publish(PublishRequest req) throws InvalidMetadataException {
+	void publish(PublishRequest req) throws InvalidMetadataException,
+			AccessDeniedException {
 		List<SubPublishRequest> list = req.getSubPublishRequestList();
 		String sId = req.getSessionId();
 		String pId = null;
@@ -136,10 +145,19 @@ class PublishService {
 		// GraphElements and Publishers...
 		String timeNow = Iso8601DateTime.getTimeNow();
 		for (MetadataHolder mh : changes) {
+
+			/*
+			 * TrustService
+			 * 
+			 * Hole für jedes Metadatum eine TrustTokenID.
+			 */
+			String ttid = TrustTokenIdGenerator.getInstance()
+					.getNextTrustTokenID();
+
 			Metadata m = mh.getMetadata();
-			
-			if (mh.isNew() || mh.isNotify())
-				addOperationalAttributes(m, timeNow, pId);
+			if (mh.isNew() || mh.isNotify()) {
+				addOperationalAttributes(m, timeNow, pId, ttid);
+			}
 		}
 	
 		// FIXME!!
@@ -149,14 +167,11 @@ class PublishService {
 			
 	/**
 	 * Publish persistent {@link Metadata}.
+	 * 
+	 * @throws AccessDeniedException
 	 */
 	private void processPublishUpdate(Publisher pub, PublishUpdate req,
-			List<MetadataHolder> changes) {
-		Identifier i1 = req.getIdent1();
-		Identifier i2 = req.getIdent2();
-		GraphElement ge = mGraph.getGraphElement(i1, i2);
-		sLogger.trace(sName + ": publish update for " + ge + " and "
-				+ req.getMetadataList().size() + " metadata objects");
+			List<MetadataHolder> changes) throws AccessDeniedException {
 		processPublish(pub, req, MetadataState.NEW, changes);
 	}
 
@@ -164,7 +179,7 @@ class PublishService {
 	 * Publish notify {@link Metadata}.
 	 */
 	private void processPublishNotify(Publisher pub, PublishNotify req,
-			List<MetadataHolder> changes) {
+			List<MetadataHolder> changes) throws AccessDeniedException {
 		processPublish(pub, req, MetadataState.NOTIFY, changes);
 	}
 	
@@ -188,7 +203,15 @@ class PublishService {
 		toRemove = ge.getMetadataHolder(filter);
 		sLogger.trace(sName + ": publish delete for " + ge + " and "
 				+ toRemove.size() + " metadata objects");
-		
+
+		/*
+		 * TrustService
+		 * 
+		 * Erstelle einen Trust-Token für die aktuelle Session des Publishers.
+		 */
+		TrustToken tt = mTrustService.getP1TT(pub.getSessionId(),
+				pub.getPublisherId());
+
 		for (MetadataHolder mh : toRemove) {
 			Metadata m = mh.getMetadata();
 			sLogger.trace(sName + ": deleting " + m.getPrefixAndElement() + " from "
@@ -211,6 +234,14 @@ class PublishService {
 				// in SubscriptionService
 				mh.setState(MetadataState.DELETED);
 				changes.add(mh);
+				/*
+				 * TrustService
+				 * 
+				 * Damit die Abonnenten erkennen können, wer die Metadaten
+				 * gelöscht hat, werden diese mit dem Trust-Token dieses
+				 * Publishers versehen.
+				 */
+				mh.setTrustToken(tt);
 				break;
 			case REPLACED:
 				mh.setState(MetadataState.DELETED);
@@ -229,9 +260,10 @@ class PublishService {
 		}
 	}
 	
-	private void addOperationalAttributes(Metadata m, String timeNow, String pId) {
+	private void addOperationalAttributes(Metadata m, String timeNow, String pId, String ttid) {
 		m.setTimestamp(timeNow);
 		m.setPublisherId(pId);
+		m.setTrustTokenId(ttid);
 	}
 
 	private void setReferences(MetadataHolder mh) {
@@ -254,16 +286,49 @@ class PublishService {
 	 * @param state
 	 * @param changes
 	 */
-	private void processPublish(Publisher pub, PublishUpdate req, MetadataState state,
-			List<MetadataHolder> changes) {
+	private void processPublish(Publisher pub, PublishUpdate req,
+			MetadataState state, List<MetadataHolder> changes)
+			throws AccessDeniedException {
 		List<Metadata> mlist = req.getMetadataList();
 		Identifier i1 = req.getIdent1();
 		Identifier i2 = req.getIdent2();
 		MetadataLifeTime lt = req.getLifeTime();
 		GraphElement graphElement = mGraph.getGraphElement(i1, i2);
 		MetadataHolder mh = null;
-		
+
+		/*
+		 * TrustService
+		 * 
+		 * Erstelle einen Trust-Token für die aktuelle Session des Publishers.
+		 */
+		TrustToken tt = mTrustService.getP1TT(pub.getSessionId(),
+				pub.getPublisherId());
+
+		/*
+		 * TrustService
+		 * 
+		 * TTI - Wenn Identifier mit keinen Metadaten verbunden ist, wird ein TT
+		 * erstellt und die Referenz im Node, der den Identifier hält,
+		 * gespeichert.
+		 */
+		/*
+		 * if (i1 == null || i2 == null) { Node n1 = (Node) graphElement; if
+		 * (!n1.isConnected()) n1.setTrustToken(tt); } else { Node n1 =
+		 * mGraph.getGraphElement(i1); if (!n1.isConnected())
+		 * n1.setTrustToken(tt);
+		 * 
+		 * Node n2 = mGraph.getGraphElement(i2); if (!n2.isConnected())
+		 * n2.setTrustToken(tt); }
+		 */
+
 		for (Metadata m : mlist) {
+			
+			/*
+			 * TrustService
+			 * 
+			 * Werfe Exception wenn der Request Trust-Token enthält.
+			 */
+			checkMetadataType(m);
 		
 			/* singleValue metadata replaces existing metadata */
 			if (m.isSingleValue())
@@ -271,6 +336,15 @@ class PublishService {
 				
 			
 			mh = mMetaHolderFac.newMetadataHolder(m, lt, graphElement, pub);
+			
+			/*
+			 * TrustService
+			 * 
+			 * Versehe die Metadataholder vor der Veröffentlichung mit dem
+			 * Trust-Token des Publishers.
+			 */
+			mh.setTrustToken(tt);
+			
 			changes.add(mh);
 			mh.setState(state);
 			setReferences(mh);
@@ -345,6 +419,24 @@ class PublishService {
 		} else {
 			removeMe.setState(MetadataState.REPLACED);
 		}
+	}
+	
+	/**
+	 * TrustService
+	 * 
+	 * Falls der Publish-Request Trust-Token enthält, wird eine
+	 * AccessDeniedException geworfen.
+	 * 
+	 * @throws AccessDeniedException 
+	 */
+	private void checkMetadataType(Metadata m) throws AccessDeniedException {
+		String metaName = m.getPrefixAndElement();
+		if (metaName
+				.equals(TrustConstStrings.TT_METADATA_PREFIX_AND_TTI_NAME)
+				|| metaName
+						.equals(TrustConstStrings.TT_METADATA_PREFIX_AND_TTM_NAME))
+			throw new AccessDeniedException(
+					"you're not allowed to publish trust-token");
 	}
 }
 

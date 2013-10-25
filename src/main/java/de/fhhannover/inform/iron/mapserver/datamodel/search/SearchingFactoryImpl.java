@@ -56,6 +56,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.messages.SearchResultType;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 
 public class SearchingFactoryImpl implements SearchingFactory {
 	
@@ -71,9 +72,9 @@ public class SearchingFactoryImpl implements SearchingFactory {
 	public SearchHandler newBasicSearchHandler(
 			DataModelServerConfigurationProvider conf, SearchRequest request,
 			ModifiableSearchResult result, int additionalBytes,
-			boolean ignoreSize) {
+			boolean ignoreSize, TrustService trustService) {
 		return new BasicSearchHandler(request, result, conf, additionalBytes,
-				ignoreSize);
+				ignoreSize, trustService);
 	}
 
 	public static SearchingFactory newInstance() {

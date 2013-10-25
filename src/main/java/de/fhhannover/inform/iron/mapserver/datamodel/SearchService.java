@@ -58,6 +58,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigExcepti
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 
 /**
  * This class is a sub service and handles {@link SearchRequest} messages
@@ -77,15 +78,18 @@ class SearchService {
 	private final SearchingFactory mSearchingFactory;
 	private final int mAdd;
 	private final DataModelServerConfigurationProvider mConf;
+	
+	private final TrustService mTrustService;
 
 	
 	SearchService(GraphElementRepository graph, PublisherRep pRep,
-			SearchingFactory sresFac, DataModelServerConfigurationProvider conf) {
+			SearchingFactory sresFac, DataModelServerConfigurationProvider conf, TrustService trustService) {
 		mGraph = graph;
 		mPublisherRep = pRep;
 		mSearchingFactory = sresFac;
 		mAdd = IfmapConstStrings.SRES_MIN_CNT;
 		mConf = conf;
+		mTrustService = trustService;
 	}
 	
 	/**
@@ -104,7 +108,7 @@ class SearchService {
 		
 		ModifiableSearchResult res = mSearchingFactory.newCopySearchResult();
 		SearchHandler handler = mSearchingFactory.newBasicSearchHandler(mConf,
-				req, res, mAdd, false);
+				req, res, mAdd, false, mTrustService);
 		Searcher searcher = mSearchingFactory.newSearcher(mGraph, handler);
 		searcher.runSearch();
 		return res;

@@ -66,12 +66,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepositoryImpl;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactory;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactoryImpl;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepository;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.exceptions.ChannelAuthException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ProviderInitializationException;
 import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProvider;
 import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProviderPropImpl;
 import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
 
 public class BasicAccessAuthenticationTest extends TestCase {		
 	
@@ -107,9 +114,14 @@ public class BasicAccessAuthenticationTest extends TestCase {
 		} catch (ProviderInitializationException e) {
 			fail("Cannot initialize the provider!");
 		}
+		
+		MetadataTypeRepository types = MetadataTypeRepositoryImpl.newInstance();
+		MetadataFactory metaFactory = MetadataFactoryImpl.newInstance(types, mServerConf);
+		TrustService trustService = new TrustServiceImpl(new SessionRepositoryImpl(),
+				metaFactory);
 	
 		Socket s = new Socket();
-		mBasicAuth = new BasicChannelAuth(s, provider);
+		mBasicAuth = new BasicChannelAuth(s, provider, trustService);
 	}	
 	
 	@After

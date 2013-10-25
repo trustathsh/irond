@@ -47,6 +47,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
@@ -63,6 +64,8 @@ class MetadataHolderImpl implements MetadataHolder {
 	private final GraphElement mGraphElement;
 	
 	private MetadataState mState;
+	
+	private TrustToken mTrustToken;
 	
 	MetadataHolderImpl(Metadata m, MetadataLifeTime lt, GraphElement ge, Publisher p) {
 		NullCheck.check(m, "metadata is null");
@@ -124,5 +127,15 @@ class MetadataHolderImpl implements MetadataHolder {
 	@Override
 	public MetadataLifeTime getLifetime() {
 		return mLifeTime;
+	}
+
+	@Override
+	public TrustToken getTrustToken() {
+		return mTrustToken;
+	}
+
+	@Override
+	public void setTrustToken(TrustToken tt) {
+		mTrustToken = tt;
 	}
 }

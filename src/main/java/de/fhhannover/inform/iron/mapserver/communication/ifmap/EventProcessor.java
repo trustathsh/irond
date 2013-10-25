@@ -217,9 +217,9 @@ public class EventProcessor extends Processor<Event> {
 	 * @param workers
 	 * @param forwarders
 	 */
-	public EventProcessor(Queue<Event> eventQueue, int workers, int forwarders) {
+	public EventProcessor(Queue<Event> eventQueue, SessionRepository sessionRepository,  int workers, int forwarders) {
 		super(eventQueue, workers, forwarders);
-		mSessionRep = new SessionRepositoryImpl();
+		mSessionRep = sessionRepository;
 		mBigProcessLock = new Object();
 	}
 	

@@ -1,4 +1,4 @@
-package de.fhhannover.inform.iron.mapserver.datamodel.meta;
+package de.fhhannover.inform.iron.mapserver.trust.utils;
 
 /*
  * #%L
@@ -45,79 +45,18 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
-import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
-
-/**
- * A {@link MetadataHolder} encapsulates a real {@link Metadata} object and
- * offers access to the {@link Publisher} instance, {@link GraphElement}
- * instance, time-stamp and further administrative attributes.
- * 
- * @since 0.3.0
- * @author aw
- *
- */
-public interface MetadataHolder {
+public class TrustConstStrings {
 	
-	/**
-	 * @return the {@link Metadata} instance that is encapsulated by this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Metadata getMetadata();
+	public final static String TT_TTM_NAME = "trust-token-metadata";
 	
-	/**
-	 * @return the {@link GraphElement} instance this {@link MetadataHolder}
-	 * 			instance is attached to.
-	 */
-	public GraphElement getGraphElement();
+	public final static String TT_TTI_NAME = "trust-token-identifier";
 	
-	/**
-	 * @return the {@link Publisher} instance indicating who published this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Publisher getPublisher();
+	public final static String TT_NS_URI = "http://www.inform.fhhannover.de/2012/IFMAP-TRUST/1";
 	
-	/**
-	 * @return the state this {@link MetadataHolder} instance is in.
-	 */
-	public MetadataState getState();
-
-	/**
-	 * Set the sate of this {@link MetadataHolder} instance.
-	 * @param state
-	 */
-	public void setState(MetadataState state);
+	public static final String TT_METADATA_PREFIX =  "trust";
 	
-	public boolean isNotify();
+	public static final String TT_METADATA_PREFIX_AND_TTM_NAME = TT_METADATA_PREFIX + ":" + TT_TTM_NAME;
 	
-	public boolean isNew();
-	
-	public boolean isDeleted();
-	
-	public boolean isUnchanged();
-	
-	/**
-	 * @return the lifetime of the attached {@link Metadata} object.
-	 */
-	public MetadataLifeTime getLifetime();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode gibt den {@link TrustToken} zurück.
-	 * 
-	 * @return
-	 */
-	public TrustToken getTrustToken();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode setzt den {@link TrustToken}.
-	 * 
-	 * @param tt
-	 */
-	public void setTrustToken(TrustToken tt);
+	public static final String TT_METADATA_PREFIX_AND_TTI_NAME = TT_METADATA_PREFIX + ":" + TT_TTI_NAME;
 
 }

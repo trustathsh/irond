@@ -59,7 +59,7 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  * @author aw
  *
  */
-class Session {
+public class Session {
 	
 	/**
 	 * Private enum to represent the state of polling.

@@ -46,6 +46,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  */
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
+
 import java.util.Collection;
 
 /**
@@ -97,4 +100,31 @@ public interface Node extends GraphElement {
 	@Override
 	public Node dummy();
 
+	/**
+	 * TrustService
+	 * 
+	 * TTI - Diese Methode gibt zurück, ob der {@link Node} mit Metadaten, die
+	 * den {@link MetadataState#UNCHANGED} haben, versehen ist oder nicht.
+	 * 
+	 * @return
+	 */
+	public boolean isConnected();
+
+	/**
+	 * TrustService
+	 * 
+	 * TTI - Diese Methode gibt den {@link TrustToken} zurück.
+	 * 
+	 * @return
+	 */
+	public TrustToken getTrustToken();
+
+	/**
+	 * TrustService
+	 * 
+	 * TTI - Diese Methode setzt den {@link TrustToken}.
+	 * 
+	 * @param tt
+	 */
+	public void setTrustToken(TrustToken tt);
 }

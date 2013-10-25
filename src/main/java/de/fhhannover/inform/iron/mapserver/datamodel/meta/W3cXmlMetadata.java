@@ -86,6 +86,8 @@ class W3cXmlMetadata extends Metadata {
 	private String mTimeStamp;
 	private String mPublisherId;
 	
+	private String mTrustTokenId;
+	
 	private static XPathFactory xpathFactory;
 	private static TransformerFactory transformerFactory;
 
@@ -244,7 +246,7 @@ class W3cXmlMetadata extends Metadata {
 		mPrefixElementName = mXmlElement.getNodeName();
 
 		// only set the byte count if we are fully initialzied
-		if (mTimeStamp != null && mPublisherId != null)
+		if (mTimeStamp != null && mPublisherId != null && mTrustTokenId != null)
 			setByteCount(mMetadataAsString.length());
 	}
 
@@ -262,5 +264,18 @@ class W3cXmlMetadata extends Metadata {
 	public String getPrefixAndElement() {
 		return mPrefixElementName;
 	}
+
+	@Override
+	public void setTrustTokenIdInternal(String ttid) {
+		mTrustTokenId = ttid;
+		mXmlElement.setAttribute(TRUST_TOKEN_ID, mTrustTokenId);
+		createStrings();
+	}
+
+	@Override
+	protected String getTrustTokenInternal() {
+		return mTrustTokenId;
+	}
+
 }
 

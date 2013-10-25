@@ -137,4 +137,10 @@ class DummyLinkImpl extends DummyGraphElement implements Link {
 	public String toString() {
 		return "dlink{" + getNode1() + ", " + getNode2() + "}";
 	}
+
+	@Override
+	public boolean hasUnchangedMetadataHolder() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

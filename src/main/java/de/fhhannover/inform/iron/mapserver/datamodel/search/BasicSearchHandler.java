@@ -62,6 +62,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
@@ -90,9 +91,12 @@ class BasicSearchHandler implements SearchHandler {
 	private final int mAddBytes;
 	private final DataModelServerConfigurationProvider mConf;
 	private final ModifiableSearchResult mResult;
-	
-	BasicSearchHandler(SearchRequest sreq, ModifiableSearchResult sres, 
-			DataModelServerConfigurationProvider conf, int add, boolean ignoreSize) {
+	private final TrustService mTrustService;
+	private final SearchRequest mSReq;
+
+	BasicSearchHandler(SearchRequest sreq, ModifiableSearchResult sres,
+			DataModelServerConfigurationProvider conf, int add,
+			boolean ignoreSize, TrustService trustService) {
 		NullCheck.check(sreq, "sreq is null");
 		NullCheck.check(sres, "sres is null");
 		NullCheck.check(conf, "conf is null");
@@ -112,7 +116,9 @@ class BasicSearchHandler implements SearchHandler {
 		mMatchLinksFilter = sreq.getMatchLinksFilter();
 		mResultFilter = sreq.getResultFilter();
 		mVisitedElements = new HashMap<GraphElement, List<MetadataHolder>>();
-		
+		mTrustService = trustService;
+		mSReq = sreq;
+
 		mResult = sres;
 	}
 
@@ -213,8 +219,17 @@ class BasicSearchHandler implements SearchHandler {
 	private void appendToResult(Node node) {
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 		
-		for (MetadataHolder mh : node.getMetadataHolderInGraph(mResultFilter))
+		for (MetadataHolder mh : node.getMetadataHolderInGraph(mResultFilter)) {
 			toAdd.add(mh.getMetadata());
+		
+			/*
+			 * TrustService
+			 * 
+			 * Füge der Ergebnismenge die Trust-Token hinzu.
+			 */
+			toAdd.add(mTrustService.getP2TTM(mSReq.getSessionId(),
+					mh.getTrustToken(), mh.getMetadata().getTrustTokenId()));
+		}
 		
 		appendToResult(node, toAdd);
 	}
@@ -231,10 +246,19 @@ class BasicSearchHandler implements SearchHandler {
 	private void appendToResult(Link link, List<MetadataHolder> matchLinksMd) {
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 		
-		for (MetadataHolder mh : matchLinksMd)
-			if (mh.getMetadata().matchesFilter(mResultFilter))
+		for (MetadataHolder mh : matchLinksMd) {
+			if (mh.getMetadata().matchesFilter(mResultFilter)) {
 				toAdd.add(mh.getMetadata());
-		
+			
+				/*
+				 * TrustService
+				 * 
+				 * Füge der Ergebnismenge die Trust-Token hinzu.
+				 */
+				toAdd.add(mTrustService.getP2TTM(mSReq.getSessionId(),
+						mh.getTrustToken(), mh.getMetadata().getTrustTokenId()));
+			}
+		}
 		appendToResult(link, toAdd);
 	}
 		

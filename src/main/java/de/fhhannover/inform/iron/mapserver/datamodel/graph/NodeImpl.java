@@ -50,6 +50,7 @@ import java.util.Map;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
+import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
@@ -59,6 +60,8 @@ class NodeImpl extends GraphElementImpl implements Node {
 	private final Map<Integer, Link> mLinks;
 	private final Node mDummy;
 	
+	private TrustToken mTrustToken;
+
 	NodeImpl(Identifier i) {
 		super();
 		NullCheck.check(i, "Identifier is null");
@@ -124,5 +127,27 @@ class NodeImpl extends GraphElementImpl implements Node {
 	@Override
 	public int getByteCount() {
 		return getIdentifier().getByteCount();
+	}
+
+	@Override
+	public TrustToken getTrustToken() {
+		return mTrustToken;
+	}
+
+	@Override
+	public void setTrustToken(TrustToken tt) {
+		mTrustToken = tt;	
+	}
+
+	@Override
+	public boolean isConnected() {
+		boolean b1 = hasUnchangedMetadataHolder();
+		boolean b2 = false;
+		
+		for (Link l : mLinks.values()) {
+			if (l.hasUnchangedMetadataHolder())
+				b2 = true;
+		}
+		return b1 || b2;
 	}
 }

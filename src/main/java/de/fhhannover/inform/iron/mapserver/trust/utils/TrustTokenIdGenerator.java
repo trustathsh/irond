@@ -1,4 +1,4 @@
-package de.fhhannover.inform.iron.mapserver.datamodel.meta;
+package de.fhhannover.inform.iron.mapserver.trust.utils;
 
 /*
  * #%L
@@ -45,79 +45,24 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * #L%
  */
 
-import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
-import de.fhhannover.inform.iron.mapserver.trust.domain.TrustToken;
+public class TrustTokenIdGenerator {
+	
+	private long mSequenceId;
+	private static TrustTokenIdGenerator mTrustTokenIdSequencer;
+	
+	private TrustTokenIdGenerator() {
+		mSequenceId = 0;
+	}
+	
+	public synchronized static TrustTokenIdGenerator getInstance() {
+		if (mTrustTokenIdSequencer == null)
+			mTrustTokenIdSequencer = new TrustTokenIdGenerator();
+		return mTrustTokenIdSequencer;
+	}
 
-/**
- * A {@link MetadataHolder} encapsulates a real {@link Metadata} object and
- * offers access to the {@link Publisher} instance, {@link GraphElement}
- * instance, time-stamp and further administrative attributes.
- * 
- * @since 0.3.0
- * @author aw
- *
- */
-public interface MetadataHolder {
-	
-	/**
-	 * @return the {@link Metadata} instance that is encapsulated by this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Metadata getMetadata();
-	
-	/**
-	 * @return the {@link GraphElement} instance this {@link MetadataHolder}
-	 * 			instance is attached to.
-	 */
-	public GraphElement getGraphElement();
-	
-	/**
-	 * @return the {@link Publisher} instance indicating who published this
-	 * 			{@link MetadataHolder} instance.
-	 */
-	public Publisher getPublisher();
-	
-	/**
-	 * @return the state this {@link MetadataHolder} instance is in.
-	 */
-	public MetadataState getState();
-
-	/**
-	 * Set the sate of this {@link MetadataHolder} instance.
-	 * @param state
-	 */
-	public void setState(MetadataState state);
-	
-	public boolean isNotify();
-	
-	public boolean isNew();
-	
-	public boolean isDeleted();
-	
-	public boolean isUnchanged();
-	
-	/**
-	 * @return the lifetime of the attached {@link Metadata} object.
-	 */
-	public MetadataLifeTime getLifetime();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode gibt den {@link TrustToken} zurück.
-	 * 
-	 * @return
-	 */
-	public TrustToken getTrustToken();
-	
-	/**
-	 * TrustService
-	 * 
-	 * Diese Methode setzt den {@link TrustToken}.
-	 * 
-	 * @param tt
-	 */
-	public void setTrustToken(TrustToken tt);
+	public synchronized String getNextTrustTokenID() {
+		mSequenceId++;
+		return String.valueOf(mSequenceId);
+	}
 
 }

@@ -57,6 +57,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.PollResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactoryImpl;
+import de.fhhannover.inform.iron.mapserver.exceptions.AccessDeniedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.AlreadyObservedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoPollResultAvailableException;
@@ -72,6 +73,7 @@ import de.fhhannover.inform.iron.mapserver.messages.PublishRequest;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.messages.SubscribeRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
@@ -106,7 +108,7 @@ public class DataModelService implements SubscriptionNotifier {
 	private final MetadataHolderFactory mMetaHolderFac;
 	private final SearchingFactory mSearchingFac;
 	
-	private DataModelService() {
+	private DataModelService(DataModelServerConfigurationProvider serverConf, TrustService trustService) {
 	
 		publisherRep = new PublisherRep();
 		
@@ -115,15 +117,15 @@ public class DataModelService implements SubscriptionNotifier {
 		mSearchingFac = SearchingFactoryImpl.newInstance();
 
 		searchService = new SearchService(mGraph, publisherRep, mSearchingFac,
-				sServerConfiguration);
+				sServerConfiguration, trustService);
 		
 		subscriptionService = new SubscriptionService(mGraph, publisherRep,
-				mSearchingFac);
+				mSearchingFac, trustService);
 		
 		publishService = new PublishService(publisherRep, mGraph,
-				mMetaHolderFac, subscriptionService, sServerConfiguration);
+				mMetaHolderFac, subscriptionService, serverConf, trustService);
 		
-		clientService = new ClientService(publisherRep, subscriptionService);
+		clientService = new ClientService(publisherRep, subscriptionService, trustService);
 	}
  
 	
@@ -136,11 +138,11 @@ public class DataModelService implements SubscriptionNotifier {
 	 * 
 	 * @return a <b>new</b> instance of a {@link DataModelService} instance
 	 */
-	public static DataModelService newInstance(DataModelServerConfigurationProvider serverConf) {
+	public static DataModelService newInstance(DataModelServerConfigurationProvider serverConf, TrustService metadatafactory) {
 		NullCheck.check(serverConf, "serverConf is null");
 		sServerConfiguration = serverConf;
 		
-		return new DataModelService();
+		return new DataModelService(serverConf, metadatafactory);
 	}
 	
 	public static DataModelServerConfigurationProvider getServerConfiguration() {
@@ -164,9 +166,10 @@ public class DataModelService implements SubscriptionNotifier {
 	 * @throws ParameterException 
 	 * @throws NotSupportedException 
 	 * @throws InvalidMetadataException 
+	 * @throws AccessDeniedException 
 	 * @throws ResponseCreationException 
 	 */
-	synchronized public void publish(PublishRequest request) throws InvalidMetadataException {
+	synchronized public void publish(PublishRequest request) throws InvalidMetadataException, AccessDeniedException {
 		checkNull(request);
 		publishService.publish(request);
 	}

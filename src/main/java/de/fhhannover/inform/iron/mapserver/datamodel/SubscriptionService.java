@@ -46,6 +46,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  */
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -87,6 +88,7 @@ import de.fhhannover.inform.iron.mapserver.messages.SubscribeRequest;
 import de.fhhannover.inform.iron.mapserver.messages.SubscribeUpdate;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
@@ -117,7 +119,10 @@ public class SubscriptionService {
 	
 	private long mLogicalTimeStamp;
 
-	SubscriptionService(GraphElementRepository graph, PublisherRep pRep, SearchingFactory sFac) {
+	private TrustService mTrustExtensionService;
+
+	SubscriptionService(GraphElementRepository graph, PublisherRep pRep,
+			SearchingFactory sFac, TrustService trustService) {
 		mGraph = graph;
 		publisherRep = pRep;
 		mSearchFac = sFac;
@@ -127,6 +132,8 @@ public class SubscriptionService {
 		mChangedMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
 		
 		mLogicalTimeStamp = 0;
+
+		mTrustExtensionService = trustService;
 	}
 	
 	/**
@@ -273,12 +280,29 @@ public class SubscriptionService {
 		
 		Searcher searcher = mSearchFac.newSearcher(mGraph, handler);
 		searcher.runSearch();
-		
+
+		/*
+		 * TrustService
+		 * 
+		 * TTI - Dieses Set wird für das Hinzufügen der Trust-Token-Identifier
+		 * benötigt. Es enthält die besuchten Nodes und garantiert, dass
+		 * Identifier immer nur einen Trust-Token haben.
+		 */
+		Set<Node> visitedNodes = new HashSet<Node>();
+
 		for (GraphElement ge : visitedGraphElement) {
 			initSres.addGraphElement(ge);
 			
-			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder())
+			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder()) {
 				initSres.addMetadata(ge, mh.getMetadata());
+
+				/*
+				 * TrustService
+				 * 
+				 * Füge der Ergebnismenge, die Trust-Token hinzu.
+				 */
+				appendTtToResult(sub, initSres, mh, visitedNodes);
+			}
 		}
 		
 		// Need to check max-size manually as ContinueSearchHandler does not care
@@ -292,6 +316,63 @@ public class SubscriptionService {
 					+ " to Starters");
 		
 		return initSres;
+	}
+	
+	/**
+	 * TrustService
+	 * 
+	 * Diese Methode fügt der Ergebnismenge die Trust-Token hinzu.
+	 * 
+	 * @param sub
+	 * @param res
+	 * @param mh
+	 * @param visitedNodes
+	 */
+	private void appendTtToResult(Subscription sub, ModifiableSearchResult res,
+			MetadataHolder mh, Set<Node> visitedNodes) {
+		Metadata ttm = mTrustExtensionService.getP2TTM(sub
+				.getPublisherReference().getSessionId(), mh.getTrustToken(), mh
+				.getMetadata().getTrustTokenId());
+		res.addMetadata(mh.getGraphElement(), ttm);
+
+		/*
+		 * TrustService
+		 * 
+		 * TTI - Dieser Abschnitt fügt die Trust-Token der Identifier zu der
+		 * Ergebnismenge hinzu.
+		 */
+		/*
+		 * if (isNode(mh.getGraphElement()) &&
+		 * !visitedNodes.contains(mh.getGraphElement())) { Node n = (Node)
+		 * mh.getGraphElement(); visitedNodes.add(n); Metadata tti =
+		 * mTrustExtensionService.getP2TTI(sub
+		 * .getPublisherReference().getSessionId(), n.getTrustToken());
+		 * res.addMetadata(mh.getGraphElement(), tti); } else if
+		 * (isLink(mh.getGraphElement())) { Node n1 = ((Link)
+		 * mh.getGraphElement()).getNode1(); Node n2 = ((Link)
+		 * mh.getGraphElement()).getNode2(); addTti(sub, n1, res, visitedNodes);
+		 * addTti(sub, n2, res, visitedNodes); }
+		 */
+	}
+
+	/**
+	 * TrustService
+	 * 
+	 * TTI - Diese Methode Dieser Abschnitt fügt die Trust-Token der Identifier
+	 * zu der Ergebnismenge hinzu. Diese Methode wird von der
+	 * {@link SubscriptionService#appendTtToResult(Subscription, ModifiableSearchResult, MetadataHolder, Set)}
+	 * Methode benötigt.
+	 * 
+	 * @param sub
+	 * @param n
+	 * @param res
+	 * @param visitedNodes
+	 */
+	private void addTti(Subscription sub, Node n, ModifiableSearchResult res,
+			Set<Node> visitedNodes) {
+		if (!visitedNodes.contains(n))
+			res.addMetadata(n, mTrustExtensionService.getP2TTI(sub
+					.getPublisherReference().getSessionId(), n.getTrustToken()));
 	}
 
 	/**
@@ -353,10 +434,26 @@ public class SubscriptionService {
 		
 		if (results.size() == 0)
 			return;
-			
-		for (MetadataHolder mh : results)
+
+		/*
+		 * TrustService
+		 * 
+		 * TTI - Dieses Set wird für das Hinzufügen der Trust-Token-Identifier
+		 * benötigt. Es enthält die besuchten Nodes und garantiert, dass
+		 * Identifier immer nur einen Trust-Token haben.
+		 */
+		Set<Node> visitedNodes = new HashSet<Node>();
+
+		for (MetadataHolder mh : results) {
 			sres.addMetadata(mh.getGraphElement(), mh.getMetadata());
 
+			/*
+			 * TrustService
+			 * 
+			 * Füge der Ergebnismenge, die Trust-Token hinzu.
+			 */
+			appendTtToResult(sub, sres, mh, visitedNodes);
+		}
 		state.getPollResult().addSearchResult(sres);
 
 		setHasChanges(sub);

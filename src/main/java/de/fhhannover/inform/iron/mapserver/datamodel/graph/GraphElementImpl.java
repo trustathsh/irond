@@ -249,4 +249,14 @@ abstract class GraphElementImpl implements GraphElement {
 	}
 	
 	protected abstract String provideToStringStart();
+	
+	public boolean hasUnchangedMetadataHolder() {
+		for (MetadataHolder mh : mMetadataHolder) {
+			if (mh.isUnchanged()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

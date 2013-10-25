@@ -67,6 +67,7 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
  
 	public static final String PUBLISHERID = "ifmap-publisher-id";
 	public static final String TIMESTAMP = "ifmap-timestamp";
+	public static final String TRUST_TOKEN_ID = "trust-token-id";
 	 
 	/**
 	 * a static logger
@@ -81,6 +82,8 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	private boolean mTimeStampSet;
 	private boolean mPublisherIdSet;
 	private final boolean mValidated;
+	
+	private boolean mTrustTokenId;
 	 
 	protected Metadata(MetadataType type) {
 		this(type, false);
@@ -221,5 +224,23 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	public boolean getValidated() {
 		return mValidated;
 	}
+	
+	public final void setTrustTokenId(String ttid) {
+		if (mTrustTokenId)
+			throw new SystemErrorException("trust-token-id was already set");
+		
+		NullCheck.check(ttid, "ttid is null");
+		//LengthCheck.checkMin(ts, 1, "ifmap-timestamp");
+		setTrustTokenIdInternal(ttid);
+		mTrustTokenId = true;
+	}
+	
+	public String getTrustTokenId() {
+		return getTrustTokenInternal();
+	}
+	
+	protected abstract String getTrustTokenInternal();
+	
+	protected abstract void setTrustTokenIdInternal(String ttid);
 }
  

@@ -56,6 +56,8 @@ import org.apache.http.message.BasicHeaderElementIterator;
 import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.ChannelAuthException;
 import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.utils.OperationType;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
@@ -68,10 +70,13 @@ public class BasicChannelAuth extends ChannelAuth {
 	private ClientIdentifier mClientId;
 	private final BasicAuthProvider mBasicAuthProvider;
 	
-	public BasicChannelAuth(Socket socket, BasicAuthProvider basicAuthProv) {
-		super(socket);
+	private TrustService mTrustService;
+	
+	public BasicChannelAuth(Socket socket, BasicAuthProvider basicAuthProv, TrustService trustService) {
+		super(socket, trustService);
 		NullCheck.check(basicAuthProv, "basic auth provider is null");
 		mBasicAuthProvider = basicAuthProv;
+		mTrustService = trustService;
 	}
 	
 	@Override
@@ -118,6 +123,17 @@ public class BasicChannelAuth extends ChannelAuth {
 				}
 			} else {
 				mClientId = newClId;
+				
+				/*
+				 * TrustService
+				 * 
+				 * Hinterlege die passende SP für diesen ClientIdentifier. Der
+				 * MAP-Client verwendet die basic Authentifizierung.
+				 */
+				mTrustService.addSpForMapc(newClId, "basicAuth",
+						OperationType.TRANSMIT_MAPC_MAPS);
+				
+				mTrustService.addSpForMapc(mClientId, mClientId.toString(), OperationType.PROCESS_MAPC);
 			}
 		}
 	}

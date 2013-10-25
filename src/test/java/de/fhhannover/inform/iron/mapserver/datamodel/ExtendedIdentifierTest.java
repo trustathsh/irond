@@ -49,9 +49,16 @@ import static junit.framework.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.fhhannover.inform.iron.mapserver.communication.ifmap.SessionRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactory;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataFactoryImpl;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepository;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeRepositoryImpl;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.TrustServiceImpl;
 
 
 /**
@@ -128,7 +135,11 @@ public class ExtendedIdentifierTest {
 	
 	@BeforeClass
 	public static void before() {
-		DataModelService.newInstance(DummyDataModelConf.getDummyConf());
+		MetadataTypeRepository types = MetadataTypeRepositoryImpl.newInstance();
+		MetadataFactory metaFactory = MetadataFactoryImpl.newInstance(types, null);
+		TrustService trustService = new TrustServiceImpl(new SessionRepositoryImpl(),
+				metaFactory);
+		DataModelService.newInstance(DummyDataModelConf.getDummyConf(), trustService);
 	}
 
 	@Test(expected=InvalidIdentifierException.class)

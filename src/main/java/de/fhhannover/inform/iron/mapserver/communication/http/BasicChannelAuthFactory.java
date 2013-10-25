@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
 import java.net.Socket;
 
 import de.fhhannover.inform.iron.mapserver.provider.BasicAuthProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
@@ -68,19 +69,22 @@ public class BasicChannelAuthFactory implements ChannelAuthFactory {
 	 */
 	private final BasicAuthProvider mBasicAuthProvider;
 	
+	private final TrustService mTrustService;
+	
 	/**
 	 * Construct a {@link BasicChannelAuthFactory} given a {@link BasicAuthProvider}.
 	 * 
 	 * @param basicAuthProvider
 	 */
-	public BasicChannelAuthFactory(BasicAuthProvider basicAuthProvider) {
+	public BasicChannelAuthFactory(BasicAuthProvider basicAuthProvider, TrustService trustService) {
 		NullCheck.check(basicAuthProvider, "basicAuthProvider is null");
 		mBasicAuthProvider = basicAuthProvider;
+		mTrustService = trustService;
 	}
 
 	@Override
 	public ChannelAuth createChannelAuth(Socket socket) {
 		NullCheck.check(socket, "socket is null");
-		return new BasicChannelAuth(socket,  mBasicAuthProvider);
+		return new BasicChannelAuth(socket,  mBasicAuthProvider, mTrustService);
 	}
 }

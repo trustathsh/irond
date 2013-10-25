@@ -49,14 +49,19 @@ import java.net.Socket;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
+import javax.security.cert.CertificateExpiredException;
 import javax.security.auth.x500.X500Principal;
 import javax.security.cert.CertificateEncodingException;
+import javax.security.cert.CertificateNotYetValidException;
 import javax.security.cert.X509Certificate;
 
 import org.apache.http.HttpRequest;
 
 import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.ChannelAuthException;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
+import de.fhhannover.inform.iron.mapserver.trust.utils.OperationType;
+import de.fhhannover.inform.iron.mapserver.utils.CommonNameDistiller;
 import de.fhhannover.inform.iron.mapserver.utils.Digests;
 
 /**
@@ -69,8 +74,11 @@ public class CertificateChannelAuth extends ChannelAuth {
 
 	private ClientIdentifier mClientId;
 	
-	public CertificateChannelAuth(Socket socket) {
-		super(socket);
+	private TrustService mTrustService;
+	
+	public CertificateChannelAuth(Socket socket, TrustService trustService) {
+		super(socket, trustService);
+		mTrustService = trustService;
 	}
 	
 	@Override
@@ -83,21 +91,64 @@ public class CertificateChannelAuth extends ChannelAuth {
 			String subject = null;
 			String issuer = null;
 			String fp = null;
+			
+			/*
+			 * TrustService Variablen
+			 */
+			String ca = null;
+			boolean expired = false;
+			boolean notYetValid = false;
+			
 			try {
 				x509 = ((SSLSocket) getSocket()).getSession().getPeerCertificateChain();
 				subject = x509[x509.length - 1].getSubjectDN().getName();
 				issuer = x509[0].getIssuerDN().getName();
 				fp = Digests.sha1(x509[0].getEncoded());
+				
+				/*
+				 * TrustService
+				 * 
+				 * Speichert die Zertifizierungsstelle ab und überprüft die
+				 * Gültigkeit des Zeritifikats.
+				 */
+				ca = x509[0].getIssuerDN().getName();
+				x509[0].checkValidity();
 			} catch (CertificateEncodingException e) {
 				throw new ChannelAuthException("SSL Cert encoding error!");
 			} catch (SSLPeerUnverifiedException e) {
 				throw new ChannelAuthException("SSL verification failed!");
+			} catch (CertificateExpiredException e) {
+					expired = true;
+			} catch (CertificateNotYetValidException e) {
+				notYetValid = true;
 			}
 			
 			mClientId = new ClientIdentifier(getDottedCommonName(subject),
 					new X500Principal(subject).getName(),
 					new X500Principal(issuer).getName(),
 					fp);
+			
+			/*
+			 * TrustService
+			 * 
+			 * Hinterlege die passenden SP für diesen ClientIdentifier
+			 */
+			// der MAP-Client verwendet die zertifiaktsbasierende Authentifizierung
+			mTrustService.addSpForMapc(mClientId, "certAuth",
+					OperationType.TRANSMIT_MAPC_MAPS);
+			
+			// Ist das Zertifikat gültig?
+			if (expired)
+				mTrustService.addSpForMapc(mClientId, "certExpired",
+						OperationType.PROCESS_MAPC);
+			else if (notYetValid)
+				//mTrustService.addSpForMapc(mClientId, "certNotYetValid",
+				//		OperationType.PROCESS_MAPC);
+			
+			// Ist das Zertifikat von tpmca signiert?
+			if (CommonNameDistiller.getCommonName(ca).equals("tpmca"))
+				mTrustService.addSpForMapc(mClientId, "certSignedByTpmCa",
+						OperationType.PROCESS_MAPC);
 		}
 	}
 

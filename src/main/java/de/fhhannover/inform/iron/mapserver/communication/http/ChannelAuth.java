@@ -51,6 +51,7 @@ import org.apache.http.HttpRequest;
 
 import de.fhhannover.inform.iron.mapserver.communication.ClientIdentifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.ChannelAuthException;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
@@ -71,9 +72,12 @@ public abstract class ChannelAuth {
 	 */
 	private final Socket mSocket;
 	
-	protected ChannelAuth(Socket socket) {
+	private final TrustService mTrustService;
+	
+	protected ChannelAuth(Socket socket, TrustService trustService) {
 		NullCheck.check(socket, "socket is null");
 		mSocket = socket;
+		mTrustService = trustService;
 	}
 	
 	/**

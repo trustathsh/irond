@@ -56,6 +56,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.messages.SearchResultType;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
+import de.fhhannover.inform.iron.mapserver.trust.TrustService;
 
 /**
  * Interface to create {@link SearchResult} implementations.
@@ -80,7 +81,7 @@ public interface SearchingFactory {
 	public SearchHandler newBasicSearchHandler(
 			DataModelServerConfigurationProvider conf, SearchRequest request,
 			ModifiableSearchResult result, int additionalBytes,
-			boolean ignoreSize);
+			boolean ignoreSize, TrustService trustService);
 
 	public SearchHandler newContinueSearchHandler(Identifier start, int depth,
 			Subscription sub, Set<GraphElement> visitedGraphElement,
