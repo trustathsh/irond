@@ -5,7 +5,7 @@
 	<inceptionYear>2010</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<checkstyle.config.location>src\main\checkstyle\my-checker.xml</checkstyle.config.location>
+		<checkstyle.config.location>src/main/checkstyle/trustFhhCodeconventions.xml</checkstyle.config.location>
 	</properties>
 
 	<!-- general project information -->
