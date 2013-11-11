@@ -31,7 +31,7 @@
     <!-- Checks for Headers                                -->
     <!-- See http://checkstyle.sf.net/config_header.html   -->
     <module name="Header">
-        <property name="headerFile" value="src\java.header"/>
+        <property name="headerFile" value="src\main\checkstyle\java.header"/>
         <property name="fileExtensions" value="java"/>
     </module>
     
