@@ -1,3 +1,7 @@
+irond Release 0.4 - 18.04.13
+
+* Added IF-MAP 2.1 compatibility
+
 irond Release 0.3.4 - 27.08.12
 
 * Bugfix: Use subject instead of issuer id when doing 

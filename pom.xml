@@ -10,7 +10,7 @@
 	<!-- general project information -->
 	<groupId>de.fhhannover.inform.trust</groupId>
 	<artifactId>irond</artifactId>
-	<version>0.4.0</version>
+	<version>0.4.1</version>
 	<packaging>jar</packaging>
 	<name>irond</name>
 	<url>http://trust.inform.fh-hannover.de</url>
@@ -105,24 +105,25 @@
 				<configuration>
 					<licenseName>apache_v2</licenseName>
 					<canUpdateDescription>true</canUpdateDescription>
+					<canUpdateCopyright>true</canUpdateCopyright>
 					<descriptionTemplate>${basedir}/src/license/description_template.ftl</descriptionTemplate>
 					<roots>
 						<root>src/main/java</root>
 						<root>src/test/java</root>
 					</roots>
 				</configuration>
-				<executions>
-					<execution>
-						<id>first</id>
-						<goals>
-							<goal>update-file-header</goal>
-						</goals>
-						<phase>process-sources</phase>
-					</execution>
-				</executions>
 			</plugin>
-
 		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<filtering>true</filtering>
+				<targetPath>../filtered-source/java</targetPath>
+			</resource>
+		</resources>
+
+		<sourceDirectory>target/filtered-source/java</sourceDirectory>
 	</build>
 	<dependencies>
 		<dependency>
