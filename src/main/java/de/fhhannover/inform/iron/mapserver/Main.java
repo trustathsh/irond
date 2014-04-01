@@ -189,6 +189,7 @@ public class Main {
 	 */
 	private SchemaProvider mSchemaProvider;
 	
+	public static final String IROND_VERSION = "${project.version}";
 	
 	public Main() throws ServerInitialException {
 		init(MAIN_CONFIGURATION_FILE);
@@ -273,7 +274,7 @@ public class Main {
 
 	
 	public static void main(String[] args) {
-		sLogger.info("Starting irond version 0.3.5...");
+		sLogger.info("Starting irond version " + IROND_VERSION + " ...");
 		try {
 			Main main;
 			if (args.length == 1) {
