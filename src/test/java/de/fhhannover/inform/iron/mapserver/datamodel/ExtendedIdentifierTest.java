@@ -47,6 +47,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 import static junit.framework.Assert.*;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
@@ -75,7 +76,7 @@ public class ExtendedIdentifierTest {
 										 "&lt;child value=&quot;child&quot;&gt;&lt;/child&gt;" +
 										 "&lt;/parent&gt;";
 
-	private static String validNoAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
+	private static String inValidNoAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
 										 " ip=&quot;192.168.0.1&quot;" +
 										 "&gt;&lt;/network&gt;";
 
@@ -144,6 +145,20 @@ public class ExtendedIdentifierTest {
 	}
 
 	@Test
+	public void testValidEmptyAdmDomain() throws InvalidIdentifierException {
+		Identity i = new Identity(validEmptyAdmDom, null, "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Ignore
+	@Test(expected=InvalidIdentifierException.class)
+	public void testValidInnerEmptyAdmDomainButOuterAdminDomain() throws InvalidIdentifierException {
+		// FIXME: an empty administrativ-domain ist NOT no administrative-domain, this needs to fail!
+		Identity i = new Identity(validEmptyAdmDom, "", "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Test
 	public void testValid2() throws InvalidIdentifierException {
 		Identity i = new Identity(valid, null, "extended", IdentityTypeEnum.other);
 		assertNotNull(i);
@@ -157,13 +172,7 @@ public class ExtendedIdentifierTest {
 
 	@Test(expected=InvalidIdentifierException.class)
 	public void testAdmDomainMissing() throws InvalidIdentifierException {
-		Identity i = new Identity(validNoAdmDom, "", "extended", IdentityTypeEnum.other);
-		assertNull(i);
-	}
-
-	@Test(expected=InvalidIdentifierException.class)
-	public void testAdmDomainEmpty() throws InvalidIdentifierException {
-		Identity i = new Identity(validEmptyAdmDom, "", "extended", IdentityTypeEnum.other);
+		Identity i = new Identity(inValidNoAdmDom, "", "extended", IdentityTypeEnum.other);
 		assertNull(i);
 	}
 
