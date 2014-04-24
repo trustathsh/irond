@@ -77,8 +77,8 @@ import de.fhhannover.inform.iron.mapserver.utils.FilterAdaption;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 import de.fhhannover.inform.iron.mapserver.utils.SimpleNamespaceContext;
 
-class W3cXmlMetadata extends Metadata {
-	
+public class W3cXmlMetadata extends Metadata {
+
 	private final Document mXmlDocument;
 	private final Element mXmlElement;
 	private String mPrefixElementName;
@@ -100,7 +100,7 @@ class W3cXmlMetadata extends Metadata {
 		}
 	}
 
-	W3cXmlMetadata(Document doc, MetadataType type, boolean validated)
+	public W3cXmlMetadata(Document doc, MetadataType type, boolean validated)
 			throws InvalidMetadataException {
 		// As dangerous as before :-(
 		super(type, validated);

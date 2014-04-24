@@ -45,19 +45,31 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * #L%
  */
 
+import java.io.StringReader;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetaCardinalityType;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolderFactory;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataLifeTime;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataState;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataTypeImpl;
+import de.fhhannover.inform.iron.mapserver.datamodel.meta.W3cXmlMetadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
+import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.PublishDelete;
@@ -77,19 +89,22 @@ import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
  * @since 0.1.0
  */
 class PublishService {
-	
+
 	/**
 	 * a static logger instance
 	 */
 	private final static Logger sLogger = LoggingProvider.getTheLogger();
 	private final static String sName = "PublishService";
-	
+
 	private PublisherRep mPublisherRep;
 	private GraphElementRepository mGraph;
 	private SubscriptionService mSubService;
 	private MetadataHolderFactory mMetaHolderFac;
 	private DataModelServerConfigurationProvider mConf;
-	
+
+	private RootIdentifierExtension mRootIdentifierExtension = new RootIdentifierExtension();
+
+
 	PublishService(PublisherRep pRep, GraphElementRepository graphRep,
 			MetadataHolderFactory metaHolderFac, SubscriptionService subServ,
 			DataModelServerConfigurationProvider conf) {
@@ -262,14 +277,17 @@ class PublishService {
 		MetadataLifeTime lt = req.getLifeTime();
 		GraphElement graphElement = mGraph.getGraphElement(i1, i2);
 		MetadataHolder mh = null;
-		
+
+		mRootIdentifierExtension.addLinkToRoot(i1, changes, state);
+		mRootIdentifierExtension.addLinkToRoot(i2, changes, state);
+
 		for (Metadata m : mlist) {
-		
+
 			/* singleValue metadata replaces existing metadata */
 			if (m.isSingleValue())
 				removeExistingSingleValueMetadata(m, graphElement, changes);
-				
-			
+
+
 			mh = mMetaHolderFac.newMetadataHolder(m, lt, graphElement, pub);
 			changes.add(mh);
 			mh.setState(state);
@@ -344,6 +362,61 @@ class PublishService {
 			changes.remove(removeMe);
 		} else {
 			removeMe.setState(MetadataState.REPLACED);
+		}
+	}
+
+
+	private class RootIdentifierExtension {
+
+		final String ROOT_ID_NAME = "irond-root-identifier";
+		final String METADATA_NS = "http://trust.f4.hs-hannover.de/ifmap/irond/1";
+
+		final MetadataLifeTime LIFETIME = MetadataLifeTime.forever;
+		final Publisher PUBLISHER = new Publisher("irond", "invalid-session-id-for-irond-publisher", 0);
+
+		Identity mRootIdentifier;
+		DocumentBuilderFactory mDocBuilerFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder;
+
+		String mRootLinkMetadata =
+			"<irond:root xmlns:irond=\""+METADATA_NS+"\" ifmap-cardinality=\"singleValue\" ></irond:root>";
+		Document mDoc;
+
+		RootIdentifierExtension() {
+			try {
+				// TODO change type to extended
+				mRootIdentifier =
+						new Identity(ROOT_ID_NAME, "", "", IdentityTypeEnum.userName);
+				docBuilder = mDocBuilerFactory.newDocumentBuilder();
+				mDoc = docBuilder.parse(new InputSource(new StringReader(mRootLinkMetadata)));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		/**
+		 * Add a link to the "root identifier" if the given identifier is
+		 * not null. The new metadata gets appended to the given changes list.
+		 */
+		void addLinkToRoot(Identifier identifier, List<MetadataHolder> changes,
+				MetadataState state) {
+			if (identifier != null) {
+				try {
+					GraphElement graphElement =
+							mGraph.getGraphElement(identifier, mRootIdentifier);
+					W3cXmlMetadata rootLinkMetadata = new W3cXmlMetadata(
+							mDoc, new MetadataTypeImpl(METADATA_NS +":irond", MetaCardinalityType.singleValue), false);
+
+					// TODO PUBLISHER is ignored?! => add PUBLISHER to PublisherRepository?
+					MetadataHolder rootLink = mMetaHolderFac.newMetadataHolder(
+							rootLinkMetadata, LIFETIME, graphElement, PUBLISHER);
+					changes.add(rootLink);
+					rootLink.setState(state);
+					setReferences(rootLink);
+				} catch (InvalidMetadataException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 	}
 }

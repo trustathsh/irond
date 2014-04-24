@@ -50,19 +50,19 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * A simple class that represents different {@link MetadataType}s.
  * Use it when comparing if {@link Metadata} is of the same type.
- * 
+ *
  * {@link Metadata} should have a typestring of urn:type
  * where urn might be http://example.com and type the Metadatatype
- * 
+ *
  * @author aw
  * @version 0.1
  */
-class MetadataTypeImpl implements MetadataType {
+public class MetadataTypeImpl implements MetadataType {
 
 	private final String mTypestring;
 	private final MetaCardinalityType mCardinality;
-	
-	MetadataTypeImpl(String typestring, MetaCardinalityType card) {
+
+	public MetadataTypeImpl(String typestring, MetaCardinalityType card) {
 		NullCheck.check(typestring, "typestring is null");
 		NullCheck.check(card, "card is null");
 		mTypestring = typestring;
