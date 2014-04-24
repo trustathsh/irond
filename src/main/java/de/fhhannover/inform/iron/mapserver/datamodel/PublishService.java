@@ -129,7 +129,6 @@ class PublishService {
 		sLogger.trace(sName + ": processing publishRequest for sessionid " + sId);
 		
 		Publisher publisher = mPublisherRep.getPublisherBySessionId(sId);
-		pId = publisher.getPublisherId();
 		
 		sLogger.trace(sName + ": " + publisher + " with " + list.size() + " requests");
 	
@@ -154,7 +153,7 @@ class PublishService {
 			Metadata m = mh.getMetadata();
 			
 			if (mh.isNew() || mh.isNotify())
-				addOperationalAttributes(m, timeNow, pId);
+				addOperationalAttributes(m, timeNow, mh.getPublisher().getPublisherId());
 		}
 	
 		// FIXME!!
@@ -407,7 +406,6 @@ class PublishService {
 					W3cXmlMetadata rootLinkMetadata = new W3cXmlMetadata(
 							mDoc, new MetadataTypeImpl(METADATA_NS +":irond", MetaCardinalityType.singleValue), false);
 
-					// TODO PUBLISHER is ignored?! => add PUBLISHER to PublisherRepository?
 					MetadataHolder rootLink = mMetaHolderFac.newMetadataHolder(
 							rootLinkMetadata, LIFETIME, graphElement, PUBLISHER);
 					changes.add(rootLink);
