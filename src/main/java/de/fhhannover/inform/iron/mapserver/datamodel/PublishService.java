@@ -102,7 +102,7 @@ class PublishService {
 	private MetadataHolderFactory mMetaHolderFac;
 	private DataModelServerConfigurationProvider mConf;
 
-	private RootIdentifierExtension mRootIdentifierExtension = new RootIdentifierExtension();
+	private RootIdentifierExtension mRootIdentifierExtension;
 
 
 	PublishService(PublisherRep pRep, GraphElementRepository graphRep,
@@ -113,6 +113,9 @@ class PublishService {
 		mMetaHolderFac = metaHolderFac;
 		mSubService	= subServ;
 		mConf = conf;
+		mRootIdentifierExtension = new RootIdentifierExtension(
+				mConf.getRootIdentifierName(),
+				mConf.getRootIdentifierTypeDef());
 	}
 	
 	/**
@@ -369,7 +372,6 @@ class PublishService {
 
 	private class RootIdentifierExtension {
 
-		final String ROOT_ID_NAME = "irond-root-identifier";
 		final String METADATA_NS = "http://trust.f4.hs-hannover.de/ifmap/irond/1";
 
 		final MetadataLifeTime LIFETIME = MetadataLifeTime.forever;
@@ -383,11 +385,10 @@ class PublishService {
 			"<irond:root xmlns:irond=\""+METADATA_NS+"\" ifmap-cardinality=\"singleValue\" ></irond:root>";
 		Document mDoc;
 
-		RootIdentifierExtension() {
+		RootIdentifierExtension(String rootIdentifierName, String rootIdentifierTypeDef) {
 			try {
-				// TODO change type to extended
 				mRootIdentifier =
-						new Identity(ROOT_ID_NAME, "", "", IdentityTypeEnum.userName);
+					new Identity(rootIdentifierName, "", rootIdentifierTypeDef, IdentityTypeEnum.other);
 				docBuilder = mDocBuilerFactory.newDocumentBuilder();
 				mDoc = docBuilder.parse(new InputSource(new StringReader(mRootLinkMetadata)));
 			} catch (Exception e) {

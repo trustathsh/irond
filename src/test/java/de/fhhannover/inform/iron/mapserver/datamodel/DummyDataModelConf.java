@@ -131,4 +131,14 @@ public class DummyDataModelConf implements DataModelServerConfigurationProvider 
 	public boolean isRootIdentifierEnabled() {
 		return false;
 	}
+
+	@Override
+	public String getRootIdentifierName() {
+		return "root-id";
+	}
+
+	@Override
+	public String getRootIdentifierTypeDef() {
+		return "root-id";
+	}
 }

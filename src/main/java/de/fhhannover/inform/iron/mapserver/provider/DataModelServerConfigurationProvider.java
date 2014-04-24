@@ -154,4 +154,18 @@ public interface DataModelServerConfigurationProvider {
 	 * @return true if the root identifier should be used
 	 */
 	public boolean isRootIdentifierEnabled();
+
+	/**
+	 * Get the name of the root identifier identity.
+	 *
+	 * @return the name of the root identifier
+	 */
+	public String getRootIdentifierName();
+
+	/**
+	 * Get the value of 'other-type-definition' for the root identifier.
+	 *
+	 * @return other-type-definition for the root identifier
+	 */
+	public String getRootIdentifierTypeDef();
 }

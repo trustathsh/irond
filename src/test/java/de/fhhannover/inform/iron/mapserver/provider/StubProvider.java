@@ -294,12 +294,22 @@ public class StubProvider {
 			public boolean isRootIdentifierEnabled() {
 				return false;
 			}
+
+			@Override
+			public String getRootIdentifierName() {
+				return "root-id";
+			}
+
+			@Override
+			public String getRootIdentifierTypeDef() {
+				return "root-id";
+			}
 		};
 	}
-	
+
 	public static PublisherIdGenerator getPublisherIdGenStub() {
 		return new PublisherIdGenerator() {
-			
+
 			@Override
 			public String generatePublisherIdFor(ClientIdentifier clientId,
 					PublisherIdProvider pubIdProv) {

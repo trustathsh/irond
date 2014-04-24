@@ -164,6 +164,12 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	private static final String ROOT_IDENTIFIER_ENABLED_KEY = "irond.root.enable";
 	private static final String ROOT_IDENTIFIER_ENABLED_DEFAULT = "false";
 
+	private static final String ROOT_IDENTIFIER_NAME_KEY = "irond.root.name";
+	private static final String ROOT_IDENTIFIER_NAME_DEFAULT = "irond-root-identifier";
+
+	private static final String ROOT_IDENTIFIER_TYPEDEF_KEY = "irond.root.typedef";
+	private static final String ROOT_IDENTIFIER_TYPEDEF_DEFAULT = "irond-root-identifier";
+
 	private PropertiesReaderWriter mProperties;
 	
 	public ServerConfigurationProviderPropImpl(String filename) throws ProviderInitializationException{
@@ -421,6 +427,16 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	public boolean isRootIdentifierEnabled() {
 		return new Boolean(getOrSetDefaultAndGet(ROOT_IDENTIFIER_ENABLED_KEY,
 				ROOT_IDENTIFIER_ENABLED_DEFAULT));
+	}
+
+	public String getRootIdentifierName() {
+		return getOrSetDefaultAndGet(ROOT_IDENTIFIER_NAME_KEY,
+				ROOT_IDENTIFIER_NAME_DEFAULT);
+	}
+
+	public String getRootIdentifierTypeDef() {
+		return getOrSetDefaultAndGet(ROOT_IDENTIFIER_TYPEDEF_KEY,
+				ROOT_IDENTIFIER_TYPEDEF_DEFAULT);
 	}
 
 	private Map<String, String> getMetadataSchemaFileNames() {
