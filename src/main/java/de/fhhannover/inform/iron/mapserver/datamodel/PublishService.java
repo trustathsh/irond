@@ -277,8 +277,10 @@ class PublishService {
 		GraphElement graphElement = mGraph.getGraphElement(i1, i2);
 		MetadataHolder mh = null;
 
-		mRootIdentifierExtension.addLinkToRoot(i1, changes, state);
-		mRootIdentifierExtension.addLinkToRoot(i2, changes, state);
+		if (mConf.isRootIdentifierEnabled()) {
+			mRootIdentifierExtension.addLinkToRoot(i1, changes, state);
+			mRootIdentifierExtension.addLinkToRoot(i2, changes, state);
+		}
 
 		for (Metadata m : mlist) {
 

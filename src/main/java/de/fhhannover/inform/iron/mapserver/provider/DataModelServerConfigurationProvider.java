@@ -146,4 +146,12 @@ public interface DataModelServerConfigurationProvider {
 	 * @return schema file source deinfed configuration file for metadata
 	 */
 	public StreamSource getMetadataSchema(String uri);
+
+	/**
+	 * Returns true if all identifiers should be linked to a single root
+	 * identifier.
+	 *
+	 * @return true if the root identifier should be used
+	 */
+	public boolean isRootIdentifierEnabled();
 }

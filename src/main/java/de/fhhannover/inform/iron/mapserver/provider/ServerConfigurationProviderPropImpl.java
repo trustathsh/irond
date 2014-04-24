@@ -161,6 +161,9 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_KEY = PROP_PREFIX + "ifmap.strict.identity.extended.lockdown";
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_DEFAULT = "false";
 
+	private static final String ROOT_IDENTIFIER_ENABLED_KEY = "irond.root.enable";
+	private static final String ROOT_IDENTIFIER_ENABLED_DEFAULT = "false";
+
 	private PropertiesReaderWriter mProperties;
 	
 	public ServerConfigurationProviderPropImpl(String filename) throws ProviderInitializationException{
@@ -412,6 +415,12 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	public boolean getXmlValidationExtendedIdentityLockDownMode() {
 		return new Boolean(getOrSetDefaultAndGet(XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_KEY,
 				XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_DEFAULT));
+	}
+
+	@Override
+	public boolean isRootIdentifierEnabled() {
+		return new Boolean(getOrSetDefaultAndGet(ROOT_IDENTIFIER_ENABLED_KEY,
+				ROOT_IDENTIFIER_ENABLED_DEFAULT));
 	}
 
 	private Map<String, String> getMetadataSchemaFileNames() {

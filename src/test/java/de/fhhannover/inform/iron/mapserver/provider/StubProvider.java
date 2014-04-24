@@ -289,6 +289,11 @@ public class StubProvider {
 				// we are running tests, so this should be fine
 				return true;
 			}
+
+			@Override
+			public boolean isRootIdentifierEnabled() {
+				return false;
+			}
 		};
 	}
 	

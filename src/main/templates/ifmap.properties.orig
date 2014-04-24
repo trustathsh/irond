@@ -100,3 +100,6 @@ irond.proc.action.forwarders=1
 irond.proc.action.workers=1
 irond.proc.event.forwarders=2
 irond.proc.event.workers=4
+
+# enable the implicit root identifier
+irond.root.enable=true
