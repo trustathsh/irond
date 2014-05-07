@@ -372,7 +372,8 @@ class PublishService {
 
 	private class RootIdentifierExtension {
 
-		final String METADATA_NS = "http://trust.f4.hs-hannover.de/ifmap/irond/1";
+		final String METADATA_NS = "http://trust.f4.hs-hannover.de/ifmap/XMLSchema/1";
+		final String METADATA_NS_PREFIX = "irond";
 
 		final MetadataLifeTime LIFETIME = MetadataLifeTime.forever;
 		final Publisher PUBLISHER = new Publisher("irond", "invalid-session-id-for-irond-publisher", 0);
@@ -382,7 +383,9 @@ class PublishService {
 		DocumentBuilder docBuilder;
 
 		String mRootLinkMetadata =
-			"<irond:root xmlns:irond=\""+METADATA_NS+"\" ifmap-cardinality=\"singleValue\" ></irond:root>";
+			"<" + METADATA_NS_PREFIX + ":root-link "
+					+ "xmlns:" + METADATA_NS_PREFIX + "=\"" + METADATA_NS + "\" "
+					+ "ifmap-cardinality=\"singleValue\" />";
 		Document mDoc;
 
 		RootIdentifierExtension(String rootIdentifierName, String rootIdentifierTypeDef) {
@@ -407,7 +410,7 @@ class PublishService {
 					GraphElement graphElement =
 							mGraph.getGraphElement(identifier, mRootIdentifier);
 					W3cXmlMetadata rootLinkMetadata = new W3cXmlMetadata(
-							mDoc, new MetadataTypeImpl(METADATA_NS +":irond", MetaCardinalityType.singleValue), false);
+							mDoc, new MetadataTypeImpl(METADATA_NS +":" + METADATA_NS_PREFIX, MetaCardinalityType.singleValue), false);
 
 					MetadataHolder rootLink = mMetaHolderFac.newMetadataHolder(
 							rootLinkMetadata, LIFETIME, graphElement, PUBLISHER);
