@@ -102,10 +102,4 @@ irond.proc.event.forwarders=2
 irond.proc.event.workers=4
 
 # Enable the implicit root identifier.
-irond.root.enable=false
-
-# The value for the 'name' attribute of the root identity identifier.
-irond.root.name=irond-root-identifier
-
-# The value for the 'other-type-definition' of the root identity identifier.
-irond.root.typedef=irond-root-identifier
+irond.root-link.enable=false

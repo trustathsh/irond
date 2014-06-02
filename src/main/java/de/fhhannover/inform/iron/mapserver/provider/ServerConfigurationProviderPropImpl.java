@@ -161,14 +161,8 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_KEY = PROP_PREFIX + "ifmap.strict.identity.extended.lockdown";
 	private static final String XML_VALIDATION_IDENTITY_EXTENDED_LOCKDOWN_DEFAULT = "false";
 
-	private static final String ROOT_IDENTIFIER_ENABLED_KEY = "irond.root.enable";
-	private static final String ROOT_IDENTIFIER_ENABLED_DEFAULT = "false";
-
-	private static final String ROOT_IDENTIFIER_NAME_KEY = "irond.root.name";
-	private static final String ROOT_IDENTIFIER_NAME_DEFAULT = "irond-root-identifier";
-
-	private static final String ROOT_IDENTIFIER_TYPEDEF_KEY = "irond.root.typedef";
-	private static final String ROOT_IDENTIFIER_TYPEDEF_DEFAULT = "irond-root-identifier";
+	private static final String ROOT_LINK_ENABLED_KEY = "irond.root-link.enable";
+	private static final String ROOT_LINK_ENABLED_DEFAULT = "false";
 
 	private PropertiesReaderWriter mProperties;
 	
@@ -424,19 +418,9 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	}
 
 	@Override
-	public boolean isRootIdentifierEnabled() {
-		return new Boolean(getOrSetDefaultAndGet(ROOT_IDENTIFIER_ENABLED_KEY,
-				ROOT_IDENTIFIER_ENABLED_DEFAULT));
-	}
-
-	public String getRootIdentifierName() {
-		return getOrSetDefaultAndGet(ROOT_IDENTIFIER_NAME_KEY,
-				ROOT_IDENTIFIER_NAME_DEFAULT);
-	}
-
-	public String getRootIdentifierTypeDef() {
-		return getOrSetDefaultAndGet(ROOT_IDENTIFIER_TYPEDEF_KEY,
-				ROOT_IDENTIFIER_TYPEDEF_DEFAULT);
+	public boolean isRootLinkEnabled() {
+		return new Boolean(getOrSetDefaultAndGet(ROOT_LINK_ENABLED_KEY,
+				ROOT_LINK_ENABLED_DEFAULT));
 	}
 
 	private Map<String, String> getMetadataSchemaFileNames() {

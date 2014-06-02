@@ -50,6 +50,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -102,7 +103,89 @@ class PublishService {
 	private MetadataHolderFactory mMetaHolderFac;
 	private DataModelServerConfigurationProvider mConf;
 
-	private RootIdentifierExtension mRootIdentifierExtension;
+	/**
+	 * XML namepspace for IF-MAP version 2.2.
+	 */
+	static final String IFMAP_2_2_NAMESPACE = "http://www.trustedcomputinggroup.org/2013/IFMAP-SERVER/1";
+
+	/**
+	 * XML namespace prefix for IF-MAP version 2.2.
+	 */
+	static final String IFMAP_2_2_NAMSPACE_PREFIX = "maps";
+
+	/**
+	 * XML namespace for irond specific metadata.
+	 */
+	static final String IROND_NAMESPACE = "http://trust.f4.hs-hannover.de/ifmap/XMLSchema/1";
+
+	/**
+	 * XML namespace prefix for the irond namespace.
+	 */
+	static final String IROND_NAMESPACE_PREFIX = "irond";
+
+	/**
+	 * The MAP server identifier (see IF-MAP version 2.2 for details).
+	 */
+	private Identifier mMapServerIdentifier;
+
+	/**
+	 * The name of the MAP server identifier.
+	 */
+	private final String mMapServerIdentifierName = "&lt;ifmap-server "
+			+ "xmlns=&quot;" + IFMAP_2_2_NAMESPACE + "&quot; "
+			+ "administrative-domain=&quot;&quot;&gt;&lt;/ifmap-server&gt;";
+
+	/**
+	 * The opening XML tag for server-capability metadata.
+	 */
+	private final String mServerCapabilityMetadataHeadXml =
+			"<" + IFMAP_2_2_NAMSPACE_PREFIX + ":server-capability "
+					+ "xmlns:maps=\"" + IFMAP_2_2_NAMESPACE + "\" "
+					+ "ifmap-cardinality=\"singleValue\">";
+
+	/**
+	 * Template string for server capability metadata elements.
+	 */
+	private final String mServerCapabilityTemplateXml =
+			"<capability>%s</capability>";
+
+	/**
+	 * The closing XML tag for server capability metadata.
+	 */
+	private final String mServerCapabilityMetadataTailXml =
+			"</" + IFMAP_2_2_NAMSPACE_PREFIX + ":server-capability>";
+
+	/**
+	 * XML for irond root link metadata.
+	 */
+	private final String mRootLinkMetadataXml =
+			"<" + IROND_NAMESPACE_PREFIX + ":root-link "
+					+ "xmlns:" + IROND_NAMESPACE_PREFIX + "=\"" + IROND_NAMESPACE + "\" "
+					+ "ifmap-cardinality=\"singleValue\" />";
+
+	/**
+	 * The publisher used by irond.
+	 */
+	private final Publisher mIrondPublisher =
+			new Publisher("irond", "invalid-session-id-for-irond-publisher", 0);
+
+	/**
+	 * Lifetime of irond specific root link metadata.
+	 */
+	private final MetadataLifeTime mRootLinkMetadataLifetime =
+			MetadataLifeTime.forever;
+
+	/**
+	 * Lifetime of server-capability metadata.
+	 */
+	private final MetadataLifeTime mServerCapabilityMetadataLifetime =
+			MetadataLifeTime.forever;
+
+
+	private final DocumentBuilderFactory mDocumentBuilderFactory =
+			DocumentBuilderFactory.newInstance();
+
+	private final DocumentBuilder mDocumentBuilder;
 
 
 	PublishService(PublisherRep pRep, GraphElementRepository graphRep,
@@ -113,9 +196,62 @@ class PublishService {
 		mMetaHolderFac = metaHolderFac;
 		mSubService	= subServ;
 		mConf = conf;
-		mRootIdentifierExtension = new RootIdentifierExtension(
-				mConf.getRootIdentifierName(),
-				mConf.getRootIdentifierTypeDef());
+
+		try {
+			mMapServerIdentifier = new Identity(mMapServerIdentifierName, "", "extended", IdentityTypeEnum.other);
+		} catch (InvalidIdentifierException e) {
+			throw new RuntimeException("could not create MAP server identifier", e);
+		}
+		try {
+			mDocumentBuilder = mDocumentBuilderFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		//addServerCapabilities(mMapServerIdentifier);
+	}
+
+	// TODO fix this
+	private void addServerCapabilities(Identifier mapServerIdentifier) {
+		try {
+			GraphElement graphElement =
+					mGraph.getGraphElement(mapServerIdentifier, null);
+			String capabilitiesXml = mServerCapabilityMetadataHeadXml;
+			capabilitiesXml += String.format(mServerCapabilityTemplateXml, "ifmap-base-version-2.2");
+			if (mConf.isRootLinkEnabled()) {
+				capabilitiesXml += String.format(mServerCapabilityTemplateXml, "irond-root-link");
+			}
+			capabilitiesXml += mServerCapabilityMetadataTailXml;
+			Document capabilitiesDoc = stringToDocument(capabilitiesXml);
+
+			W3cXmlMetadata capabilitiesMetadata = new W3cXmlMetadata(
+					capabilitiesDoc, new MetadataTypeImpl(IFMAP_2_2_NAMESPACE + ":" + IFMAP_2_2_NAMSPACE_PREFIX,
+							MetaCardinalityType.singleValue),
+					false);
+
+			MetadataHolder capabilityMetadataHolder = mMetaHolderFac.newMetadataHolder(
+					capabilitiesMetadata, mServerCapabilityMetadataLifetime, graphElement, mIrondPublisher);
+			List<MetadataHolder> changes = CollectionHelper.provideListFor(MetadataHolder.class);
+			changes.add(capabilityMetadataHolder);
+			capabilityMetadataHolder.setState(MetadataState.NEW);
+			setReferences(capabilityMetadataHolder);
+		} catch (InvalidMetadataException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Parse the given XML string.
+	 *
+	 * @param xml the XML string to parse
+	 * @return the parsed XML document
+	 * @throws RuntimeException if the parsing fails
+	 */
+	private Document stringToDocument(String xml) {
+		try {
+			return mDocumentBuilder.parse(new InputSource(new StringReader(xml)));
+		} catch (Exception e) {
+			throw new RuntimeException("could not parse '" + xml + "' as XML", e);
+		}
 	}
 	
 	/**
@@ -280,9 +416,9 @@ class PublishService {
 		GraphElement graphElement = mGraph.getGraphElement(i1, i2);
 		MetadataHolder mh = null;
 
-		if (mConf.isRootIdentifierEnabled()) {
-			mRootIdentifierExtension.addLinkToRoot(i1, changes, state);
-			mRootIdentifierExtension.addLinkToRoot(i2, changes, state);
+		if (mConf.isRootLinkEnabled()) {
+			addLinkToRoot(i1, mMapServerIdentifier, changes, state);
+			addLinkToRoot(i2, mMapServerIdentifier, changes, state);
 		}
 
 		for (Metadata m : mlist) {
@@ -370,56 +506,29 @@ class PublishService {
 	}
 
 
-	private class RootIdentifierExtension {
-
-		final String METADATA_NS = "http://trust.f4.hs-hannover.de/ifmap/XMLSchema/1";
-		final String METADATA_NS_PREFIX = "irond";
-
-		final MetadataLifeTime LIFETIME = MetadataLifeTime.forever;
-		final Publisher PUBLISHER = new Publisher("irond", "invalid-session-id-for-irond-publisher", 0);
-
-		Identity mRootIdentifier;
-		DocumentBuilderFactory mDocBuilerFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder;
-
-		String mRootLinkMetadata =
-			"<" + METADATA_NS_PREFIX + ":root-link "
-					+ "xmlns:" + METADATA_NS_PREFIX + "=\"" + METADATA_NS + "\" "
-					+ "ifmap-cardinality=\"singleValue\" />";
-		Document mDoc;
-
-		RootIdentifierExtension(String rootIdentifierName, String rootIdentifierTypeDef) {
+	/**
+	 * Add a root link between 'root' and 'identifier' if the given identifier is
+	 * not null. The new metadata gets appended to the given changes list.
+	 */
+	private void addLinkToRoot(Identifier root, Identifier identifier, List<MetadataHolder> changes,
+			MetadataState state) {
+		if (identifier != null) {
 			try {
-				mRootIdentifier =
-					new Identity(rootIdentifierName, "", rootIdentifierTypeDef, IdentityTypeEnum.other);
-				docBuilder = mDocBuilerFactory.newDocumentBuilder();
-				mDoc = docBuilder.parse(new InputSource(new StringReader(mRootLinkMetadata)));
-			} catch (Exception e) {
+				GraphElement graphElement =
+						mGraph.getGraphElement(identifier, root);
+				W3cXmlMetadata rootLinkMetadata = new W3cXmlMetadata(
+						stringToDocument(mRootLinkMetadataXml),
+						new MetadataTypeImpl(IROND_NAMESPACE + ":" + IROND_NAMESPACE_PREFIX,
+								MetaCardinalityType.singleValue),
+						false);
+
+				MetadataHolder rootLink = mMetaHolderFac.newMetadataHolder(
+						rootLinkMetadata, mRootLinkMetadataLifetime, graphElement, mIrondPublisher);
+				changes.add(rootLink);
+				rootLink.setState(state);
+				setReferences(rootLink);
+			} catch (InvalidMetadataException e) {
 				throw new RuntimeException(e);
-			}
-		}
-
-		/**
-		 * Add a link to the "root identifier" if the given identifier is
-		 * not null. The new metadata gets appended to the given changes list.
-		 */
-		void addLinkToRoot(Identifier identifier, List<MetadataHolder> changes,
-				MetadataState state) {
-			if (identifier != null) {
-				try {
-					GraphElement graphElement =
-							mGraph.getGraphElement(identifier, mRootIdentifier);
-					W3cXmlMetadata rootLinkMetadata = new W3cXmlMetadata(
-							mDoc, new MetadataTypeImpl(METADATA_NS +":" + METADATA_NS_PREFIX, MetaCardinalityType.singleValue), false);
-
-					MetadataHolder rootLink = mMetaHolderFac.newMetadataHolder(
-							rootLinkMetadata, LIFETIME, graphElement, PUBLISHER);
-					changes.add(rootLink);
-					rootLink.setState(state);
-					setReferences(rootLink);
-				} catch (InvalidMetadataException e) {
-					throw new RuntimeException(e);
-				}
 			}
 		}
 	}

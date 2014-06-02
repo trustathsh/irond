@@ -291,19 +291,11 @@ public class StubProvider {
 			}
 
 			@Override
-			public boolean isRootIdentifierEnabled() {
+			public boolean isRootLinkEnabled() {
+				// TODO Auto-generated method stub
 				return false;
 			}
 
-			@Override
-			public String getRootIdentifierName() {
-				return "root-id";
-			}
-
-			@Override
-			public String getRootIdentifierTypeDef() {
-				return "root-id";
-			}
 		};
 	}
 
