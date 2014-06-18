@@ -89,7 +89,7 @@ public class PublishUpdate extends SubPublishRequest {
 	 * @param lt
 	 * @throws RequestCreationException
 	 */
-	PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml,
+	public PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml,
 			MetadataLifeTime lt) throws RequestCreationException {
 		super(ident1, ident2);
 		
@@ -111,7 +111,7 @@ public class PublishUpdate extends SubPublishRequest {
 	 * @param ml
 	 * @throws RequestCreationException
 	 */
-	PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml)
+	public PublishUpdate(Identifier ident1, Identifier ident2, List<Metadata> ml)
 			throws RequestCreationException {
 		this(ident1, ident2, ml, MetadataLifeTime.session);
 	}
@@ -124,7 +124,7 @@ public class PublishUpdate extends SubPublishRequest {
 	 * @param lt
 	 * @throws RequestCreationException
 	 */
-	PublishUpdate(Identifier ident1, List<Metadata> ml, MetadataLifeTime lt)
+	public PublishUpdate(Identifier ident1, List<Metadata> ml, MetadataLifeTime lt)
 			throws RequestCreationException {
 		this(ident1, null, ml, lt);
 	}
@@ -137,7 +137,7 @@ public class PublishUpdate extends SubPublishRequest {
 	 * @param ml
 	 * @throws RequestCreationException
 	 */
-	PublishUpdate(Identifier ident1, List<Metadata> ml) throws RequestCreationException {
+	public PublishUpdate(Identifier ident1, List<Metadata> ml) throws RequestCreationException {
 		this(ident1, ml, MetadataLifeTime.session);
 	}
 	

@@ -85,7 +85,7 @@ public class PublishRequest extends RequestWithSessionId {
 	 * @param sessionid
 	 * @throws RequestCreationException
 	 */
-	PublishRequest(String sessionid, List<SubPublishRequest> subpublishrequests)
+	public PublishRequest(String sessionid, List<SubPublishRequest> subpublishrequests)
 												throws RequestCreationException {
 		super(sessionid);
 		

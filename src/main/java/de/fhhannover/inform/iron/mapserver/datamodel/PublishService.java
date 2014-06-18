@@ -46,6 +46,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  */
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -72,6 +73,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.meta.W3cXmlMetadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
+import de.fhhannover.inform.iron.mapserver.exceptions.RequestCreationException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.PublishDelete;
 import de.fhhannover.inform.iron.mapserver.messages.PublishNotify;
@@ -102,6 +104,12 @@ class PublishService {
 	private SubscriptionService mSubService;
 	private MetadataHolderFactory mMetaHolderFac;
 	private DataModelServerConfigurationProvider mConf;
+
+	/**
+	 * Indicates whether all identifier should be linked to the MAP server
+	 * identifier or not.
+	 */
+	private boolean mIsRootLinkEnabled;
 
 	/**
 	 * XML namepspace for IF-MAP version 2.2.
@@ -140,7 +148,7 @@ class PublishService {
 	 */
 	private final String mServerCapabilityMetadataHeadXml =
 			"<" + IFMAP_2_2_NAMSPACE_PREFIX + ":server-capability "
-					+ "xmlns:maps=\"" + IFMAP_2_2_NAMESPACE + "\" "
+					+ "xmlns:" + IFMAP_2_2_NAMSPACE_PREFIX + "=\"" + IFMAP_2_2_NAMESPACE + "\" "
 					+ "ifmap-cardinality=\"singleValue\">";
 
 	/**
@@ -182,8 +190,7 @@ class PublishService {
 			MetadataLifeTime.forever;
 
 
-	private final DocumentBuilderFactory mDocumentBuilderFactory =
-			DocumentBuilderFactory.newInstance();
+	private final DocumentBuilderFactory mDocumentBuilderFactory;
 
 	private final DocumentBuilder mDocumentBuilder;
 
@@ -196,7 +203,12 @@ class PublishService {
 		mMetaHolderFac = metaHolderFac;
 		mSubService	= subServ;
 		mConf = conf;
+		mIsRootLinkEnabled = mConf.isRootLinkEnabled();
 
+		mDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+		mDocumentBuilderFactory.setNamespaceAware(true);
+
+		mPublisherRep.addPublisher(mIrondPublisher.getPublisherId(), mIrondPublisher.getSessionId(), 0);
 		try {
 			mMapServerIdentifier = new Identity(mMapServerIdentifierName, "", "extended", IdentityTypeEnum.other);
 		} catch (InvalidIdentifierException e) {
@@ -207,35 +219,50 @@ class PublishService {
 		} catch (ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}
-		//addServerCapabilities(mMapServerIdentifier);
+
+		addServerCapabilities(mMapServerIdentifier);
 	}
 
-	// TODO fix this
 	private void addServerCapabilities(Identifier mapServerIdentifier) {
 		try {
-			GraphElement graphElement =
-					mGraph.getGraphElement(mapServerIdentifier, null);
+			// create server-capability metadata XML string
 			String capabilitiesXml = mServerCapabilityMetadataHeadXml;
 			capabilitiesXml += String.format(mServerCapabilityTemplateXml, "ifmap-base-version-2.2");
 			if (mConf.isRootLinkEnabled()) {
 				capabilitiesXml += String.format(mServerCapabilityTemplateXml, "irond-root-link");
 			}
 			capabilitiesXml += mServerCapabilityMetadataTailXml;
-			Document capabilitiesDoc = stringToDocument(capabilitiesXml);
 
+			Document capabilitiesDoc = stringToDocument(capabilitiesXml);
 			W3cXmlMetadata capabilitiesMetadata = new W3cXmlMetadata(
 					capabilitiesDoc, new MetadataTypeImpl(IFMAP_2_2_NAMESPACE + ":" + IFMAP_2_2_NAMSPACE_PREFIX,
 							MetaCardinalityType.singleValue),
 					false);
 
-			MetadataHolder capabilityMetadataHolder = mMetaHolderFac.newMetadataHolder(
-					capabilitiesMetadata, mServerCapabilityMetadataLifetime, graphElement, mIrondPublisher);
-			List<MetadataHolder> changes = CollectionHelper.provideListFor(MetadataHolder.class);
-			changes.add(capabilityMetadataHolder);
-			capabilityMetadataHolder.setState(MetadataState.NEW);
-			setReferences(capabilityMetadataHolder);
+			List<Metadata> metadata = new ArrayList<Metadata>();
+			metadata.add(capabilitiesMetadata);
+			PublishUpdate update = new PublishUpdate(mapServerIdentifier, metadata, mServerCapabilityMetadataLifetime);
+			List<SubPublishRequest> publishRequests = new ArrayList<SubPublishRequest>();
+			publishRequests.add(update);
+
+			PublishRequest publishRequest = new PublishRequest(mIrondPublisher.getSessionId(), publishRequests);
+
+			/* Check if the root-link feature is enabled and disable it for the
+			 * following operation to prevent the creation of root-links to
+			 * the MAP server identifier.
+			 * TODO check if this may cause problems/race conditions while initializing irond
+			 */
+			if (mIsRootLinkEnabled) {
+				mIsRootLinkEnabled = false;
+				publish(publishRequest);
+				mIsRootLinkEnabled = true;
+			} else {
+				publish(publishRequest);
+			}
 		} catch (InvalidMetadataException e) {
 			throw new RuntimeException(e);
+		} catch (RequestCreationException e) {
+			throw new RuntimeException("could not create fake request for server-capability metadata", e);
 		}
 	}
 
@@ -416,7 +443,7 @@ class PublishService {
 		GraphElement graphElement = mGraph.getGraphElement(i1, i2);
 		MetadataHolder mh = null;
 
-		if (mConf.isRootLinkEnabled()) {
+		if (mIsRootLinkEnabled) {
 			addLinkToRoot(i1, mMapServerIdentifier, changes, state);
 			addLinkToRoot(i2, mMapServerIdentifier, changes, state);
 		}
