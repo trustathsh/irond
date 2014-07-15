@@ -69,7 +69,9 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
  
 	public static final String PUBLISHERID = "ifmap-publisher-id";
 	public static final String TIMESTAMP = "ifmap-timestamp";
-	 
+
+	public static final String TIMESTAMP_FRACTION = "ifmap-timestamp-fraction";
+
 	/**
 	 * a static logger
 	 */

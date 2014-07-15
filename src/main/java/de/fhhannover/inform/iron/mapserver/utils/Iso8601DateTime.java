@@ -53,17 +53,32 @@ import java.util.Date;
  */
 public class Iso8601DateTime {
 
+	private static final SimpleDateFormat xsdDateTimeFormatter =
+			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	private static final SimpleDateFormat xsdDateTimeTimezoneFormatter =
+			new SimpleDateFormat("Z");
+	private static final SimpleDateFormat millisecondsFormatter =
+			new SimpleDateFormat("S");
+
 	/**
 	 * Thanks Ingo!
 	 * @param dt
 	 * @return
 	 */
-	public static String formatDate(Date dt){
-		//FIXME hack in order to get good timestamps for xsd:dateTime
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	SimpleDateFormat tzFormatter = new SimpleDateFormat("Z");
-	String timezone = tzFormatter.format(dt);
-	return formatter.format(dt) + timezone.substring(0, 3) + ":"
-		+ timezone.substring(3);
+	public static String formatDate(Date dt) {
+		// FIXME hack in order to get good timestamps for xsd:dateTime
+		String timezone = xsdDateTimeTimezoneFormatter.format(dt);
+		return xsdDateTimeFormatter.format(dt) + timezone.substring(0, 3) + ":"
+				+ timezone.substring(3);
+	}
+
+	/**
+	 * Return the milliseconds fraction of the given {@link Date}.
+	 *
+	 * @param dt the {@link Date} from with to extract the milliseconds
+	 * @return a string containing the milliseconds, e.g. '123' for 0.123 seconds
+	 */
+	public static String formatMilliseconds(Date dt) {
+		return millisecondsFormatter.format(dt);
 	}
 }
