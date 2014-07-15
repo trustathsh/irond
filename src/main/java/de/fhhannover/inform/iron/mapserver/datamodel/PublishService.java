@@ -47,6 +47,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -310,18 +311,18 @@ class PublishService {
 			else
 				throw new SystemErrorException("Unknown SubPublishRequest implementation");
 		}
-		
-		
-		// set timestamp and publisher id _now_ and set references to 
+
+
+		// set timestamp and publisher id _now_ and set references to
 		// GraphElements and Publishers...
-		String timeNow = Iso8601DateTime.getTimeNow();
+		Date now = new Date();
 		for (MetadataHolder mh : changes) {
 			Metadata m = mh.getMetadata();
-			
+
 			if (mh.isNew() || mh.isNotify())
-				addOperationalAttributes(m, timeNow, mh.getPublisher().getPublisherId());
+				addOperationalAttributes(m, now, mh.getPublisher().getPublisherId());
 		}
-	
+
 		// FIXME!!
 		//mdentifierRep.setTimestamp(System.currentTimeMillis());
 		mSubService.commitChanges(changes);
@@ -408,8 +409,8 @@ class PublishService {
 			}
 		}
 	}
-	
-	private void addOperationalAttributes(Metadata m, String timeNow, String pId) {
+
+	private void addOperationalAttributes(Metadata m, Date timeNow, String pId) {
 		m.setTimestamp(timeNow);
 		m.setPublisherId(pId);
 	}

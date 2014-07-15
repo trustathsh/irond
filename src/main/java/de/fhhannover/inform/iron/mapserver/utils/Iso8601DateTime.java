@@ -52,14 +52,13 @@ import java.util.Date;
  * @since 0.3.0
  */
 public class Iso8601DateTime {
-	
+
 	/**
 	 * Thanks Ingo!
 	 * @param dt
 	 * @return
 	 */
-	public static String getTimeNow(){
-		Date dt = new Date();
+	public static String formatDate(Date dt){
 		//FIXME hack in order to get good timestamps for xsd:dateTime
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	SimpleDateFormat tzFormatter = new SimpleDateFormat("Z");

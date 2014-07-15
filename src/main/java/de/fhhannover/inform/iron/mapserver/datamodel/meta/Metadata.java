@@ -45,6 +45,8 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * #L%
  */
 
+import java.util.Date;
+
 import de.fhhannover.inform.iron.mapserver.datamodel.SimpleSearchAbleImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
@@ -145,17 +147,17 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	 * 
 	 * @param ts
 	 */
-	public final void setTimestamp(String ts) {
+	public final void setTimestamp(Date ts) {
 		if (mTimeStampSet)
 			throw new SystemErrorException("ifmap-timestamp was already set");
 		
 		NullCheck.check(ts, "timestamp is null");
-		LengthCheck.checkMin(ts, 1, "ifmap-timestamp");
+		LengthCheck.checkMin(ts.getTime() + "", 1, "ifmap-timestamp");
 		setTimeStampInternal(ts);
 		mTimeStampSet = true;
 	}
-	
-	protected abstract void setTimeStampInternal(String ts);
+
+	protected abstract void setTimeStampInternal(Date ts);
 
 	/**
 	 * Get a reference to the MetaDataType. This can be used to compare

@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -74,6 +75,7 @@ import org.w3c.dom.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.utils.FilterAdaption;
+import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 import de.fhhannover.inform.iron.mapserver.utils.SimpleNamespaceContext;
 
@@ -83,7 +85,7 @@ public class W3cXmlMetadata extends Metadata {
 	private final Element mXmlElement;
 	private String mPrefixElementName;
 	private String mMetadataAsString;
-	private String mTimeStamp;
+	private Date mTimeStamp;
 	private String mPublisherId;
 	
 	private static XPathFactory xpathFactory;
@@ -199,11 +201,11 @@ public class W3cXmlMetadata extends Metadata {
 	public Document toW3cDocument() {
 		return (Document) mXmlDocument.cloneNode(true);
 	}
-	
+
 	@Override
-	public void setTimeStampInternal(String ts) {
+	public void setTimeStampInternal(Date ts) {
 		mTimeStamp = ts;
-		mXmlElement.setAttribute(TIMESTAMP, mTimeStamp);
+		mXmlElement.setAttribute(TIMESTAMP, Iso8601DateTime.formatDate(mTimeStamp));
 		createStrings();
 	}
 
