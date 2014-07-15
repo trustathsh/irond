@@ -78,6 +78,7 @@ import de.fhhannover.inform.iron.mapserver.utils.FilterAdaption;
 import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 import de.fhhannover.inform.iron.mapserver.utils.SimpleNamespaceContext;
+import de.fhhannover.inform.iron.mapserver.utils.TimestampFraction;
 
 public class W3cXmlMetadata extends Metadata {
 
@@ -206,7 +207,7 @@ public class W3cXmlMetadata extends Metadata {
 	public void setTimeStampInternal(Date ts) {
 		mTimeStamp = ts;
 		mXmlElement.setAttribute(TIMESTAMP, Iso8601DateTime.formatDate(mTimeStamp));
-		mXmlElement.setAttribute(TIMESTAMP_FRACTION, Iso8601DateTime.formatMilliseconds(mTimeStamp));
+		mXmlElement.setAttribute(TIMESTAMP_FRACTION, TimestampFraction.getMilliseconds(mTimeStamp) + "");
 		createStrings();
 	}
 

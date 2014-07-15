@@ -57,8 +57,6 @@ public class Iso8601DateTime {
 			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	private static final SimpleDateFormat xsdDateTimeTimezoneFormatter =
 			new SimpleDateFormat("Z");
-	private static final SimpleDateFormat millisecondsFormatter =
-			new SimpleDateFormat("S");
 
 	/**
 	 * Thanks Ingo!
@@ -70,15 +68,5 @@ public class Iso8601DateTime {
 		String timezone = xsdDateTimeTimezoneFormatter.format(dt);
 		return xsdDateTimeFormatter.format(dt) + timezone.substring(0, 3) + ":"
 				+ timezone.substring(3);
-	}
-
-	/**
-	 * Return the milliseconds fraction of the given {@link Date}.
-	 *
-	 * @param dt the {@link Date} from with to extract the milliseconds
-	 * @return a string containing the milliseconds, e.g. '123' for 0.123 seconds
-	 */
-	public static String formatMilliseconds(Date dt) {
-		return millisecondsFormatter.format(dt);
 	}
 }
