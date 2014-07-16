@@ -35,20 +35,20 @@ public class TimestampFractionTest {
 	@Test
 	public void testFormatMilliseconds() {
 		Date d = parseDate("2014-07-15T22:22:22.123+0200");
-		assertEquals(0.123, TimestampFraction.getMilliseconds(d), TOLERANCE);
+		assertEquals(0.123, TimestampFraction.getSecondFraction(d), TOLERANCE);
 	}
 
 	@Test
 	public void testFormatMillisecondsWithZero() {
 		Date d = parseDate("2014-07-15T22:22:22.0+0200");
-		assertEquals(0.0, TimestampFraction.getMilliseconds(d), TOLERANCE);
+		assertEquals(0.0, TimestampFraction.getSecondFraction(d), TOLERANCE);
 	}
 
 	@Test
 	public void testFormatMillisecondsNoMilliseconds() {
 		try {
 			Date d = formatterNoMilliseconds.parse("2014-07-15T22:22:22+0200");
-			assertEquals(0.0, TimestampFraction.getMilliseconds(d), TOLERANCE);
+			assertEquals(0.0, TimestampFraction.getSecondFraction(d), TOLERANCE);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}

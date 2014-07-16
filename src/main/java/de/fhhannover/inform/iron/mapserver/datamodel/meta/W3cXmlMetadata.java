@@ -207,7 +207,7 @@ public class W3cXmlMetadata extends Metadata {
 	public void setTimeStampInternal(Date ts) {
 		mTimeStamp = ts;
 		mXmlElement.setAttribute(TIMESTAMP, Iso8601DateTime.formatDate(mTimeStamp));
-		mXmlElement.setAttribute(TIMESTAMP_FRACTION, TimestampFraction.getMilliseconds(mTimeStamp) + "");
+		mXmlElement.setAttribute(TIMESTAMP_FRACTION, TimestampFraction.getSecondFraction(mTimeStamp) + "");
 		createStrings();
 	}
 
