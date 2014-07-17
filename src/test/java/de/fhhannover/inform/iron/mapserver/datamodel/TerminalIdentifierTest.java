@@ -64,7 +64,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.TerminalIdentifiers;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 
 public class TerminalIdentifierTest extends TestCase {
-	String ar, ip, id, dev, mac, binky;
+	String ar, ip, id, dev, mac, id_user, id_dns, id_other, id_extended;
 	
 	@Before
 	public void setUp() {
@@ -74,7 +74,10 @@ public class TerminalIdentifierTest extends TestCase {
 		id = "identity";
 		dev = "device";
 		mac = "mac-address";
-		binky = "identity:other:1231ss";
+		id_user = "identity:username";
+		id_other = "identity:other:ifmaproxx";
+		id_dns = "identity:dns-name";
+		id_extended = "http://www.example.com/extended-identifiers#network2";
 	}
 	
 	@Test
@@ -86,12 +89,11 @@ public class TerminalIdentifierTest extends TestCase {
 			assertFalse(ti.contains(mac));
 			assertFalse(ti.contains(dev));
 			assertFalse(ti.contains(ar));
-			assertFalse(ti.contains(id));
+			assertFalse(ti.contains(id_user));
+			assertFalse(ti.contains(id_other));
+			assertFalse(ti.contains(id_dns));
+			assertFalse(ti.contains(id_extended));
 			
-			ti = new TerminalIdentifiers(binky);
-			assertTrue(ti.contains(binky));
-			
-
 			ti = new TerminalIdentifiers("");
 			assertFalse(ti.contains(ip));
 			assertFalse(ti.contains(mac));
@@ -144,6 +146,43 @@ public class TerminalIdentifierTest extends TestCase {
 			assertTrue(ti.contains(dev));
 			assertTrue(ti.contains(ar));
 			assertTrue(ti.contains(id));
+			
+			
+			ti = new TerminalIdentifiers("identity:username");
+			assertFalse(ti.contains(ip));
+			assertFalse(ti.contains(mac));
+			assertFalse(ti.contains(dev));
+			assertFalse(ti.contains(ar));
+			assertTrue(ti.contains(id_user));
+			
+			ti = new TerminalIdentifiers("identity:username");
+			assertFalse(ti.contains(ip));
+			assertFalse(ti.contains(mac));
+			assertFalse(ti.contains(dev));
+			assertFalse(ti.contains(ar));
+			assertTrue(ti.contains(id_user));
+			
+			ti = new TerminalIdentifiers("identity:dns-name");
+			assertFalse(ti.contains(ip));
+			assertFalse(ti.contains(mac));
+			assertFalse(ti.contains(dev));
+			assertFalse(ti.contains(ar));
+			assertTrue(ti.contains(id_dns));
+			
+			ti = new TerminalIdentifiers("identity:other:ifmaproxx");
+			assertFalse(ti.contains(ip));
+			assertFalse(ti.contains(mac));
+			assertFalse(ti.contains(dev));
+			assertFalse(ti.contains(ar));
+			assertTrue(ti.contains(id_other));
+			
+			ti = new TerminalIdentifiers("http://www.example.com/extended-identifiers#network2");
+			assertFalse(ti.contains(ip));
+			assertFalse(ti.contains(mac));
+			assertFalse(ti.contains(dev));
+			assertFalse(ti.contains(ar));
+			assertTrue(ti.contains(id_extended));
+			
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 			fail();
@@ -154,12 +193,15 @@ public class TerminalIdentifierTest extends TestCase {
 	public void testUnknownTerminalIdentifier() {
 		try {
 			new TerminalIdentifiers("ipx-address");
+			new TerminalIdentifiers("htt://www.example.com/extended-identifiers#network2");
+			new TerminalIdentifiers("identity:bonkers");
 			fail();
 		} catch (InvalidIdentifierException e) {
 			// all good
 		}
 	}
 	
+//	@Ignore
 //	@Test
 //	public void testTooManyTerminalIdentifiers() {
 //		try {
