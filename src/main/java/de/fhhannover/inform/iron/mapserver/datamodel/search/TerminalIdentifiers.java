@@ -46,6 +46,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  */
 
 import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.apache.log4j.lf5.viewer.configure.MRUFileManager;
 
 import de.fhhannover.inform.iron.mapserver.IfmapConstStrings;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
@@ -65,9 +68,9 @@ import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 public class TerminalIdentifiers {
 	
 	@SuppressWarnings("rawtypes")
-	private final Set<Class> mIdentifierClasses;
-	
-	private final String mToSTringString;
+//	private final Set<Class> mIdentifierClasses;
+	private final Set<String> mTerminalIdentifiers;
+	private final String mRawString;
 	
 	/**
 	 * @param terminalIdentStr the string of the search or subscribe update request
@@ -75,21 +78,29 @@ public class TerminalIdentifiers {
 	 */
 	public TerminalIdentifiers(String terminalIdentStr) throws InvalidIdentifierException {
 		
-		mIdentifierClasses = CollectionHelper.provideSetFor(Class.class);
+//		mIdentifierClasses = CollectionHelper.provideSetFor(Class.class);
+		mTerminalIdentifiers = CollectionHelper.provideSetFor(String.class);
 		
 		if (terminalIdentStr == null || terminalIdentStr.length() == 0) {
-			mToSTringString = "term{}";
+			mRawString = null;
 			return;
 		}
 		
 		
 		validatedFill(terminalIdentStr);
 		
-		mToSTringString = "term{" + terminalIdentStr + "}";
+		mRawString = terminalIdentStr;
 	}
 	
-	public boolean contains(Identifier i) {
-		return mIdentifierClasses.contains(i.getClass());
+//	public boolean contains(Identifier i) {
+//		return mIdentifierClasses.contains(i.getClass());
+//	}
+	public boolean contains(String terminalIdentifier) {
+		return mTerminalIdentifiers.contains(terminalIdentifier);
+	}
+	
+	public String getRawString() {
+		return mRawString;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -104,39 +115,29 @@ public class TerminalIdentifiers {
 			throw new InvalidIdentifierException("Bad terminal-identifiers: "
 					+ terminalIdentStr);
 		
-		if (splitted.length > IfmapConstStrings.IDENTIFIERS.length)
-			throw new InvalidIdentifierException("Bad terminal-identifiers: "
-					+ "Too many terminal-identifiers specified: "
-					+ terminalIdentStr);
-			
-	
-		outer: for (String str : splitted) {
+		for (String str : splitted) {
 			
 			if (str.length() == 0)
 				throw new InvalidIdentifierException("Bad terminal-identifiers: "
 						+ "<,,> specified? : "+ terminalIdentStr);
 			
-			
-			for (int i = 0; i < IfmapConstStrings.IDENTIFIERS.length; i++) {
-				String iStr = IfmapConstStrings.IDENTIFIERS[i];
-				Class iClass = IfmapConstStrings.IDENTIFIER_CLASSES[i];
-				if (str.equals(iStr)) {
-					if (mIdentifierClasses.contains(iClass))
-						throw new InvalidIdentifierException("Bad terminal-identifiers: "
-						+ "Twice the same identifier? : " + terminalIdentStr);
-					
-					mIdentifierClasses.add(IfmapConstStrings.IDENTIFIER_CLASSES[i]);
-					continue outer;
+			//Check identifier types as well as patterns for other and extended types (Ifmap 2.2)
+			if(!IfmapConstStrings.IDENTIFIERS.contains(str)) {
+				Pattern p = Pattern.compile(IfmapConstStrings.REGEX_ID_EXT);
+				Pattern q = Pattern.compile(IfmapConstStrings.REGEX_ID_OTHER_NAME);
+				Pattern r = Pattern.compile(IfmapConstStrings.REGEX_ID_OTHER_VENDOR);
+				if(!p.matcher(str).matches()  && !q.matcher(str).matches() && !r.matcher(str).matches()) {
+					throw new InvalidIdentifierException("Bad terminal-identifiers: "
+							+ " unknown identifier: " + str);
 				}
 			}
+			mTerminalIdentifiers.add(str);
 			
-			throw new InvalidIdentifierException("Bad terminal-identifiers: "
-					+ " unknown identifier: " + str);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return mToSTringString;
+		return "term{"+mRawString+"}";
 	}
 }

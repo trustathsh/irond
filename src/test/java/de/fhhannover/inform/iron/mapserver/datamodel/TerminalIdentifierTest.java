@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 import junit.framework.TestCase;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.AccessRequest;
@@ -63,21 +64,17 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.TerminalIdentifiers;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 
 public class TerminalIdentifierTest extends TestCase {
-	Identifier ar, ip, id, dev, mac;
+	String ar, ip, id, dev, mac, binky;
 	
 	@Before
 	public void setUp() {
 		DataModelService.setServerConfiguration(DummyDataModelConf.getDummyConf());
-			try {
-				ip = new IpAddress("192.168.0.1", IpAddressTypeEnum.IPv4);
-				mac = new MacAddress("aa:bb:cc:dd:ee:ff");
-				dev = new Device("abc", DeviceTypeEnum.name);
-				id = new Identity("test", IdentityTypeEnum.userName);
-				ar = new AccessRequest("AR100");
-			} catch (InvalidIdentifierException e) {
-				fail();
-				e.printStackTrace();
-			}
+		ar = "access-request";
+		ip = "ip-address";
+		id = "identity";
+		dev = "device";
+		mac = "mac-address";
+		binky = "identity:other:1231ss";
 	}
 	
 	@Test
@@ -90,6 +87,10 @@ public class TerminalIdentifierTest extends TestCase {
 			assertFalse(ti.contains(dev));
 			assertFalse(ti.contains(ar));
 			assertFalse(ti.contains(id));
+			
+			ti = new TerminalIdentifiers(binky);
+			assertTrue(ti.contains(binky));
+			
 
 			ti = new TerminalIdentifiers("");
 			assertFalse(ti.contains(ip));
@@ -159,33 +160,34 @@ public class TerminalIdentifierTest extends TestCase {
 		}
 	}
 	
-	@Test
-	public void testTooManyTerminalIdentifiers() {
-		try {
-			new TerminalIdentifiers("ip-address" +
-									",mac-address" +
-									",access-request" +
-									",device" +
-									",identity" +
-									",identity");
-			fail();
-		} catch (InvalidIdentifierException e) {
-			// all good
-		}
-	}
+//	@Test
+//	public void testTooManyTerminalIdentifiers() {
+//		try {
+//			new TerminalIdentifiers("ip-address" +
+//									",mac-address" +
+//									",access-request" +
+//									",device" +
+//									",identity" +
+//									",identity");
+//			fail();
+//		} catch (InvalidIdentifierException e) {
+//			// all good
+//		}
+//	}
 	
-	@Test
-	public void testTerminalIdentifierTwice() {
-		try {
-			new TerminalIdentifiers("ip-address" +
-									",mac-address" +
-									",identity" +
-									",identity");
-			fail();
-		} catch (InvalidIdentifierException e) {
-			// all good
-		}
-	}
+//	@Ignore 
+//	@Test
+//	public void testTerminalIdentifierTwice() {
+//		try {
+//			new TerminalIdentifiers("ip-address" +
+//									",mac-address" +
+//									",identity" +
+//									",identity");
+//			fail();
+//		} catch (InvalidIdentifierException e) {
+//			// all good
+//		}
+//	}
 	
 	@Test
 	public void testWeirdTerminalIdentifierString1() {

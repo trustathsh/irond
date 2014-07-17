@@ -54,6 +54,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchHandler;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Searcher;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactory;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
@@ -95,8 +96,9 @@ class SearchService {
 	 * @param req
 	 * @return
 	 * @throws SearchResultsTooBigException 
+	 * @throws SearchException 
 	 */
-	SearchResult search(SearchRequest req) throws SearchResultsTooBigException {
+	SearchResult search(SearchRequest req) throws SearchResultsTooBigException, SearchException {
 	
 		Publisher p = mPublisherRep.getPublisherBySessionId(req.getSessionId());
 		

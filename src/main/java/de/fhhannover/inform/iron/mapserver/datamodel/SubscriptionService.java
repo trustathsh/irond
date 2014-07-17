@@ -76,6 +76,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.AlreadyObservedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchSubscriptionException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PollResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
@@ -137,9 +138,10 @@ public class SubscriptionService {
 	 * a delete.
 	 * 
 	 * @param subscriptionReq
+	 * @throws SearchException 
 	 * @throws NoSuchSubscribeException
 	 */
-	void subscribe(SubscribeRequest subReq) throws NoSuchSubscriptionException {
+	void subscribe(SubscribeRequest subReq) throws NoSuchSubscriptionException, SearchException {
 		NullCheck.check(subReq, "subReq is null");
 		
 		Publisher pub = publisherRep.getPublisherBySessionId(subReq.getSessionId());
@@ -197,8 +199,9 @@ public class SubscriptionService {
 	 * 
 	 * @param pub
 	 * @param ssr
+	 * @throws SearchException 
 	 */
-	private void processSubscribeUpdate(Publisher pub, SubscribeUpdate ssr) {
+	private void processSubscribeUpdate(Publisher pub, SubscribeUpdate ssr) throws SearchException {
 
 		NullCheck.check(pub, "pub is null");
 		NullCheck.check(ssr, "ssr is null");
@@ -253,8 +256,9 @@ public class SubscriptionService {
 	 * {@link SearchResultType#SEARCH} into the {@link PollResult}.
 	 * 
 	 * @param sub
+	 * @throws SearchException 
 	 */
-	private ModifiableSearchResult runInitialSearch(Subscription sub) throws SearchResultsTooBigException {
+	private ModifiableSearchResult runInitialSearch(Subscription sub) throws SearchResultsTooBigException, SearchException {
 		
 		Set<GraphElement> visitedGraphElement = CollectionHelper.provideSetFor(GraphElement.class);
 		Set<MetadataHolder> newMeta = CollectionHelper.provideSetFor(MetadataHolder.class);
@@ -382,11 +386,17 @@ public class SubscriptionService {
 					": SearchResultsTooBig while updating Subscriptions");
 			throw new SystemErrorException(
 					"SearchResultsTooBig while updating Subscriptions");
+		} catch (SearchException e) {
+			// This should never happen
+			sLogger.error(sName + 
+					": SearchException while updating Subscriptions");
+			throw new SystemErrorException(
+					"SearchException while updating Subscriptions");
 		}
 	}
 
 	private void doCleanupSearchers(Subscription sub, SubscriptionChangeState subcs)
-			throws SearchResultsTooBigException {
+			throws SearchResultsTooBigException, SearchException {
 	
 		for (Node starter : subcs.mDeleteStarters) {
 			// might not have to run it anymore
@@ -401,7 +411,7 @@ public class SubscriptionService {
 		}
 	}
 
-	private void doDeleteSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException {
+	private void doDeleteSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException, SearchException {
 		Set<Node> contStarters = CollectionHelper.provideSetFor(Node.class);
 		Set<MetadataHolder> deleted = CollectionHelper.provideSetFor(MetadataHolder.class);
 		SearchHandler handler = null;
@@ -429,7 +439,7 @@ public class SubscriptionService {
 		subcs.mContinueStarter.addAll(contStarters);
 	}
 
-	private void doContinueSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException {
+	private void doContinueSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException, SearchException {
 		Set<Node> curStarters = CollectionHelper.provideSetFor(Node.class);
 		Set<MetadataHolder> added = CollectionHelper.provideSetFor(MetadataHolder.class);
 		Set<Node> nextStarters = CollectionHelper.provideSetFor(Node.class);

@@ -65,6 +65,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.ParameterException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PollResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
 import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.DumpResult;
@@ -172,7 +173,7 @@ public class DataModelService implements SubscriptionNotifier {
 	}
 
 
-	synchronized public SearchResult search(SearchRequest request) throws SearchResultsTooBigException {
+	synchronized public SearchResult search(SearchRequest request) throws SearchResultsTooBigException, SearchException {
 		checkNull(request);
 		return searchService.search(request);
 	}
@@ -213,7 +214,7 @@ public class DataModelService implements SubscriptionNotifier {
 		return result;
 	}
 	
-	synchronized public void subscribe(SubscribeRequest request) throws NoSuchSubscriptionException {
+	synchronized public void subscribe(SubscribeRequest request) throws NoSuchSubscriptionException, SearchException {
 		checkNull(request);
 		subscriptionService.subscribe(request);
 	}

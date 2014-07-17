@@ -79,6 +79,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.NoPollResultAvailableExcep
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchSubscriptionException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PollResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.StorePublisherIdException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
@@ -542,6 +543,9 @@ public class EventProcessor extends Processor<Event> {
 			deferErrorResult(channelId, clientId, ErrorCode.SearchResultsTooBig,
 					e.getMessage());
 
+		} catch (SearchException e) {
+			deferErrorResult(channelId, clientId, ErrorCode.Failure,
+					e.getMessage());
 		} catch (AbortRequestException e) {
 			// abort
 		}
@@ -571,6 +575,9 @@ public class EventProcessor extends Processor<Event> {
 				// anyway.
 				sLogger.info(sLogger + ": " + clientId + " wrong subscription: "
 						+ e.getMessage());
+			} catch (SearchException e) {
+				deferErrorResult(channelId, clientId, ErrorCode.Failure,
+						e.getMessage());
 			}
 			
 			deferSubscribeReceived(channelId, clientId);

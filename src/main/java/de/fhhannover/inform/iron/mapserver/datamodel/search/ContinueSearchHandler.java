@@ -55,6 +55,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
@@ -73,7 +74,7 @@ class ContinueSearchHandler implements SearchHandler {
 	private final Filter mResultFilter;
 	private int mMaxDepth;
 	private int mCurDepth;
-	private final TerminalIdentifiers mTermIdents;
+	private final TerminalIdentifiers mTermIdentTypes;
 	private final Set<GraphElement> mVisitedGraphElements;
 	private final Set<MetadataHolder> mNewMetadata;
 	private final Set<Node> mStarters;
@@ -93,7 +94,7 @@ class ContinueSearchHandler implements SearchHandler {
 		mMaxDepth = sreq.getMaxDepth();
 		mMatchLinksFilter = sreq.getMatchLinksFilter();
 		mResultFilter = sreq.getResultFilter();
-		mTermIdents = sreq.getTerminalIdentifiers();
+		mTermIdentTypes = sreq.getTerminalIdentifiers();
 		mVisitedGraphElements = visitedGraphElement;
 		mNewMetadata = newMeta;
 		mStarters = starters;
@@ -118,18 +119,18 @@ class ContinueSearchHandler implements SearchHandler {
 	}
 
 	@Override
-	public boolean travelLinksOf(Node cur) {
+	public boolean travelLinksOf(Node cur) throws SearchException {
 		
 		
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			if (mCurDepth >= mMaxDepth)
 				sLogger.trace(mName + ": max-depth reached at " + cur);
 		
-			if (mTermIdents.contains(cur.getIdentifier()))
+			if (!TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes))
 				sLogger.trace(mName + ": terminal identifier at " + cur);
 		}
 		
-		return mCurDepth < mMaxDepth && !mTermIdents.contains(cur.getIdentifier());
+		return mCurDepth < mMaxDepth &&  !TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes);
 	}
 
 	@Override

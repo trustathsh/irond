@@ -75,6 +75,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.exceptions.RequestCreationException;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.PublishDelete;
 import de.fhhannover.inform.iron.mapserver.messages.PublishNotify;
@@ -288,6 +289,7 @@ class PublishService {
 	 *
 	 * @param req
 	 * @throws InvalidMetadataException 
+	 * @throws SearchException 
 	 */
 	void publish(PublishRequest req) throws InvalidMetadataException {
 		List<SubPublishRequest> list = req.getSubPublishRequestList();

@@ -50,13 +50,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
+import de.fhhannover.inform.iron.mapserver.IfmapConstStrings;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
+import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
@@ -141,8 +146,8 @@ class BasicSearchHandler implements SearchHandler {
 	}
 
 	@Override
-	public boolean travelLinksOf(Node cur) {
-		return mCurDepth < mMaxDepth && !mTermIdentTypes.contains(cur.getIdentifier());
+	public boolean travelLinksOf(Node cur) throws SearchException {
+		return mCurDepth < mMaxDepth && !TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes);
 	}
 
 	@Override
@@ -286,4 +291,5 @@ class BasicSearchHandler implements SearchHandler {
 	private String sizeString() {
 		return mIgnoreSize ? "unlimited" : mMaxResultSize + "";
 	}
+	
 }

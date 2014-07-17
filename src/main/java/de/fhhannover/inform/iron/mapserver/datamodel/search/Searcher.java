@@ -45,6 +45,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 
 /**
@@ -55,5 +56,5 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigExcepti
  */
 public interface Searcher {
 	
-	public void runSearch() throws SearchResultsTooBigException;
+	public void runSearch() throws SearchResultsTooBigException, SearchException;
 }

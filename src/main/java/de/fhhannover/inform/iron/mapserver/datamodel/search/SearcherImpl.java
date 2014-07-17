@@ -52,6 +52,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
@@ -84,7 +85,7 @@ class SearcherImpl implements Searcher {
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Searcher#runSearch(boolean)
 	 */
 	@Override
-	public void runSearch() throws SearchResultsTooBigException {
+	public void runSearch() throws SearchResultsTooBigException, SearchException {
 		Set<Node> nodes = CollectionHelper.provideSetFor(Node.class);
 
 		mHandler.onStart();
@@ -128,8 +129,9 @@ class SearcherImpl implements Searcher {
 	 * @param depth
 	 * @param prev
 	 * @throws SearchResultsTooBigException 
+	 * @throws SearchException If something was wrong with search request
 	 */
-	private Set<Node> traverse(Node cur) throws SearchResultsTooBigException {
+	private Set<Node> traverse(Node cur) throws SearchResultsTooBigException, SearchException {
 		NullCheck.check(cur, "search went wrong");
 		Set<Node> ret = CollectionHelper.provideSetFor(Node.class);
 		
@@ -159,8 +161,9 @@ class SearcherImpl implements Searcher {
 	/**
 	 * @return {@link Set} of {@link Node} instances for the next depth.
 	 * @throws SearchResultsTooBigException 
+	 * @throws SearchException If something was wrong with the search request
 	 */
-	private Set<Node> traverseDepth(Set<Node> nextNodes) throws SearchResultsTooBigException {
+	private Set<Node> traverseDepth(Set<Node> nextNodes) throws SearchResultsTooBigException, SearchException {
 		Set<Node> ret = CollectionHelper.provideSetFor(Node.class);
 		mHandler.nextDepth();
 		

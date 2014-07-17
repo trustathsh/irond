@@ -45,9 +45,12 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
+import org.xml.sax.SAXException;
+
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 
 /**
@@ -84,8 +87,9 @@ public interface SearchHandler {
 	 * 
 	 * @param cur
 	 * @return
+	 * @throws SearchException If somehting was wrong with the search request
 	 */
-	public boolean travelLinksOf(Node cur);
+	public boolean travelLinksOf(Node cur) throws SearchException;
 
 	/**
 	 * Called for each {@link Link} object of a {@link Node} object to indicate
