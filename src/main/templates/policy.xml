@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/access_control-xacml-2.0-policy-schema-os.xsd"
+  PolicyId="urn:oasis:names:tc:example:IrondPrototypeSamplePolicy"
+  RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:deny-overrides">
+
+  <Description>
+    irond prototype content authorization testing policy.
+  </Description>
+
+  <Target/>
+
+  <Rule Effect="Permit"
+        RuleId="http://www.trustedcomputinggroup.org/2011/IFMAP/3/SamplePolicy1/dhcpServerRule">
+    <Description>
+      The MAP client with basic auth username dhcp may read and change ip-mac metadata only.
+    </Description>
+
+    <Target>
+      <Actions/>  <!-- all actions -->
+      <Subjects>
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">dhcp</AttributeValue>
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                                        DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </SubjectMatch>
+        </Subject>
+      </Subjects>
+
+      <Resources>
+        <Resource>
+          <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2:ip-mac</AttributeValue>
+            <ResourceAttributeDesignator AttributeId="urn:tcg:ifmap:resource:metadata-type"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string" />
+          </ResourceMatch>
+        </Resource>
+      </Resources>
+    </Target>
+  </Rule>
+  
+  
+  <Rule Effect="Permit"
+        RuleId="http://www.trustedcomputinggroup.org/2011/IFMAP/3/SamplePolicy1/pdpRule">
+    <Description>
+      The MAP client with basic auth username "pdp" may only use operation update
+      for ar-mac and ar-dev metadata. This is just an example. Probably not really
+      useful.
+    </Description>
+
+    <Target>
+      <Actions>
+        <!-- Only allow "update" in action-id -->
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">update</AttributeValue>
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                       DataType="http://www.w3.org/2001/XMLSchema#string" />
+          </ActionMatch>
+        </Action>
+      </Actions>
+      <Subjects>
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">pdp</AttributeValue>
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                                        DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </SubjectMatch>
+        </Subject>
+      </Subjects>
+
+      <Resources>
+        <!-- the access-request-mac metadata -->
+        <Resource>
+          <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2:access-request-mac</AttributeValue>
+            <ResourceAttributeDesignator AttributeId="urn:tcg:ifmap:resource:metadata-type"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string" />
+          </ResourceMatch>
+        </Resource>
+        
+        <!-- the access-request-device metadata -->
+        <Resource>
+          <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2:access-request-device</AttributeValue>
+            <ResourceAttributeDesignator AttributeId="urn:tcg:ifmap:resource:metadata-type"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string" />
+          </ResourceMatch>
+        </Resource>
+      </Resources>
+    </Target>
+  </Rule>
+  
+  <Rule Effect="Permit"
+        RuleId="http://www.trustedcomputinggroup.org/2011/IFMAP/3/SamplePolicy1/dhcpServerRule">
+    <Description>
+      The MAP client with basic auth username test may do anything. test FTW!
+    </Description>
+
+    <Target>
+      <!-- all actions -->
+      <Actions/>
+      <Subjects>
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <!-- Whitespaces are important! -->
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">test</AttributeValue>
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                                        DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </SubjectMatch>
+        </Subject>
+      <!-- all subjects -->
+      </Subjects>
+      <!-- all resources -->
+      <Resources/>
+    </Target>
+  </Rule>
+</Policy>
