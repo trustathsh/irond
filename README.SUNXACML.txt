@@ -2,7 +2,7 @@ To build the current version of irond, the latest snapshot of sunxacml-2.0 is
 needed. You can get this file from [1]. To have maven add this file to its
 repository, execute the following command:
 
-  mvn install:install-file -Dfilepath/to/sunxacml-2.0-M2-SNAPSHOT.jar \
+  mvn install:install-file -Dfile=/path/to/sunxacml-2.0-M2-SNAPSHOT.jar \
 			   -DgroupId=sunxacml \
 			   -DartifactId=sunxacml \
 			   -Dversion=2.0-M2 \
