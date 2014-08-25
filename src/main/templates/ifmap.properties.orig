@@ -129,7 +129,7 @@ irond.pdp.metadata.attr=
 irond.pdp.rawlog=false
 
 # The file used to map clients and their roles. The format of this file is:
-<basic_auth_user|cert_fingerprint>=role[,role]
+# <basic_auth_user|cert_fingerprint>=role[,role]
 irond.rolemapper.params=roles.properties
 
 # irond works with two queues. The number of forwarder and worker
