@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -350,11 +350,20 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	}
 		
 	/**
-	 * An extended identifier is not allowed to have an empty or missing
-	 * administrative-domain attribute *in* the encoded XML. On the other
-	 * hand, the encapsulating identity identifier is not allowed to have
+	 * An extended identifier is not allowed to have NO
+	 * administrative-domain attribute *in* the encoded XML, but it is allowed
+	 * to submit an empty string.
+	 * <p><blockquote><pre>
+	 * "If the administrative-domain is not used, it MUST be set to an empty string in an
+	 * extended identifier instance." [1, page 20]
+	 * </pre></blockquote></p>
+	 * On the other hand, the encapsulating identity identifier is not allowed to have
 	 * an administrative-domain set.
-	 * 
+	 *
+	 * <p>
+	 * [1] TNC IF-MAP Binding for SOAP, Specification Version 2.1, Revision 15, 7 May 2012.
+	 * </p>
+	 *
 	 * @throws InvalidIdentifierException
 	 */
 	private void checkExtendedIdentifierAdminDomain() throws InvalidIdentifierException {
@@ -382,11 +391,6 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		if (admAttr == null)
 			throw new InvalidIdentifierException("No administrative-domain " +
 												 "for extended identifier.");
-		
-		if (!(admAttr.getValue().length() > 0))
-			throw new InvalidIdentifierException("Empty administrative-domain " +
-												 "for extended identifier.");
-		
 		// all good, hopefully.
 	}
 

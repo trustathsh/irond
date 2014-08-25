@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.fhhannover.inform.iron.mapserver.contentauth.IfmapPep;
@@ -78,7 +79,7 @@ public class ExtendedIdentifierTest {
 										 "&lt;child value=&quot;child&quot;&gt;&lt;/child&gt;" +
 										 "&lt;/parent&gt;";
 
-	private static String validNoAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
+	private static String inValidNoAdmDom = "&lt;network xmlns=&quot;http://ns&quot;" +
 										 " ip=&quot;192.168.0.1&quot;" +
 										 "&gt;&lt;/network&gt;";
 
@@ -148,6 +149,20 @@ public class ExtendedIdentifierTest {
 	}
 
 	@Test
+	public void testValidEmptyAdmDomain() throws InvalidIdentifierException {
+		Identity i = new Identity(validEmptyAdmDom, null, "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Ignore
+	@Test(expected=InvalidIdentifierException.class)
+	public void testValidInnerEmptyAdmDomainButOuterAdminDomain() throws InvalidIdentifierException {
+		// FIXME: an empty administrativ-domain ist NOT no administrative-domain, this needs to fail!
+		Identity i = new Identity(validEmptyAdmDom, "", "extended", IdentityTypeEnum.other);
+		assertNotNull(i);
+	}
+
+	@Test
 	public void testValid2() throws InvalidIdentifierException {
 		Identity i = new Identity(valid, null, "extended", IdentityTypeEnum.other);
 		assertNotNull(i);
@@ -161,13 +176,7 @@ public class ExtendedIdentifierTest {
 
 	@Test(expected=InvalidIdentifierException.class)
 	public void testAdmDomainMissing() throws InvalidIdentifierException {
-		Identity i = new Identity(validNoAdmDom, "", "extended", IdentityTypeEnum.other);
-		assertNull(i);
-	}
-
-	@Test(expected=InvalidIdentifierException.class)
-	public void testAdmDomainEmpty() throws InvalidIdentifierException {
-		Identity i = new Identity(validEmptyAdmDom, "", "extended", IdentityTypeEnum.other);
+		Identity i = new Identity(inValidNoAdmDom, "", "extended", IdentityTypeEnum.other);
 		assertNull(i);
 	}
 

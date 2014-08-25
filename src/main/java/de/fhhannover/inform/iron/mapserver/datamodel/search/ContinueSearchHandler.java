@@ -9,34 +9,34 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ *
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,6 +58,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
@@ -73,7 +74,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 	private final Set<MetadataHolder> mNewMetadata;
 	private final Set<Node> mStarters;
 	private final String mName;
-	
+
 	ContinueSearchHandler(
 			Identifier start,
 			int depth,
@@ -84,7 +85,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 			Publisher pub,
 			IfmapPep pep) {
 		super(sub.getSearchRequest(), start, visitedElements, depth, pub, pep);
-		
+
 		NullCheck.check(newMeta, "newMeta is null");
 		NullCheck.check(starters, "nextContPoints is null");
 		mSubscription = sub;
@@ -107,18 +108,17 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 	}
 
 	@Override
-	public boolean travelLinksOf(Node cur) {
-		
+	public boolean travelLinksOf(Node cur) throws SearchException {
+
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			if (getCurrentDepth() >= getMaxDepth())
 				sLogger.trace(mName + ": max-depth reached at " + cur);
-		
-			if (getTerminalIdentifiers().contains(cur.getIdentifier()))
+
+			if (!TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes))
 				sLogger.trace(mName + ": terminal identifier at " + cur);
 		}
-		
-		return getCurrentDepth()< getMaxDepth()
-				&& !getTerminalIdentifiers().contains(cur.getIdentifier());
+
+		return mCurDepth < mMaxDepth &&  !TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes);
 	}
 
 	@Override
@@ -127,19 +127,19 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		SubscriptionEntry remEntry = l.getRemovedSubscriptionEntry(mSubscription);
 		List<MetadataHolder> newMatching;
 		List<MetadataHolder> nextMatching;
-		
-	
+
+
 		if (entry != null && remEntry != null && entry != remEntry)
 			throw new SystemErrorException("removed entries should be reused");
-		
+
 		if (remEntry != null) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 				sLogger.trace(mName + ": Found removed sub entry on " + l);
-				sLogger.trace(mName + ": Removed entry mh size: on " 
+				sLogger.trace(mName + ": Removed entry mh size: on "
 						+ remEntry.getMetadataHolder().size());
 			}
 		}
-		
+
 		// might be a circle search?
 		if (entry != null && entry.getDepth() <= getCurrentDepth())
 			return false;
@@ -147,7 +147,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		// There might be some metadata from before here.
 		if (entry != null && entry.getMetadataHolder().size() > 0)
 			return true;
-		
+
 		// We can try to use the metedata of the old entry if one exists:
 		if (remEntry != null && remEntry.getMetadataHolder().size() > 0)
 			return true;
@@ -155,10 +155,10 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		// Just check whether there is some new Metadata that matches,
 		// assuming this is always a subset of the Next metadata
 		newMatching = l.getMetadataHolderNew(getMatchLinksFilter());
-		
+
 		// Only for what the client is authorized
 		newMatching = authorized(newMatching);
-	
+
 		if (newMatching.size() > 0)
 			return true;
 
@@ -166,7 +166,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		// the next graph state.
 		nextMatching = l.getMetadataHolderNext(getMatchLinksFilter());
 		nextMatching = authorized(nextMatching);
-	
+
 		return nextMatching.size() > 0;
 	}
 
@@ -177,49 +177,49 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 
 	@Override
 	public boolean traverseTo(Node nextNode) {
-		
+
 		SubscriptionEntry entry =  nextNode.getSubscriptionEntry(mSubscription);
-		
+
 		// If this subscription doesn't have an entry on this node or has a
 		// higher depth than we do, yes, please bring us there...
-		// bring us there... 
+		// bring us there...
 		//
 		if (entry == null) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-				sLogger.trace(mName + ": Traversing to " + nextNode + 
+				sLogger.trace(mName + ": Traversing to " + nextNode +
 						" as no entry is there for " + mSubscription);
 			}
-			
+
 			return true;
 		}
-		
+
 		// If there's a greater depth than we would reach we want to travel
 		// there.
 		if (entry.getDepth() > getCurrentDepth() + 1) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-				sLogger.trace(mName + ": Traversing to " + nextNode 
+				sLogger.trace(mName + ": Traversing to " + nextNode
 						+ " as current depth is " + getCurrentDepth()
 						+ " and there it is  " + entry.getDepth());
 			}
-			
+
 			return true;
 		}
-	
+
 		// We have to restart the search at nodes where it'll result in
 		// a lower depth.
 		if (entry.getDepth() < getCurrentDepth() - 1) {
-			
+
 			if (SearchHandler.SEARCH_HANDLER_DEBUG)
 				sLogger.trace(mName + ": Found new continue starter at " + nextNode);
-			
+
 			mStarters.add(nextNode);
 		}
-	
+
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-			sLogger.trace(mName + ": Will not visit " + nextNode + " with depth " 
+			sLogger.trace(mName + ": Will not visit " + nextNode + " with depth "
 					+ entry.getDepth());
 		}
-		
+
 		return false;
 	}
 
@@ -241,65 +241,65 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 
 		if (SearchHandler.SEARCH_HANDLER_DEBUG)
 			sLogger.trace(mName + ": Visiting " + ge + " at depth " + getCurrentDepth());
-		
+
 		if (entry == null) {
 			if (remEntry != null) {
-			
+
 				if (SearchHandler.SEARCH_HANDLER_DEBUG)
 					sLogger.trace(mName + ": Reusing old entry on " + ge);
-				
+
 				entry = remEntry;
 				toAdd = remEntry.getMetadataHolder();
-				
+
 			} else {
-				
+
 				if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 					sLogger.trace(mName + ": Creating new entry on " + ge
 							+ " with depth " + getCurrentDepth());
 				}
-				
+
 				entry = new SubscriptionEntry(mSubscription);
-				
+
 				if (ge instanceof Node) {
 					toAdd = ge.getMetadataHolder(getResultFilter());
 				} else if (ge instanceof Link) {
 					List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
 					toAdd = ge.getMetadataHolder(getMatchLinksFilter());
-					
+
 					for (MetadataHolder mh : toAdd)
 						if (mh.getMetadata().matchesFilter(getResultFilter()))
 							tmp.add(mh);
-					
+
 					toAdd = tmp;
 				}
-			
-				
+
+
 				// Only authorized stuff
 				toAdd = authorized(toAdd);
-				
+
 				if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 					sLogger.trace(mName + ": Adding " + toAdd.size()
 							+ " metadata objects to entry of " + ge);
 				}
-				
+
 				entry.addMetadataHolder(toAdd);
 			}
-			
+
 			ge.addSubscriptionEntry(entry);
 			entry.getSubscription().addGraphElement(ge);
 		}
-	
+
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Setting depth to " + getCurrentDepth()
 					+ " for entry on " + ge);
 		}
-	
+
 		// go null if we don't have any elements
 		toAdd = (toAdd == null || toAdd.size() == 0) ? null : toAdd;
-		
+
 		if (toAdd != null)
 			mNewMetadata.addAll(toAdd);
-		
+
 		entry.setDepth(getCurrentDepth());
 		getVisitedElements().put(ge, null);
 	}

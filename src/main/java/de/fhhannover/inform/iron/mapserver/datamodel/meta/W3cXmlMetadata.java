@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -74,16 +75,18 @@ import org.w3c.dom.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidMetadataException;
 import de.fhhannover.inform.iron.mapserver.utils.FilterAdaption;
+import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 import de.fhhannover.inform.iron.mapserver.utils.SimpleNamespaceContext;
+import de.fhhannover.inform.iron.mapserver.utils.TimestampFraction;
 
-class W3cXmlMetadata extends Metadata {
-	
+public class W3cXmlMetadata extends Metadata {
+
 	private final Document mXmlDocument;
 	private final Element mXmlElement;
 	private String mPrefixElementName;
 	private String mMetadataAsString;
-	private String mTimeStamp;
+	private Date mTimeStamp;
 	private String mPublisherId;
 	
 	private static XPathFactory xpathFactory;
@@ -100,7 +103,7 @@ class W3cXmlMetadata extends Metadata {
 		}
 	}
 
-	W3cXmlMetadata(Document doc, MetadataType type, boolean validated)
+	public W3cXmlMetadata(Document doc, MetadataType type, boolean validated)
 			throws InvalidMetadataException {
 		// As dangerous as before :-(
 		super(type, validated);
@@ -199,11 +202,12 @@ class W3cXmlMetadata extends Metadata {
 	public Document toW3cDocument() {
 		return (Document) mXmlDocument.cloneNode(true);
 	}
-	
+
 	@Override
-	public void setTimeStampInternal(String ts) {
+	public void setTimeStampInternal(Date ts) {
 		mTimeStamp = ts;
-		mXmlElement.setAttribute(TIMESTAMP, mTimeStamp);
+		mXmlElement.setAttribute(TIMESTAMP, Iso8601DateTime.formatDate(mTimeStamp));
+		mXmlElement.setAttribute(TIMESTAMP_FRACTION, TimestampFraction.getSecondFraction(mTimeStamp) + "");
 		createStrings();
 	}
 

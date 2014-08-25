@@ -1,0 +1,12 @@
+language: java
+jdk:
+    - openjdk6
+
+notifications:
+    email:
+        recipients:
+            - trustathsh.developer@gmail.com
+        on_success: change
+        on_failure: change
+    irc:
+        - "irc.freenode.net#trustathsh"

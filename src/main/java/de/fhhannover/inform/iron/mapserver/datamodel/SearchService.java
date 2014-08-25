@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchHandler;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Searcher;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.SearchingFactory;
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
@@ -96,8 +97,9 @@ class SearchService {
 	 * @param req
 	 * @return
 	 * @throws SearchResultsTooBigException 
+	 * @throws SearchException 
 	 */
-	SearchResult search(SearchRequest req) throws SearchResultsTooBigException {
+	SearchResult search(SearchRequest req) throws SearchResultsTooBigException, SearchException {
 	
 		Publisher p = mPublisherRep.getPublisherBySessionId(req.getSessionId());
 		

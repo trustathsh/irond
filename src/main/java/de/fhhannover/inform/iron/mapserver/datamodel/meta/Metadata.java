@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * limitations under the License.
  * #L%
  */
+
+import java.util.Date;
 
 import de.fhhannover.inform.iron.mapserver.datamodel.SimpleSearchAbleImpl;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.Filter;
@@ -67,7 +69,9 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
  
 	public static final String PUBLISHERID = "ifmap-publisher-id";
 	public static final String TIMESTAMP = "ifmap-timestamp";
-	 
+
+	public static final String TIMESTAMP_FRACTION = "ifmap-timestamp-fraction";
+
 	/**
 	 * a static logger
 	 */
@@ -145,17 +149,17 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	 * 
 	 * @param ts
 	 */
-	public final void setTimestamp(String ts) {
+	public final void setTimestamp(Date ts) {
 		if (mTimeStampSet)
 			throw new SystemErrorException("ifmap-timestamp was already set");
 		
 		NullCheck.check(ts, "timestamp is null");
-		LengthCheck.checkMin(ts, 1, "ifmap-timestamp");
+		LengthCheck.checkMin(ts.getTime() + "", 1, "ifmap-timestamp");
 		setTimeStampInternal(ts);
 		mTimeStampSet = true;
 	}
-	
-	protected abstract void setTimeStampInternal(String ts);
+
+	protected abstract void setTimeStampInternal(Date ts);
 
 	/**
 	 * Get a reference to the MetaDataType. This can be used to compare

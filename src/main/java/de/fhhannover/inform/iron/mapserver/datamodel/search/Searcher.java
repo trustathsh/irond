@@ -20,7 +20,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
  * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
  * 
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
@@ -29,7 +29,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
  * %%
- * Copyright (C) 2010 - 2013 Trust@FHH
+ * Copyright (C) 2010 - 2014 Trust@FHH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
+import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 
 /**
@@ -55,5 +56,5 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigExcepti
  */
 public interface Searcher {
 	
-	public void runSearch() throws SearchResultsTooBigException;
+	public void runSearch() throws SearchResultsTooBigException, SearchException;
 }
