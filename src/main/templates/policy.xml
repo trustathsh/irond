@@ -22,7 +22,6 @@
       <Subjects>
         <Subject>
           <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-            <!-- Whitespaces are important! -->
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">dhcp</AttributeValue>
             <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:subject:if-map:content:role"
                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
@@ -33,7 +32,6 @@
       <Resources>
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-            <!-- Whitespaces are important! -->
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#ip-mac</AttributeValue>
             <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
@@ -54,7 +52,6 @@
 
     <Target>
       <Actions>
-        <!-- Only allow "update" in action-id -->
         <Action>
           <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">write</AttributeValue>
@@ -76,7 +73,6 @@
       <Subjects>
         <Subject>
           <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-            <!-- Whitespaces are important! -->
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">pdp</AttributeValue>
             <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:subject:if-map:content:role"
                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
@@ -85,20 +81,16 @@
       </Subjects>
 
       <Resources>
-        <!-- the access-request-mac metadata -->
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-            <!-- Whitespaces are important! -->
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#access-request-mac</AttributeValue>
             <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ResourceMatch>
         </Resource>
-        
-        <!-- the access-request-device metadata -->
+
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-            <!-- Whitespaces are important! -->
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#access-request-device</AttributeValue>
             <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
