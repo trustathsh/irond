@@ -99,4 +99,33 @@
       </Resources>
     </Target>
   </Rule>
+  
+  <Rule Effect="Permit"
+        RuleId="http://www.trustedcomputinggroup.org/2011/IFMAP/3/SamplePolicy1/dhcpServerRule">
+    <Description>
+      The MAP client with role visual may read arbitrary metadata.
+    </Description>
+
+    <Target>
+      <Actions>
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                       DataType="http://www.w3.org/2001/XMLSchema#string" />
+          </ActionMatch>
+        </Action>
+      </Actions>
+      <Subjects>
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">visual</AttributeValue>
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:subject:role"
+                                        DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </SubjectMatch>
+        </Subject>
+      </Subjects>
+      <Resources/>
+    </Target>
+  </Rule>
 </Policy>
