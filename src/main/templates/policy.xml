@@ -23,7 +23,7 @@
         <Subject>
           <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">dhcp</AttributeValue>
-            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:subject:if-map:content:role"
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:subject:role"
                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
           </SubjectMatch>
         </Subject>
@@ -33,7 +33,7 @@
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#ip-mac</AttributeValue>
-            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
+            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:resource:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ResourceMatch>
         </Resource>
@@ -60,12 +60,12 @@
           </ActionMatch>
           <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">publish</AttributeValue>
-            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:action:if-map:content:request-type"
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:action:request-type"
                                        DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ActionMatch>
           <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">update</AttributeValue>
-            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:action:if-map:content:publish-request-subtype"
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:action:publish-request-subtype"
                                        DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ActionMatch>
         </Action>
@@ -74,7 +74,7 @@
         <Subject>
           <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">pdp</AttributeValue>
-            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:subject:if-map:content:role"
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:subject:role"
                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
           </SubjectMatch>
         </Subject>
@@ -84,7 +84,7 @@
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#access-request-mac</AttributeValue>
-            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
+            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:resource:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ResourceMatch>
         </Resource>
@@ -92,7 +92,7 @@
         <Resource>
           <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://www.trustedcomputinggroup.org/2010/IFMAP-METADATA/2#access-request-device</AttributeValue>
-            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:resource:if-map:content:metadata-type"
+            <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:3.0:if-map:content:resource:metadata-type"
                                          DataType="http://www.w3.org/2001/XMLSchema#string" />
           </ResourceMatch>
         </Resource>

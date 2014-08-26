@@ -99,36 +99,42 @@ abstract class AbstractSunXacml implements IfmapPepHandler {
 	static URI onLinkUri;
 	static URI selfIdentUri;
 	static URI clientIdentUri;
-	
+
+	static final String tcXacmlNsPrefix_3_0 = "urn:oasis:names:tc:xacml:3.0:if-map:content:";
+	static final String tcXacmlNsPrefix_1_0 = "urn:oasis:names:tc:xacml:1.0:";
+
 	static final String xacmlNs = "fix:this:xacml:ns:";
 	static final String xacmlNs10 = "urn:oasis:names:tc:xacml:1.0:";
+
 	static final String tcgNsResource = "urn:oasis:names:tc:xacml:3.0:resource:if-map:content:";
-	static final String tcgNsSubject = "urn:oasis:names:tc:xacml:3.0:subject:if-map:content:";
-	static final String tcgNsAction = "urn:oasis:names:tc:xacml:3.0:action:if-map:content:";
-	static final String tcgNsEnvironment = "urn:oasis:names:tc:xacml:3.0:environment:if-map:content:";
-	static final String tcgNsAttr = "urn:oasis:names:tc:xacml:3.0:resource:if-map:content:";
 	static final String w3cXmlSchema ="http://www.w3.org/2001/XMLSchema#";
-	
+
 	static {
 		try {
 			stringUri = new URI(w3cXmlSchema + "string");
 			booleanUri = new URI(w3cXmlSchema + "boolean");
-			subjectIdUri = new URI(xacmlNs10 + "subject:subject-id");
-			roleUri = new URI(tcgNsSubject + "role");
-			actionUri = new URI(xacmlNs10 + "action:action-id");
-			clobberUri = new URI(tcgNsAction + "delete-metadata-by-other-client");
-			identTypeUri = new URI(tcgNsResource + "identifier-type");
-			identAttrUri = new URI(tcgNsAttr + "identifier-attribute:");
-			metadataTypeUri = new URI(tcgNsResource + "metadata-type");
-			metadataAttrUri = new URI(tcgNsAttr + "metadata-attribute:");
+
+			subjectIdUri = new URI(tcXacmlNsPrefix_1_0 + "subject:subject-id");
+
+			roleUri =   new URI(tcXacmlNsPrefix_3_0 + "subject:role");
+			dryRunUri = new URI(tcXacmlNsPrefix_3_0 + "environment:dry-run");
+
+			metadataTypeUri = new URI(tcXacmlNsPrefix_3_0 + "resource:metadata-type");
+			identTypeUri =    new URI(tcXacmlNsPrefix_3_0 + "resource:identifier-type");
+			clientIdentUri =  new URI(tcXacmlNsPrefix_3_0 + "resource:is-map-client-identifier");
+			selfIdentUri =    new URI(tcXacmlNsPrefix_3_0 + "resource:is-self-identifier");
+			onLinkUri =       new URI(tcXacmlNsPrefix_3_0 + "resource:on-link");
+			metadataAttrUri = new URI(tcXacmlNsPrefix_3_0 + "resource:metadata-attribute:");
+			identAttrUri =    new URI(tcXacmlNsPrefix_3_0 + "resource:identifier-attribute:");
+
+			actionUri =      new URI(tcXacmlNsPrefix_1_0 + "action:action-id");
+			requestTypeUri = new URI(tcXacmlNsPrefix_3_0 + "action:request-type");
+			clobberUri =     new URI(tcXacmlNsPrefix_3_0 + "action:delete-metadata-by-other-client");
+			publishReqSubTypeUri = new URI(tcXacmlNsPrefix_3_0 + "action:publish-request-subtype");
+
+
 			resourceIdUri = new URI(xacmlNs10 + "resource:resource-id");
-			requestTypeUri = new URI(tcgNsAction + "request-type");
-			publishReqSubTypeUri = new URI(tcgNsAction + "publish-request-subtype");
 			adminDomaindUri = new URI(tcgNsResource + "administrative-domain");
-			dryRunUri = new URI(tcgNsResource + "dry-run");
-			onLinkUri = new URI(tcgNsResource + "on-link");
-			selfIdentUri = new URI(tcgNsResource + "is-self-identifier");
-			clientIdentUri = new URI(tcgNsResource + "is-map-client-identifier");
 		} catch (URISyntaxException e) {
 			// This should never happend. If it does, make sure we die...
 			e.printStackTrace();
