@@ -76,7 +76,7 @@ public class IfmapConstStrings {
 	public static final String ID_SIP = "identity:sip-uri";
 	public static final String ID_TEL = "identity:tel-uri";
 	public static final String ID_HIP_HIT = "identity:hip-hit";
-	public static final String ID_EXT = "identity:extended";
+	public static final String ID_EXT = "identity:other:extended";
 	public static final String ID_NON_EXT = "identity:nonextended";
 
 	public static final String REGEX_ID_EXT = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]#.*";
