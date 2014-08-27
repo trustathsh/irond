@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
 /**
  * Identifies a MAPC based on the credentials used during authentication
  * with the MAPS. Stores all information needed to identify a client.
- * 
+ *
  * @author aw
  * @author jk
  *
@@ -60,7 +60,7 @@ public class ClientIdentifier {
 	private final String mUsername;
 	private final String mIssuer;
 	private final String mSubject;
-	
+
 	/**
 	 * Depending on whether the client authenticated using cert or basic
 	 * auth, this field holds the username or the fingerprint of the
@@ -72,10 +72,10 @@ public class ClientIdentifier {
 	/**
 	 * Constructs a {@link ClientIdentifier} object based on certificate
 	 * subject, top-level issuer, and certificate finger print.
-	 * 
+	 *
 	 * @param username
 	 * @param subject
-	 * @param issuer 
+	 * @param issuer
 	 */
 	public ClientIdentifier(String readableIdent, String subject, String issuer,
 			String fp) {
@@ -85,23 +85,23 @@ public class ClientIdentifier {
 
 		if (fp == null || fp.length() == 0)
 			throw new SystemErrorException("fp not given");
-		
+
 		mUsername = readableIdent;
 		mSubject = (subject != null) ? subject : "";
 		mIssuer = (issuer != null) ? issuer : "";
 		mUsernameOrFp = fp;
 		mHashCode = calculateHashCode();
 	}
-	
+
 	/**
 	 * Constructs a {@link ClientIdentifier} object based on username
-	 * 
+	 *
 	 * @param userName client username
 	 */
 	public ClientIdentifier(String userName) {
 		this(userName, null, null, userName);
 	}
-	
+
 	/**
 	 * Calculate hash code for the client
 	 * @return hashcode value
@@ -111,7 +111,7 @@ public class ClientIdentifier {
 				mSubject.hashCode() + 11 * mIssuer.hashCode()
 				+ 11 * mUsernameOrFp.hashCode();
 	}
-	
+
 	/**
 	 * Client username
 	 * @return client username
@@ -135,7 +135,7 @@ public class ClientIdentifier {
 	public String getIssuer() {
 		return mIssuer;
 	}
-	
+
 	/**
 	 * Client IP address
 	 * @return ip
@@ -144,19 +144,19 @@ public class ClientIdentifier {
 		return mIpAddress;
 	}
 	*/
-	
+
 	public String getReadablePseudoIdentifier() {
 		return mUsername;
 	}
-	
+
 	public String getUserameOrCertFingerPrint() {
 		return mUsernameOrFp;
 	}
-	
+
 	public String getUserNameOrCertFingerprint() {
 		return mUsernameOrFp;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -164,7 +164,7 @@ public class ClientIdentifier {
 	public int hashCode() {
 		return mHashCode;
 	}
-	
+
 	/**
 	 * Compares the client identifier against any other client identifier
 	 * @param o second client identifier
@@ -172,27 +172,27 @@ public class ClientIdentifier {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		ClientIdentifier oClId = (ClientIdentifier) o; 
-		
+		ClientIdentifier oClId = (ClientIdentifier) o;
+
 		if (this == o)
 			return true;
-		
+
 		if (o == null)
 			return false;
-			
+
 		if (mHashCode != o.hashCode())
 			return false;
-			
+
 		if (!(o instanceof ClientIdentifier))
 			return false;
 		oClId = (ClientIdentifier) o;
-		
+
 		return mUsername.equals(oClId.getUsername()) &&
 				mSubject.equals(oClId.getSubject()) &&
 				mIssuer.equals(oClId.getIssuer()) &&
 				mUsernameOrFp.equals(oClId.mUsernameOrFp);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

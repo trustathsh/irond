@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,16 +59,16 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
  * Implementation of the {@link GraphElement} interface.
- * 
+ *
  * @since 0.3.0
  * @author aw
  */
 abstract class GraphElementImpl implements GraphElement {
-	
+
 	private final List<MetadataHolder> mMetadataHolder;
 	private final Map<Subscription, SubscriptionEntry> mSubscriptionEntries;
 	private final Map<Subscription, SubscriptionEntry> mRemovedSubscriptionEntries;
-	
+
 	protected GraphElementImpl() {
 		mMetadataHolder = CollectionHelper.provideListFor(MetadataHolder.class);
 		mSubscriptionEntries = CollectionHelper.provideMapFor(Subscription.class,
@@ -85,29 +85,29 @@ abstract class GraphElementImpl implements GraphElement {
 	@Override
 	public List<MetadataHolder> getMetadataHolder(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : mMetadataHolder)
 			if (mh.getMetadata().matchesFilter(f))
 				ret.add(mh);
-		
+
 		return ret;
 	}
 
 	@Override
 	public List<MetadataHolder> getMetadataHolder(MetadataType type) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : mMetadataHolder)
 			if (mh.getMetadata().getType() == type)
 				ret.add(mh);
-		
+
 		return ret;
 	}
 
 	@Override
 	public List<MetadataHolder> getMetadataHolderInGraph() {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : mMetadataHolder)
 			if (mh.isUnchanged() || mh.isDeleted())
 				ret.add(mh);
@@ -118,44 +118,44 @@ abstract class GraphElementImpl implements GraphElement {
 	@Override
 	public List<MetadataHolder> getMetadataHolderInGraph(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : getMetadataHolderInGraph())
 			if (mh.getMetadata().matchesFilter(f))
 				ret.add(mh);
-		
+
 		return ret;
 	}
 
 	@Override
 	public List<MetadataHolder> getMetadataHolderNext(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : getMetadataHolder())
 			if ((mh.isNew() || mh.isUnchanged()) && mh.getMetadata().matchesFilter(f))
 				ret.add(mh);
-		
+
 		return ret;
 	}
 
 	@Override
 	public List<MetadataHolder> getMetadataHolderNew(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		for (MetadataHolder mh : getMetadataHolder())
 			if (mh.isNew() && mh.getMetadata().matchesFilter(f))
 				ret.add(mh);
-		
+
 		return ret;
-		
+
 	}
-	
+
 	@Override
 	public void addMetadataHolder(MetadataHolder m) {
 		NullCheck.check(m, "MetadataHolder is null");
 		if (mMetadataHolder.contains(m))
 			throw new SystemErrorException("MetadataHolder " + m + " already on "
 					+ this);
-		
+
 		mMetadataHolder.add(m);
 	}
 
@@ -163,10 +163,10 @@ abstract class GraphElementImpl implements GraphElement {
 	public void removeMetadataHolder(MetadataHolder m) {
 		NullCheck.check(m, "MetadataHolder is null");
 		int idx = mMetadataHolder.indexOf(m);
-		
+
 		if (idx < 0)
 			throw new SystemErrorException("MetadataHolder " + m + " not on " + this);
-		
+
 		mMetadataHolder.remove(idx);
 	}
 
@@ -205,7 +205,7 @@ abstract class GraphElementImpl implements GraphElement {
 	public void removeAllSubscriptionEntries() {
 		mSubscriptionEntries.clear();
 	}
-	
+
 	@Override
 	public SubscriptionEntry getRemovedSubscriptionEntry(Subscription sub) {
 		return mRemovedSubscriptionEntries.get(sub);
@@ -215,7 +215,7 @@ abstract class GraphElementImpl implements GraphElement {
 	public List <SubscriptionEntry> getRemovedSubscriptionEntries() {
 		return CollectionHelper.copy(mRemovedSubscriptionEntries.values());
 	 }
-	
+
 	@Override
 	public void addRemovedSubscriptionEntry(SubscriptionEntry entry) {
 		NullCheck.check(entry, "entry is null");
@@ -224,29 +224,29 @@ abstract class GraphElementImpl implements GraphElement {
 			throw new SystemErrorException("entry " + entry
 					+ " already removed for  " + this);
 	 }
-	
+
 	@Override
 	public void removeRemovedSubscriptionEntry(Subscription sub) {
 		NullCheck.check(sub, "Subscription is null");
 		if (mRemovedSubscriptionEntries.remove(sub) == null)
-			throw new SystemErrorException("entry for " + sub + " not removed for " 
+			throw new SystemErrorException("entry for " + sub + " not removed for "
 					+ this);
 	}
-	
+
 	@Override
 	public void removeAllRemovedSubscriptionEntries() {
 		mRemovedSubscriptionEntries.clear();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public final String toString() {
-		
+
 		return provideToStringStart() + ", #md=" + mMetadataHolder.size()
 				+ ", #subs=" + mSubscriptionEntries.size() + "}";
 	}
-	
+
 	protected abstract String provideToStringStart();
 }

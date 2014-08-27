@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,12 +63,12 @@ import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 
 /**
  * This class is a sub service and handles {@link SearchRequest} messages
- * 
+ *
  * @author aw, vp
  * @since 0.1
  */
 class SearchService {
-	
+
 	private static Logger logger;
 	static {
 		logger = LoggingProvider.getTheLogger();
@@ -93,18 +93,18 @@ class SearchService {
 	/**
 	 * Here the search is processed with the help
 	 * of a searcher and a builder object who really do the hard work together.
-	 * 
+	 *
 	 * @param req
 	 * @return
-	 * @throws SearchResultsTooBigException 
-	 * @throws SearchException 
+	 * @throws SearchResultsTooBigException
+	 * @throws SearchException
 	 */
 	SearchResult search(SearchRequest req) throws SearchResultsTooBigException, SearchException {
-	
+
 		Publisher p = mPublisherRep.getPublisherBySessionId(req.getSessionId());
-		
+
 		logger.trace("SearchService: search for " + p.getPublisherId());
-		
+
 		ModifiableSearchResult res = mSearchingFactory.newCopySearchResult();
 		SearchHandler handler = mSearchingFactory.newBasicSearchHandler(mConf,
 				req, res, mAdd, false, p, mPep);
@@ -113,4 +113,4 @@ class SearchService {
 		return res;
 	}
 }
- 
+

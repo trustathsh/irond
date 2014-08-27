@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,53 +65,53 @@ import de.fhhannover.inform.iron.mapserver.utils.IpAddressValidator;
 
 /**
  * Implementation of the identity identifier.
- * 
+ *
  * @since 0.1.0
  * @author aw
  */
 public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		implements IdentifierWithAdministrativeDomain {
-	
+
 	private final String mName;
 	private final IdentityTypeEnum mType;
 	private final String mOtherTypeDefinition;
 	private Document mExtendedIdentifier;
 	private final X500Principal mDistinguishedName;
 	private	final boolean mCaseSensitive;
-	
+
 	/**
 	 * Construct a identity object from name, administrative-domain and the type.
-	 * 
+	 *
 	 * *Note:* If we come across a Host Identity Tag (hipHit), treat it as IPv6
 	 * address.
-	 * 
+	 *
 	 * @param name
 	 * @param ad
 	 * @param it
-	 * @throws InvalidIdentifierException 
+	 * @throws InvalidIdentifierException
 	 */
 	public Identity(final String name, final String ad, final String otherTypeDef,
 			final IdentityTypeEnum it) throws InvalidIdentifierException {
 		super(IfmapConstStrings.ID, ad);
 		int byteCount = 0;
-		
+
 		if (name == null || name.length() == 0)
 			throw new InvalidIdentifierException("Identity: name is " +
 					"null or empty string");
-		
+
 		if (it == null)
 			throw new InvalidIdentifierException("Identity: type is null");
 
 		mName = name;
 		mType = it;
-		
+
 		mCaseSensitive = mConf.getIdentityTypeIsCaseSensitive(mType.toString());
 
-		if (mType == IdentityTypeEnum.other && 
+		if (mType == IdentityTypeEnum.other &&
 				(otherTypeDef == null || otherTypeDef.length() == 0))
 			throw new InvalidIdentifierException("Identity: type-other "
 					+ "requires other-type-definition");
-		
+
 		mOtherTypeDefinition = (otherTypeDef == null) ? "" : otherTypeDef;
 
 		if (mType == IdentityTypeEnum.hipHit && !IpAddressValidator.validateIPv6(name))
@@ -119,52 +119,52 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 						+ "HIP-HIT incorrect format (" + name + ")");
 
 		if (isExtendedIdentifier()) {
-			
+
 			mExtendedIdentifier = prepareExtendedIdentifier(name);
-			
+
 			checkExtendedIdentifierAdminDomain();
-			
-		
+
+
 			// If we want to validate extended identfiers, do it.
 			// Throws InvalidIdentifierException if not schema compliant
 			if(mConf.getXmlValidationExtendedIdentity())
 				validateExtendedIdentifier();
 		}
-		
+
 		if (isDistinguishedName()) {
 			mDistinguishedName = prepareDistinguishedName(name);
-			
+
 			// let the MAPC know if X500 was invalid
 			if (mDistinguishedName == null && mConf.getStrictDistinguishedName())
 				throw new InvalidIdentifierException("distinguished-name " +
 						" not in X500 format: " + name);
-			
+
 		} else {
 			mDistinguishedName = null;
 		}
-		
+
 		byteCount += (IfmapConstStrings.ID_CNT + mName.length()
 		+ mType.toString().length() + getByteCountForAdministrativeDomain());
 		if (mType == IdentityTypeEnum.other) {
 			byteCount += IfmapConstStrings.ID_OTHER_TYPE_DEF_ATTR_CNT;
 			byteCount += mOtherTypeDefinition.length();
 		}
-		
+
 		setByteCount(byteCount);
 	}
 
 	public Identity(String name, IdentityTypeEnum it) throws InvalidIdentifierException {
 		this(name, "", null, it);
 	}
-	
+
 	public IdentityTypeEnum getIdentityType() {
 		return mType;
 	}
-	
+
 	public final String getName() {
 		return mName;
 	}
-	
+
 	/**
 	 * @return the other-type-definition attribute if type is other, otherwise
 	 * 		we die.
@@ -173,13 +173,13 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		if (mType != IdentityTypeEnum.other)
 			throw new SystemErrorException("Identity: Error calling " +
 					"getOtherTypeDefinition() on type=" + mType.toString());
-		
+
 		return mOtherTypeDefinition;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentifierWithAdministrativeDomainImpl#equals(java.lang.Object)
-	 * 
+	 *
 	 * we ceck the other type def case sensitive... ?
 	 * FIXME: What is the specification saying?
 	 */
@@ -187,28 +187,28 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	public boolean equals(Object o) {
 		if (o == null)
 			return false;
-		
+
 		if (this == o)
 			return true;
-	
+
 		// is it Identity at all?
 		if (!(o instanceof Identity))
 			return false;
-		
+
 		// check administrative domain in super-class
 		if (!super.equals(o))
 			return false;
-	
+
 		Identity oI = (Identity)o;
-	
+
 		// same type?
 		if (mType != oI.getIdentityType())
 			return false;
-			
+
 		// compare other-type-definitions, if type="other"
 		if (mType == IdentityTypeEnum.other) {
 			String otherTypeDef = oI.getOtherTypeDefinition();
-			if (!mOtherTypeDefinition.equals(otherTypeDef))		
+			if (!mOtherTypeDefinition.equals(otherTypeDef))
 				return false;
 		}
 
@@ -217,13 +217,13 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 			if (mDistinguishedName != null && oI.mDistinguishedName != null) {
 				return mDistinguishedName.equals(oI.mDistinguishedName);
 			} else {
-				
+
 				// Sanity check: One of the DNs was null, so this implies
 				// strict handling of DNs is disabled
-				
+
 				if (mConf.getStrictDistinguishedName())
 					throw new SystemErrorException("DN null, but strict enabled");
-				
+
 				return (mCaseSensitive) ? mName.equals(oI.mName) :
 						mName.equalsIgnoreCase(oI.mName);
 			}
@@ -240,24 +240,24 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	* If there is an extended identifier or DSN identity the hashcode
 	* ignores the name field which needs to get inspected closer
 	* by using equals().
-	* 
+	*
 	* @return hash value
 	*/
 	@Override
 	protected final int getHashCode() {
 		int hash = 11 * 97 + (mType != null ? mType.hashCode() : 0);
-		
+
 		hash = 11 * hash + mOtherTypeDefinition.hashCode();
-		
+
 		if (mType == IdentityTypeEnum.distinguishedName && mDistinguishedName != null)
 			hash = 11 * hash + mDistinguishedName.getName().hashCode();
 		else
 			hash = 11 * hash + ((mCaseSensitive) ? mName.hashCode() :
 					mName.toLowerCase().hashCode());
-		
+
 		return 11 * hash + super.getHashCode();
 	}
-		
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentifierImpl#getPrintableString()
 	 */
@@ -265,18 +265,18 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	protected String getPrintableString() {
 		String ad = getAdministrativeDomain();
 		StringBuilder sb = new StringBuilder("id{");
-		
+
 		if (isExtendedIdentifier()) {
 			sb.append(DomHelpers.unescapeXml(mName));
 		} else {
 			sb.append(mName);
 		}
-		
+
 		if (ad != null && ad.length() > 0) {
 			sb.append(", ");
 			sb.append(ad);
 		}
-		
+
 		sb.append(", ");
 		sb.append(mType.toString());
 
@@ -287,30 +287,30 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		sb.append("}");
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Prepare an extended identifier as w3c.dom.Document. While at it, check
 	 * if the representation send by the MAPC is the same as irond would
 	 * produce itself.
-	 * 
+	 *
 	 * @param xml XML string
 	 * @return XML document
-	 * @throws InvalidIdentifierException  If something goes wrong while 
+	 * @throws InvalidIdentifierException  If something goes wrong while
 	 * 		   parsing the XML document, or if encoding the {@link Document}
 	 *		   does not result in the same {@link String} as the MAPC did
 	 *		   send.
 	 */
 	private Document prepareExtendedIdentifier(String xml) throws InvalidIdentifierException {
-		
+
 		Document ret = null;
 		String myXml = null;
-		String unescaped = DomHelpers.unescapeXml(xml); 
-		
+		String unescaped = DomHelpers.unescapeXml(xml);
+
 		try {
 			ret = DomHelpers.toDocument(unescaped, null);
-			
+
 			myXml = DomHelpers.toExtendedIdentifierValue(ret);
-		
+
 			// If irond thinks the result of encoding should look different,
 			// send this to the MAPC.
 			if (!myXml.equals(xml))
@@ -319,7 +319,7 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 						"Your value:\"" + xml + "\" Mine: \"" + myXml + "\". " +
 						"If you think this is an error in irond, please report " +
 						"it. Thanks!");
-			
+
 		} catch (SAXException e) {
 			throw new InvalidIdentifierException("extended identifier error: " +
 						e.getMessage());
@@ -327,28 +327,28 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 			throw new InvalidIdentifierException("extended identifier error: " +
 						e.getMessage());
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Prepare an DSN
 	 * @param dsn DSN string
 	 * @return X500 prinicipal
-	 * @throws InvalidIdentifierException 
+	 * @throws InvalidIdentifierException
 	 */
 	private X500Principal prepareDistinguishedName(String dsn) {
 		if (!mCaseSensitive)
 			dsn = dsn.toLowerCase();
-		
+
 		try {
-			return new X500Principal(dsn);		
+			return new X500Principal(dsn);
 		} catch (Exception e) {
 			// Too bad
 		}
 		return null;
 	}
-		
+
 	/**
 	 * An extended identifier is not allowed to have NO
 	 * administrative-domain attribute *in* the encoded XML, but it is allowed
@@ -367,27 +367,27 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	 * @throws InvalidIdentifierException
 	 */
 	private void checkExtendedIdentifierAdminDomain() throws InvalidIdentifierException {
-		
+
 		String ad = super.getAdministrativeDomain();
-		
+
 		if (mExtendedIdentifier == null)
 			throw new SystemErrorException("Trying to check admin-domain, but " +
 										   "extended identifier is null?!");
-		
+
 		if (ad != null && ad.length() > 0)
 			throw new InvalidIdentifierException(
 					"Identity: extended identity with " +
 					"administrative-domain (" + ad + ") found");
-		
+
 		Node n = mExtendedIdentifier.getFirstChild();
-		
+
 		if (n.getNodeType() != Node.ELEMENT_NODE)
 			throw new SystemErrorException("Extended identifier root node not elemnt?");
-		
+
 		Element el = (Element)n;
-		
+
 		Attr admAttr = el.getAttributeNodeNS(null, "administrative-domain");
-		
+
 		if (admAttr == null)
 			throw new InvalidIdentifierException("No administrative-domain " +
 												 "for extended identifier.");
@@ -396,17 +396,17 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 	private void validateExtendedIdentifier() throws InvalidIdentifierException {
 		String ns = mExtendedIdentifier.lookupNamespaceURI(null);
-		
+
 		if (ns == null || ns.isEmpty())
 			throw new InvalidIdentifierException("Extended identifier without namespace");
 
 		StreamSource schema = mConf.getExtendedIdentitySchema(ns);
 		boolean lockdown = mConf.getXmlValidationExtendedIdentityLockDownMode();
-		
+
 		if (lockdown && schema == null)
 			throw new InvalidIdentifierException("extended identifier: " +
 				"lock-down: missing schema ");
-	
+
 		try {
 			if (schema != null)
 					DomHelpers.validate(mExtendedIdentifier, schema);
@@ -415,24 +415,24 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 					" validation failed: " + e.getMessage());
 		}
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentifierImpl#getXmlDocument()
 	 */
 	@Override
 	public Document getXmlDocument() {
-		
+
 		// If we have an extended identifier, make sure we return the Document
 		// that is stored in the name attribute
 		if (isExtendedIdentifier())
 			return mExtendedIdentifier;
-		
-		
+
+
 		// Otherwise, whatever is there originally...
 		return super.getXmlDocument();
 	}
-	
+
 	private boolean isExtendedIdentifier() {
 		return mType == IdentityTypeEnum.other
 				&& mOtherTypeDefinition.equals(IfmapConstStrings.ID_OTHER_EXT);

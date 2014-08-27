@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,18 +58,18 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
  * TODO
- * 
+ *
  * @since 0.1.0
  * @author aw
  *
  */
 abstract class SearchResultImpl implements ModifiableSearchResult {
-	
+
 	/**
 	 * The name of this {@link SearchResult}. May be null.
 	 */
 	private final String mName;
-	
+
 	/**
 	 * The type of this {@link SearchResult}.
 	 */
@@ -79,12 +79,12 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	 * Represents the ordered list of {@link ResultItem} objects.
 	 */
 	protected final List<ResultItem> mResultItems;
-	
+
 	/**
 	 * Represents the last {@link ResultItem} instance used.
 	 */
 	protected ResultItem mLastResultItem;
-	
+
 	/**
 	 * Just a quick reference to the {@link GraphElement} instance in the
 	 * last {@link ResultItem} used.
@@ -93,33 +93,33 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 
 	/**
 	 * Constructor to create {@link SearchResult} instances.
-	 * 
+	 *
 	 * @param name
 	 * @param type
 	 */
 	protected SearchResultImpl(String name, SearchResultType type) {
 		NullCheck.check(type, "type is null");
-		
+
 		if (name != null)
 			LengthCheck.checkMinMax(name, 1, 20, "name is set, so length should" +
 					" be > 0 && <= 20");
-		
+
 		mName = name;
 		mType = type;
 		mResultItems = CollectionHelper.provideListFor(ResultItem.class);
 		mLastResultItem = null;
 	}
-	
+
 	/**
 	 * Constructor to create a {@link SearchResult} with name and type
 	 * {@link SearchResultType#SEARCH}.
-	 * 
+	 *
 	 * @param name
 	 */
 	protected SearchResultImpl(String name) {
 		this(name, SearchResultType.SEARCH);
 	}
-	
+
 	/**
 	 * Constructor to create a {@link SearchResult} without a name and type
 	 * {@link SearchResultType#SEARCH}.
@@ -127,7 +127,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	protected SearchResultImpl() {
 		this(null, SearchResultType.SEARCH);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult#getResultItems()
 	 */
@@ -135,7 +135,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public final List<ResultItem> getResultItems() {
 		return Collections.unmodifiableList(mResultItems);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult#getName()
 	 */
@@ -151,7 +151,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public final SearchResultType getType() {
 		return mType;
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.SearchResult#isEmpty()
@@ -169,7 +169,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 		NullCheck.check(ge, "ge is null");
 		addMetadata(ge, (Metadata)null);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.SearchAble#getByteCount()
 	 */
@@ -177,19 +177,19 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public int getByteCount() {
 		return sizeEnclosingElement() + sizeResultItems();
 	}
-	
+
 	private int sizeResultItems() {
 		int ret = 0;
-		
+
 		for (ResultItem ri: getResultItems())
 			ret += ri.getByteCount();
-		
+
 		return ret;
 	}
-	
+
 	private int sizeEnclosingElement() {
 		final int ret;
-		
+
 		// They are all the same, but make it explicit by switching
 		switch (getType()) {
 		case SEARCH:
@@ -207,16 +207,16 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 		default:
 			throw new RuntimeException("Unknown searchResult type");
 		}
-		
+
 		return ret;
 	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("sr{");
-		
+
 		for (ResultItem ri : mResultItems)
 			sb.append(ri.toString() + ", ");
-		
+
 		sb.setLength(sb.length() - 2);
 		sb.append("}");
 		return sb.toString();
@@ -229,7 +229,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public final void addMetadata(GraphElement ge, List<Metadata> mlist) {
 		NullCheck.check(ge, "ge is null");
 		NullCheck.check(mlist, "mlist is null");
-		
+
 		if (mlist.size() == 0)
 			addGraphElement(ge);
 		else
@@ -252,7 +252,7 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	@Override
 	public void addResultItems(List<ResultItem> rilist) {
 		NullCheck.check(rilist, "rilist is null");
-		
+
 		for (ResultItem ri : rilist)
 			addResultItem(ri);
 	}
@@ -264,16 +264,16 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public boolean sameNameAndType(SearchResult o) {
 		if (o == this)
 			return true;
-		
+
 		if (o.getName() == null && getName() == null)
 			return true;
-		
+
 		if (o.getName() == null || getName() == null)
 			return false;
-		
+
 		return o.getType() == getType() && o.getName().equals(getName());
 	}
-	
+
 	@Override
 	public boolean hasMetadataAndOnlyValidatedMetadata() {
 		boolean result = false;

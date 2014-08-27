@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,17 +55,17 @@ import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException
 
 /**
  * Some testcases for MAC Addresses
- * 
+ *
  * @author aw
  * @version 0.1
- * 
+ *
  * created: 27.11.09
  * changes:
  *  27.11.09 aw - Created first testcases.
  *
  */
 public class MacAddressTest extends TestCase {
-	
+
 	MacAddress mac1, mac3, mac4, mac5,
 				mac6, mac7, mac8, mac9, mac10,
 				mac11, mac12, mac13, mac14, mac15,
@@ -78,7 +78,7 @@ public class MacAddressTest extends TestCase {
 		mac1 = new MacAddress("aa:bb:cc:dd:ee:ff", "");
 		mac3 = new MacAddress("aa:bb:cc:dd:ee:fe", "");
 		mac4 = new MacAddress("11:22:33:44:55:66", "");
-		
+
 		mac14 = new MacAddress("01:23:45:67:89:ab", "");
 		//mac14 = new MacAddress("aa:bb:cc:dd:ee:ff");
 		mac15 = new MacAddress("aa:bb:cc:dd:ee:ff", "myDomain");
@@ -86,15 +86,15 @@ public class MacAddressTest extends TestCase {
 		//mac17 = new MacAddress("AA:BB:CC:DD:EE:FF", "mydomain");
 		mac18 = new MacAddress("aa:bb:cc:dd:ee:ff", null);
 		mac19 = new MacAddress("aa:bb:cc:dd:ee:ff", "");
-		
+
 	}
-	
+
 	@Test
 	public void testDifferent() {
 		assertFalse(mac1.equals(mac3));
 		assertFalse(mac3.equals(mac4));
 	}
-	
+
 	@Test
 	public void testDomain() {
 		//assertTrue(mac1.equals(mac14));
@@ -103,12 +103,12 @@ public class MacAddressTest extends TestCase {
 		assertTrue(mac1.equals(mac19));
 		assertFalse(mac14.equals(mac17));		/* this might fail if domainName is case insensitive */
 	}
-	
-	
+
+
 	@Test
 	public void testGoodMacAddresses() {
 		boolean exception;
-		
+
 		exception = false;
 		try {
 			mac6 = new MacAddress("aa:bb:cc:11:ff:22");	// ok!
@@ -117,7 +117,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertFalse(exception);
 		assertNotNull(mac6);
-		
+
 		exception = false;
 		try {
 			mac21 = new MacAddress("00:00:00:00:00:00");	// ok!
@@ -127,12 +127,12 @@ public class MacAddressTest extends TestCase {
 		assertFalse(exception);
 		assertNotNull(mac21);
 	}
-	
-	
+
+
 	@Test
 	public void testBadMacAddresses() {
 		boolean exception = false;
-		
+
 		exception = false;
 		try {
 			mac13 = new MacAddress("11:22:00:aa:CC:fe");	// ok!
@@ -141,7 +141,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac13);
-		
+
 		try {
 			mac5 = new MacAddress("xx:xx:xx:xx:xx:xx");		//exception
 		} catch (InvalidIdentifierException e) {
@@ -149,7 +149,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac5);
-		
+
 		exception = false;
 		try {
 			mac8 = new MacAddress("aa:bb:11:ee:ff:gg");		// exception!
@@ -158,7 +158,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac8);
-		
+
 		exception = false;
 		try {
 			mac9 = new MacAddress("127.0.0.1");				// exception!
@@ -167,7 +167,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac9);
-		
+
 		exception = false;
 		try {
 			mac9 = new MacAddress("aa:bb:cc:dd:ee");		// exception!
@@ -176,7 +176,7 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac9);
-		
+
 		/* the following might be allowed??? */
 		exception = false;
 		try {
@@ -186,8 +186,8 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac10);
-		
-		
+
+
 		/* the following might be allowed??? */
 		exception = false;
 		try {
@@ -197,17 +197,17 @@ public class MacAddressTest extends TestCase {
 		}
 		assertTrue(exception);
 		assertNull(mac11);
-		
-		
+
+
 		exception = false;
 		try {
 			mac12 = new MacAddress("11:22:00:aa:CC:eg");	// exception!
 		} catch (InvalidIdentifierException e) {
 			exception = true;
-		}		
+		}
 		assertTrue(exception);
 		assertNull(mac12);
-		
+
 		exception = false;
 		try {
 			mac20 = new MacAddress("FF:FF:FF:FF:FF:ff");	// ok!

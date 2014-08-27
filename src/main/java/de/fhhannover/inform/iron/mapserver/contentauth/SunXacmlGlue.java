@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.contentauth;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ *
+ * This file is part of irond, version 0.4.0, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.contentauth;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,9 +78,9 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
  * So we are using a sunxacml version which seems to be somewhere in the
  * transition of using JAXB. This is sh*t, because we can only use the JAXB
  * marshaller/unmarshaller for requests, but not for the responses.
- * 
+ *
  * This class provides some helpers to get around that thing...
- * 
+ *
  * @author aw
  */
 class SunXacmlGlue {
@@ -88,44 +88,44 @@ class SunXacmlGlue {
 	/* Creating Marshaller and Unmarshaller is expensive, use ThreadLocals */
 	private static ThreadLocalUnmarshaller sUnmarshaller = new ThreadLocalUnmarshaller();
 	private static ThreadLocalMarshaller sMarshaller = new ThreadLocalMarshaller();
-	
+
 	/**
 	 * @param ctx
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
 	static ResponseType results2ResponseType(Set results) {
-		
+
 		ResponseType respType = new ResponseType();
 		List<ResultType> rtResults = respType.getResult();
-		
+
 		for (Object r : results)
 			rtResults.add(result2ResultType((Result)r));
-		
+
 		return respType;
 	}
-	
+
 	static Set<Result> responseType2Results(ResponseType respType) {
 		Set<Result> ret = new HashSet<Result>();
-		
+
 		List<ResultType> results = respType.getResult();
-		
+
 		for (ResultType rt : results) {
 			ret.add(resultType2Result(rt));
-			
+
 		}
-		
+
 		return ret;
 	}
-	
+
 	static InputStream request2Is(RequestType reqType) throws JAXBException {
-		
+
 		ObjectFactory of = new ObjectFactory();
 		JAXBElement<RequestType> jaxbReqType = of.createRequest(reqType);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		sMarshaller.get().marshal(jaxbReqType, baos);
-		
+
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
@@ -137,10 +137,10 @@ class SunXacmlGlue {
 	}
 
 	private static Result resultType2Result(ResultType rt) {
-		
+
 		int decision = decisionType2Decision(rt.getDecision());
 		Status status = statusType2Status(rt.getStatus());
-		
+
 		return new Result(decision, status, rt.getResourceId());
 	}
 
@@ -149,7 +149,7 @@ class SunXacmlGlue {
 		List codes = new ArrayList();
 		StatusCodeType sct = status.getStatusCode();
 		codes.add(sct.getValue());
-		
+
 		return new Status(codes, status.getStatusMessage());
 	}
 
@@ -157,29 +157,29 @@ class SunXacmlGlue {
 		ResultType rt = new ResultType();
 		rt.setDecision(intDecision2DecisonEnum(r.getDecision()));
 		// We are not taking Obligations into account!!!!
-		
+
 		if (r.getObligations().size() > 0)
-			System.err.println("WARNING: result contains " 
+			System.err.println("WARNING: result contains "
 								+ r.getObligations().size()
 								+ " obligations.");
-		
+
 		rt.setObligations(null);
 		rt.setResourceId(r.getResource());
 		rt.setStatus(status2StatusType(r.getStatus()));
-		
-		
+
+
 		return rt;
 	}
 
 	private static StatusType status2StatusType(Status status) {
 		StatusType st = new StatusType();
 		st.setStatusCode(statusCode2StatusCodeType(status.getCode()));
-		
+
 		if (status.getDetail() != null)
 			st.setStatusDetail(statusDetail2StatusDetailType(status.getDetail()));
-		
+
 		st.setStatusMessage(status.getMessage());
-		
+
 		return st;
 	}
 
@@ -193,13 +193,13 @@ class SunXacmlGlue {
 	@SuppressWarnings("rawtypes")
 	private static StatusCodeType statusCode2StatusCodeType(List code) {
 		StatusCodeType sct = new StatusCodeType();
-		
+
 		if (code.size() == 0 || code.size() > 1)
-			System.err.println("WARNING: result contains " 
+			System.err.println("WARNING: result contains "
 								+ code.size() + " codes.");
-		
+
 		sct.setValue((String) code.get(0));
-		
+
 		return sct;
 	}
 
@@ -207,17 +207,17 @@ class SunXacmlGlue {
 		switch (decision) {
 		case Result.DECISION_DENY:
 			return DecisionType.DENY;
-			
+
 		case Result.DECISION_INDETERMINATE:
 			return DecisionType.INDETERMINATE;
-			
+
 		case Result.DECISION_NOT_APPLICABLE:
 			return DecisionType.NOT_APPLICABLE;
-			
+
 		case Result.DECISION_PERMIT:
 			return DecisionType.PERMIT;
 		}
-		
+
 		throw new SystemErrorException("pure sunxacml weirdness!");
 	}
 
@@ -225,17 +225,17 @@ class SunXacmlGlue {
 		switch (decisionType) {
 		case DENY:
 			return Result.DECISION_DENY;
-			
+
 		case INDETERMINATE:
 			return Result.DECISION_INDETERMINATE;
-			
+
 		case NOT_APPLICABLE:
 			return Result.DECISION_NOT_APPLICABLE;
-			
+
 		case PERMIT:
 			return Result.DECISION_PERMIT;
 		}
-		
+
 		throw new SystemErrorException("pure sunxacml weirdness");
 	}
 
@@ -243,9 +243,9 @@ class SunXacmlGlue {
 		ObjectFactory of = new ObjectFactory();
 		JAXBElement<ResponseType> jaxbReqType = of.createResponse(rt);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		sMarshaller.get().marshal(jaxbReqType, baos);
-		
+
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
@@ -254,7 +254,7 @@ class SunXacmlGlue {
 		JAXBElement<ResponseType> jaxbEl = null;
 		try {
 			jaxbEl = (JAXBElement<ResponseType>) sUnmarshaller.get().unmarshal(is);
-			
+
 			return jaxbEl.getValue();
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -263,23 +263,23 @@ class SunXacmlGlue {
 	}
 
 	static void log(RequestType reqType) {
-		
+
 		try {
 			ByteArrayInputStream bais = (ByteArrayInputStream) SunXacmlGlue.request2Is(reqType);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			int myByte = 0;
-		
+
 			while ((myByte = bais.read()) >= 0)
 				baos.write(myByte);
-			
+
 		} catch (JAXBException e) {
 			// well. logging failed... too bad...
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static class ThreadLocalMarshaller extends ThreadLocal<Marshaller> {
-		
+
 		@Override
 		protected Marshaller initialValue() {
 			return BindingUtility.createMarshaller();
@@ -287,7 +287,7 @@ class SunXacmlGlue {
 	}
 
 	private static class ThreadLocalUnmarshaller extends ThreadLocal<Unmarshaller> {
-		
+
 		@Override
 		protected Unmarshaller initialValue() {
 			try {
@@ -296,7 +296,7 @@ class SunXacmlGlue {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			
+
 			// Unreached
 			return null;
 		}

@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,18 +60,18 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.SubscriptionEntry;
  * This interface basically provides access to the metadata stored on
  * a {@link GraphElement} instance.
  * {@link GraphElement} instances are compared by reference, always.
- * 
+ *
  * @author aw
  *
  */
 public interface GraphElement extends SearchAble {
-	
+
 	/**
 	 * @return a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object.
 	 */
 	public List<MetadataHolder> getMetadataHolder();
-	
+
 	/**
 	 * @param f
 	 * @return a list of {@link MetadataHolder} objects attached to this
@@ -80,7 +80,7 @@ public interface GraphElement extends SearchAble {
 	 */
 	public List<MetadataHolder> getMetadataHolder(Filter f);
 
-	
+
 	/**
 	 * @param type a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object, where the {@link MetadataType}
@@ -104,7 +104,7 @@ public interface GraphElement extends SearchAble {
 	 * 			or DELETED and matching the given {@link Filter} instance.
 	 */
 	public List<MetadataHolder> getMetadataHolderInGraph(Filter f);
-	
+
 	/**
 	 * @param f
 	 * @return a list of {@link MetadataHolder} objects attached to this
@@ -120,26 +120,26 @@ public interface GraphElement extends SearchAble {
 	 * 			given {@link Filter} instance.
 	 */
 	public List<MetadataHolder> getMetadataHolderNew(Filter f);
-	
+
 	/**
 	 * Add a {@link MetadataHolder} object to this {@link GraphElement} object.
-	 * 
+	 *
 	 * @param m
 	 */
 	public void addMetadataHolder(MetadataHolder m);
-	
+
 	/**
 	 * Remove a {@link MetadataHolder} object from this {@link GraphElement} object.
-	 * 
+	 *
 	 * @param m
 	 */
 	public void removeMetadataHolder(MetadataHolder m);
-	
+
 	/**
 	 * Remove all {@link MetadataHolder} objects attached to this {@link GraphElement}.
 	 */
 	public void removeAllMetadataHolders();
-	
+
 	/**
 	 * @return a list of {@link SubscriptionEntry} objects attached to this
 	 * 			{@link GraphElement} object.
@@ -151,22 +151,22 @@ public interface GraphElement extends SearchAble {
 	 * 			or null if none is there.
 	 */
 	public List <SubscriptionEntry> getSubscriptionEntries();
-	
+
 	/**
 	 * Add a {@link SubscriptionEntry} instance to this {@link GraphElement} object.
-	 * 
+	 *
 	 * @param sub
 	 */
 	public void addSubscriptionEntry(SubscriptionEntry entry);
-	
+
 	/**
 	 * Remove a {@link SubscriptionEntry} object from this {@link GraphElement}
 	 * 			object.
-	 * 
+	 *
 	 * @param subscription
 	 */
 	public void removeSubscriptionEntry(Subscription sub);
-	
+
 	/**
 	 * Remove all {@link SubscriptionEntry} objects attached to this
 	 * 			{@link GraphElement} object.
@@ -176,47 +176,47 @@ public interface GraphElement extends SearchAble {
 	/**
 	 * Compare {@link GraphElement} objects based on their {@link Identifier}
 	 * instances.
-	 * 
+	 *
 	 * @param graphElement
 	 * @return
 	 */
 	public boolean equalsIdentifiers(GraphElement o);
-	
+
 	/**
 	 * Return an immutable {@link GraphElement}, which does not contain any
 	 * references to mutable objects.
 	 */
 	public GraphElement dummy();
-	
+
 	/**
 	 * @return a the removed {@link SubscriptionEntry} for the given
 	 *			{@link Subscription} or null if none is there.
 	 */
 	public SubscriptionEntry getRemovedSubscriptionEntry(Subscription sub);
-	
+
 	/**
 	 * @return a list of {@link SubscriptionEntry} objects attached to this
 	 * 			{@link GraphElement} object, which were removed when subgraphs
 	 * 			were removed.
 	 */
 	public List <SubscriptionEntry> getRemovedSubscriptionEntries();
-	
+
 	/**
 	 * Add a removed {@link SubscriptionEntry} instance to this {@link GraphElement}
 	 * object.
-	 * 
+	 *
 	 * @param sub
 	 */
 	public void addRemovedSubscriptionEntry(SubscriptionEntry entry);
-	
+
 	/**
 	 * Remove a removed {@link SubscriptionEntry} object from this
 	 * {@link GraphElement} object.
-	 * 
+	 *
 	 * @param subscription
 	 */
 	public void removeRemovedSubscriptionEntry(Subscription sub);
-	
+
 	/**
 	 * Remove all removed {@link SubscriptionEntry} objects attached to this
 	 * 			{@link GraphElement} object.

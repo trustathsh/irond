@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.meta;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,12 +59,12 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  * @author aw
  */
 public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
-	
+
 	private static final String sName = "MetadataTypeRepository";
 
 	private static final Logger sLogger = LoggingProvider.getTheLogger();
 	private final HashMap<String, MetadataType> mTypes;
-	
+
 	private MetadataTypeRepositoryImpl() {
 		mTypes = new HashMap<String, MetadataType>();
 		initializeStandardMetadataCardinalities();
@@ -83,10 +83,10 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 		NullCheck.check(name, "name is null");
 		NullCheck.check(ns, "ns is null");
 		NullCheck.check(card, "lt is null");
-	
+
 		String key = key(name, ns);
 		MetadataType type = mTypes.get(key);
-	
+
 		// new entry
 		if (type == null) {
 			type = new MetadataTypeImpl(key, card);
@@ -121,7 +121,7 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 	public void clear() {
 		mTypes.clear();
 	}
-	
+
 	/**
 	 * For the set of standard metadata, the cardinalities are known.
 	 * Create types for these when the class is first created.
@@ -138,7 +138,7 @@ public class MetadataTypeRepositoryImpl implements MetadataTypeRepository {
 			}
 		}
 	}
-	
+
 	private String key(String name, String ns) {
 		return ns + "#" + name;
 	}

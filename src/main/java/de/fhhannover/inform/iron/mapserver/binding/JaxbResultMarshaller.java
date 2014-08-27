@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.binding;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.binding;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -107,22 +107,22 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
  * A implementation of {@link ResponseCreator} using JAXB as XML binding.
- * 
+ *
  * Originates from the old MessageTransformer class
- * 
+ *
  * @author aw
  */
 class JaxbResultMarshaller implements ResultMarshaller {
-	
-	private JAXBContext mJaxbCtx; 
+
+	private JAXBContext mJaxbCtx;
 	private ThreadLocal<Marshaller> mMarshaller;
 
 	private ObjectFactory mIfmapObjFac = new ObjectFactory();
 	private org.w3._2003._05.soap_envelope.ObjectFactory mSoapObjFac =
 			new org.w3._2003._05.soap_envelope.ObjectFactory();
-	
+
 	private JaxbIdentifierHelper identifierHelper = new JaxbIdentifierHelper();
-	
+
 	JaxbResultMarshaller() {
 		try {
 			mJaxbCtx = JAXBContext.newInstance(Envelope.class);
@@ -152,7 +152,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private InputStream doMarshal(Envelope env) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
@@ -167,11 +167,11 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		}
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
-	
+
 	/**
 	 * Add validation header to @link{ResponseType} based on already
 	 * set metadata validation
-	 * @param resp 
+	 * @param resp
 	 */
 	private void setResponseValidationAttribute(ResponseType resp) {
 		if (resp == null)
@@ -191,7 +191,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		body.setResponse(rt);
 		return env;
 	}
-	
+
 	private ResponseType getResponseElement(Envelope env) {
 		return env.getBody().getResponse();
 	}
@@ -201,21 +201,21 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		Envelope env = prepareEnvelopeWithResponse();
 		ResponseType resp = getResponseElement(env);
 		NewSessionResultType nsrt = getNsrt(sessionId, publisherId);
-		
+
 		if (maxPollResultSize != null)
 			nsrt.setMaxPollResultSize(new BigInteger("" + maxPollResultSize));
-		
+
 		resp.setNewSessionResult(nsrt);
 		return doMarshal(env);
 	}
-	
+
 	private NewSessionResultType getNsrt(String sessionId, String publisherId) {
 		NewSessionResultType nsrt = mIfmapObjFac.createNewSessionResultType();
 		nsrt.setSessionId(sessionId);
 		nsrt.setIfmapPublisherId(publisherId);
 		return nsrt;
 	}
-	
+
 	private InputStream createEndSessionResponse() {
 		Envelope env = prepareEnvelopeWithResponse();
 		ResponseType resp = getResponseElement(env);
@@ -247,7 +247,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		resp.setPurgePublisherReceived(ppr);
 		return doMarshal(env);
 	}
-	
+
 	private InputStream createSubscribeResponse() {
 		Envelope env = prepareEnvelopeWithResponse();
 		ResponseType resp = getResponseElement(env);
@@ -275,10 +275,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		resp.setSearchResult(srt);
 		return doMarshal(env);
 	}
-	
+
 	private InputStream createDumpResponse(DumpResult dumpResult) {
 		Envelope env = prepareEnvelopeWithResponse();
-		ResponseType resp = getResponseElement(env);		
+		ResponseType resp = getResponseElement(env);
 		DumpResponseType dump = transformDumpResult(dumpResult);
 		resp.setDumpResult(dump);
 		return doMarshal(env);
@@ -293,7 +293,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		resp.setPollResult(prt);
 		return doMarshal(env);
 	}
-	
+
 	private InputStream createPollResponseError(ErrorCode errCode, String errMsg,
 			String subName) {
 		Envelope env = prepareEnvelopeWithResponse();
@@ -310,7 +310,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 
 		// list with all results
 		List<Object> list = prt.getSearchResultOrUpdateResultOrDeleteResult();
-		
+
 		for (SearchResult sr : pr.getResults()) {
 			switch (sr.getType()) {
 				case SEARCH:
@@ -325,19 +325,19 @@ class JaxbResultMarshaller implements ResultMarshaller {
 				case NOTIFY:
 					list.add(transformNotifyResult(sr));
 					break;
-					
+
 				default:
 					throw new RuntimeException("Unknown SearchResult type");
 			}
-			
+
 		}
-		
+
 		for (String err : pr.getErrorResults())
 			list.add(createErrorPollResult(err));
-		
+
 		return prt;
 	}
-	
+
 	private DeleteResultType transformDeleteResult(SearchResult sr) {
 		DeleteResultType res = null;
 		if (sr != null) {
@@ -347,10 +347,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			}
 			addResultItems(res, sr);
 		}
-		
+
 		return res;
 	}
-	
+
 	private UpdateResultType transformUpdateResult(SearchResult sr) {
 		UpdateResultType res = null;
 		if (sr != null) {
@@ -360,10 +360,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			}
 			addResultItems(res, sr);
 		}
-		
+
 		return res;
 	}
-	
+
 	private NotifyResultType transformNotifyResult(SearchResult sr) {
 		NotifyResultType res = null;
 		if (sr != null) {
@@ -373,10 +373,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			}
 			addResultItems(res, sr);
 		}
-		
+
 		return res;
 	}
-	
+
 	private SearchResultType transformSearchResult(SearchResult sr) {
 		SearchResultType res = null;
 		if (sr != null) {
@@ -386,7 +386,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			}
 			addResultItems(res, sr);
 		}
-		
+
 		return res;
 	}
 
@@ -400,19 +400,19 @@ class JaxbResultMarshaller implements ResultMarshaller {
 
 	private DumpResponseType transformDumpResult(DumpResult dr) {
 		NullCheck.check(dr, "dr is null");
-		
+
 		// TODO: This seems really wrong. All this stuff shouldn't be done
 		// during marshalling, but rather before.
-		String istr = dr.getFilter();				
+		String istr = dr.getFilter();
     	DumpResponseType dt =  mIfmapObjFac.createDumpResponseType();
-    	
+
     	Collection<Identifier> idents = dr.getIdentifier();
     	long last_update = dr.getLastUpdateTime();
-    	
+
     	dt.setLastUpdate(""+last_update);
-    	
+
     	istr = (istr == null) ? "" : istr.trim().toLowerCase();
-    	
+
     	// No filter or * --> all identifiers.
 		if(istr.equals("") ||  istr.equals("*")) {
 			for(Identifier id : idents)
@@ -420,18 +420,18 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		} else {
 			StringTokenizer tokenizer = new StringTokenizer(istr,",");
 			ArrayList<String> list = new ArrayList<String>();
-				
+
 			while (tokenizer.hasMoreElements())
 				list.add(tokenizer.nextToken());
-				
+
 			if(!istr.equals("-"))
 				for(Identifier id : idents)
 					if(list.contains(id.getTypeString()))
-						this.add(dt, id);    			
+						this.add(dt, id);
 		}
 		return dt;
 	}
-	
+
 	private void add(DumpResponseType drt, Identifier ident) {
 		NullCheck.check(drt, "drt is null");
 		NullCheck.check(ident, "ident is null");
@@ -455,7 +455,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 				res.getResultItem().addAll(rits);
 		}
 	}
-	
+
 	private void addResultItems(NotifyResultType res, SearchResult result) {
 		if (result != null && res != null) {
 			List<ResultItemType> rits = createResultItemList(result);
@@ -463,7 +463,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 				res.getResultItem().addAll(rits);
 		}
 	}
-	
+
 	private void addResultItems(SearchResultType res, SearchResult result) {
 		if (result != null && res != null) {
 			List<ResultItemType> rits = createResultItemList(result);
@@ -471,10 +471,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 				res.getResultItem().addAll(rits);
 		}
 	}
-		
+
 	private List<ResultItemType> createResultItemList(SearchResult result) {
 		List<ResultItemType> list = new LinkedList<ResultItemType>();
-		
+
 		for (ResultItem ri : result.getResultItems()) {
 			List<Metadata> dmlist = ri.getMetdata();
 			GraphElement ge = ri.getGraphElement();
@@ -482,7 +482,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		}
 		return list;
 	}
-	
+
 	private ResultItemType transformToResultItem(GraphElement ge, List<Metadata> dmlist) {
 		NullCheck.check(ge, "ge is null");
 		NullCheck.check(dmlist, "dmlist is null");
@@ -491,10 +491,10 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		rit.setMetadata(mlist);
 		return rit;
 	}
-	
+
 	private ResultItemType createResultItemFor(GraphElement ge) {
 		Identifier i1 = null, i2 = null;
-		
+
 		if (ge instanceof Node) {
 			i1 = ((Node)ge).getIdentifier();
 		} else if (ge instanceof Link) {
@@ -508,16 +508,16 @@ class JaxbResultMarshaller implements ResultMarshaller {
 
 	private ResultItemType createResultItemFor(Identifier i1, Identifier i2) {
 		ResultItemType ret = mIfmapObjFac.createResultItemType();
-	
+
 		if (i1 != null)
 			addToResultItem(ret, i1);
-		
+
 		if (i2 != null)
 			addToResultItem(ret, i2);
-	
+
 		if (ret.getAccessRequestOrIdentityOrIpAddress().size() == 0)
 			throw new SystemErrorException("No Identifier in ResultItem");
-		
+
 		return ret;
 	}
 
@@ -527,16 +527,16 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		List<Object> identList = ret.getAccessRequestOrIdentityOrIpAddress();
 		identList.add(identifierHelper.transformIdentifierToJaxbObject(i));
 	}
-	
+
 	/**
 	 * This method converts from a datamodel metadata list to a
 	 * MetadataListType.
 	 * It simply uses the toW3CDocument() method of Metadata implementations
 	 * and puts those into the MetaDataListType
-	 * 
-	 * Warning, returns null if no metadata is available in the 
+	 *
+	 * Warning, returns null if no metadata is available in the
 	 * given list.
-	 * 
+	 *
 	 * @param List of metadata from the datamodel
 	 * @return Type which can be set in the autogenerated classes as
 	 *	 list
@@ -545,7 +545,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		MetadataListType ret = null;
 		if (metadata != null && metadata.size() > 0) {
 			ret = new MetadataListType();
-			
+
 			for (Metadata m : metadata) {
 				org.w3c.dom.Document w3cDoc =  m.toW3cDocument();
 				if (w3cDoc != null) {
@@ -561,7 +561,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 	public InputStream marshal(Result result) {
 		NullCheck.check(result, "result is null");
 		InputStream is = null;
-		
+
 		if (result instanceof ErrorResult) {
 			ErrorResult err = (ErrorResult)result;
 			ErrorCode errCode = err.getErrorCode();
@@ -582,7 +582,7 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		} else if (result instanceof AddressedDumpResult) {
 			AddressedDumpResult dr = (AddressedDumpResult)result;
 			is = createDumpResponse(dr.getDumpResult());
-		} else if (result instanceof 
+		} else if (result instanceof
 				de.fhhannover.inform.iron.mapserver.messages.EndSessionResult) {
 			is = createEndSessionResponse();
 		} else if (result instanceof PollResultsTooBigResult) {
@@ -594,15 +594,15 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			is = createSubscribeResponse();
 		} else if (result instanceof PurgePublishReceivedResult) {
 			is = createPurgePublisherResponse();
-		} else if (result instanceof 
+		} else if (result instanceof
 				de.fhhannover.inform.iron.mapserver.messages.RenewSessionResult) {
 			is = createRenewSessionResponse();
 		} else {
 			throw new RuntimeException("UNEXPECTED: Unknown Result!");
 		}
-		
+
 		if (is == null) throw new RuntimeException("UNEXPECTED: stream is null?");
-		
+
 		return is;
 	}
 }

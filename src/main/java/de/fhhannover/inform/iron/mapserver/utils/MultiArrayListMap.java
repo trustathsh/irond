@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.utils;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,11 +54,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
-	
+
 	private Map<K, List<V>> mMapOfLists;
-	
+
 	private int mSize;
-	
+
 	public MultiArrayListMap() {
 		mMapOfLists = new HashMap<K, List<V>>();
 		mSize = 0;
@@ -81,7 +81,7 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 
 	@Override
 	public V put(K key, V value) {
-		
+
 		/* We do not allow duplicates, that is, if the list of the
 		 * key contains an old entry where entry.equals(value) is true,
 		 * we remove the entry.
@@ -89,7 +89,7 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 		List<V> list = mMapOfLists.get(key);
 		int idx = findIndexOf(value, list);
 		V ret = null;
-	
+
 		/* If there never was a list, put a new one in.
 		 * If there was an element already, remove it.
 		 */
@@ -100,7 +100,7 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 			ret = list.remove(idx);
 			mSize--;
 		}
-		
+
 		list.add(value);
 		mSize++;
 		return ret;
@@ -120,10 +120,10 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	@Override
 	public Collection<V> values() {
 		ArrayList<V> ret = new ArrayList<V>();
-		
+
 		for (List<V> list : mMapOfLists.values())
 			ret.addAll(list);
-		
+
 		return ret;
 	}
 
@@ -131,7 +131,7 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	public V get(K key, V value) {
 		List<V> list = mMapOfLists.get(key);
 		int idx = findIndexOf(value, list);
-		
+
 		return (idx >= 0) ? list.get(idx) : null;
 	}
 
@@ -142,12 +142,12 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 		if (idx >= 0) {
 			list.remove(idx);
 			mSize--;
-			
+
 			// list is not needed anymore
 			if (list.size() == 0)
 				mMapOfLists.remove(key);
 		}
-		
+
 		return (idx >= 0);
 	}
 
@@ -155,10 +155,10 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	public Collection<V> getAll(K key) {
 		List<V> ret = new ArrayList<V>();
 		List<V> list = mMapOfLists.get(key);
-		
+
 		if (list != null)
 			ret.addAll(list);
-		
+
 		return ret;
 	}
 
@@ -169,10 +169,10 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 			mSize -= tmp.size();
 		return (tmp != null && tmp.size() > 0);
 	}
-	
+
 	/**
 	 * Helper to easily get the index of an object in a {@link List} instance.
-	 * 
+	 *
 	 * @param value
 	 * @param list list to look for value, might be null
 	 * @return -1 if list == null, otherwise list.indexOf(value)

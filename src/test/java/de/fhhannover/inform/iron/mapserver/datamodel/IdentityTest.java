@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,12 +55,12 @@ import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException
 
 /**
  * Some tests of type identity.
- * 
+ *
  * Only a few types are tested as they are basically all
  * handled the same way.
  * More care is taken with the type other.
- * 
- * 
+ *
+ *
  * @author aw
  * @version 0.1
  * created: 27.11.09
@@ -68,7 +68,7 @@ import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException
  *
  */
 public class IdentityTest extends TestCase {
-	
+
 	Identity id0, id1, id2, id3, id4;	/* aiknames */
 	Identity id5, id6, id7, id8;		/* distinguished names */
 	Identity id9, id10, id11, id12;		/* dns-names */
@@ -80,12 +80,12 @@ public class IdentityTest extends TestCase {
 	Identity id33, id34, id35, id36;	/* hip-hit */
 	Identity id37, id38, id39, id40;	/* other */
 	Identity id41, id42;				/* other */
-	
-	
+
+
 	public IdentityTest() throws Exception {
-		
+
 		DataModelService.setServerConfiguration(DummyDataModelConf.getDummyConf());
-		
+
 		/* create aik names */
 		try {
 			id0 = new Identity("xxlkjds", "myDomain", null, IdentityTypeEnum.aikName);
@@ -96,7 +96,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* create distinguished names */
 		try {
 			id5 = new Identity("cn=Ben Gray,ou=editing,o=New York Times,c=US", "mydomain", null, IdentityTypeEnum.distinguishedName);
@@ -106,7 +106,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* create dnsnames names */
 		try {
 			id9 = new Identity("xxlkjds", "mydomain", null, IdentityTypeEnum.dnsName);
@@ -116,7 +116,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* create email-addresses */
 		try {
 			id13 = new Identity("a@b.c", "mydomain", null, IdentityTypeEnum.emailAddress);
@@ -126,7 +126,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* create kerberos-addresses */
 		try {
 			id17 = new Identity("mueller/admin@EXAMPLE.COM", "mydomain", null, IdentityTypeEnum.kerberosPrincipal);
@@ -136,7 +136,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* create usernames */
 		try {
 			id21 = new Identity("user1", "mydomain", null, IdentityTypeEnum.kerberosPrincipal);
@@ -146,7 +146,7 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			e.printStackTrace();
 		}
-		
+
 		/* other types */
 		try {
 			id37 = new Identity("value22", "mydomain", "inform.fh-hannover.de:mytype", IdentityTypeEnum.other);
@@ -158,9 +158,9 @@ public class IdentityTest extends TestCase {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
+
+
 	@Test
 	public void testCreateOtherTypes() {
 		try {
@@ -175,21 +175,21 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			assertTrue(false);									/* test failed */
 		}
-		
+
 		try {
 			id38 = new Identity("value22", "mydomain", "inform.fh-hannover.de:mytype", IdentityTypeEnum.other);
 			assertTrue(true);									/* test passed */
 		} catch (InvalidIdentifierException e) {
 			assertTrue(false);									/* test failed */
 		}
-		
+
 		try {
 			id39 = new Identity("value22", "mydomain", "inform.fh-hannover.de:mytype2", IdentityTypeEnum.other);
 			assertTrue(true);									/* test passed */
 		} catch (InvalidIdentifierException e) {
 			assertTrue(false);									/* test failed */
 		}
-		
+
 		try {
 			id40 = new Identity("value33", "mydomain", "inform.fh-hannover.de:mytype2", IdentityTypeEnum.other);
 			assertTrue(true);
@@ -202,9 +202,9 @@ public class IdentityTest extends TestCase {
 		} catch (InvalidIdentifierException e) {
 			assertTrue(false);
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testCompareOtherTypes() {
 		assertTrue(id37.equals(id38));
@@ -213,8 +213,8 @@ public class IdentityTest extends TestCase {
 		assertTrue(id40.equals(id40));
 //		assertFalse(id40.equals(id41));
 	}
-	
-	
+
+
 	@Test
 	public void testCreateAik() {
 		assertNotNull(id1);
@@ -222,7 +222,7 @@ public class IdentityTest extends TestCase {
 		assertNotNull(id3);
 		assertNotNull(id4);
 	}
-	
+
 	@Test
 	public void testCompareAikNames() {
 //		assertFalse(id0.equals(id1));
@@ -231,7 +231,7 @@ public class IdentityTest extends TestCase {
 		assertFalse(id1.equals(id2));
 		assertFalse(id1.equals(id4));
 	}
-	
+
 	@Test
 	public void testCompareDifferentTypes() {
 		assertFalse(id1.equals(id5));
@@ -240,7 +240,7 @@ public class IdentityTest extends TestCase {
 		assertFalse(id13.equals(id17));
 		assertFalse(id17.equals(id21));
 	}
-	
+
 	@Test
 	public void testCreateDistinguished() {
 		assertNotNull(id5);
@@ -248,7 +248,7 @@ public class IdentityTest extends TestCase {
 		assertNotNull(id7);
 		assertNotNull(id8);
 	}
-	
+
 	@Test
 	public void testCompareDistinguishedNames() {
 		assertTrue(id6.equals(id6));
@@ -256,7 +256,7 @@ public class IdentityTest extends TestCase {
 		assertFalse(id5.equals(id6));
 		assertFalse(id5.equals(id8));
 	}
-	
+
 	@Test
 	public void testCompareUserNames() {
 		assertTrue(id21.equals(id21));
@@ -264,7 +264,7 @@ public class IdentityTest extends TestCase {
 		assertTrue(id22.equals(id23));
 		assertFalse(id24.equals(id23));
 	}
-	
+
 	@Test
 	public void testCreateKerberos() {
 		assertNotNull(id13);
@@ -272,7 +272,7 @@ public class IdentityTest extends TestCase {
 		assertNotNull(id15);
 		assertNotNull(id16);
 	}
-	
+
 	@Test
 	public void testCreateDNS() {
 		assertNotNull(id9);
@@ -280,7 +280,7 @@ public class IdentityTest extends TestCase {
 		assertNotNull(id11);
 		assertNotNull(id12);
 	}
-	
+
 	@Test
 	public void testCreateEmail() {
 		assertNotNull(id13);
@@ -288,7 +288,7 @@ public class IdentityTest extends TestCase {
 		assertNotNull(id15);
 		assertNotNull(id16);
 	}
-	
+
 	public void testCreateUserNames() {
 		assertNotNull(id21);
 		assertNotNull(id22);

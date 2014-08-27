@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,21 +68,21 @@ import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
  *
  */
 public class TimerTest extends TestCase {
-	
+
 	private ServerConfigurationProvider mServerConf;
 	private EventProcessor mEventProc = null;
 	private Queue<Event> mEventQueue;
 	private Queue<ActionSeries> mActionQueue;
-	
+
 	private ChannelIdentifier chSsrc;
 	private ChannelIdentifier chArc;
 	private ClientIdentifier clId;
-	
+
 	private static int TIME_OUT_MILIS = 200;
 	private static int SPAN_TIME_MILIS = 100;
-	
+
 	private static final String SESSION_ID = "0";
-	
+
 	@Before
 	public void setUp() {
 		chSsrc = new ChannelIdentifier("192.168.0.1", 8888, 0);
@@ -95,16 +95,16 @@ public class TimerTest extends TestCase {
 		mEventQueue, mActionQueue);
 		mEventProc.start();
 	}
-	
+
 	@After
 	public void tearDown() {
 		mEventProc.stop();
 	}
-	
+
 	/**
 	 * Create a new session, wait some time longer than TIME_OUT_SEC,
 	 * run endSession. Expect InvalidSessionID in the queue.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void testTimer_Timeout() throws InterruptedException {
@@ -115,29 +115,29 @@ public class TimerTest extends TestCase {
 		Event endsessionreq = TestEventCreator.createEndSessionRequest(clId,
 				chSsrc, SESSION_ID, true);
 		mEventQueue.put(newsessionreq);
-		
+
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-		
+
 		// notify the eventprocessor that the channel was closed
 		mEventQueue.put(closechannel);
 
 		// sleep some time
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(endsessionreq);
-	
+
 		// this should be a InvalidSessionID result, because a timeout happend
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkErrorResponse(ErrorCode.InvalidSessionID.toString(),
 				as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * Create a new session, wait some time shorter than TIME_OUT_SEC,
 	 * run endSession. Expect endSessionResult in the queue.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void testTimer_NoTimeout() throws InterruptedException {
@@ -148,31 +148,31 @@ public class TimerTest extends TestCase {
 		Event endsessionreq = TestEventCreator.createEndSessionRequest(clId,
 				chSsrc, SESSION_ID, true);
 		mEventQueue.put(newsessionreq);
-	
+
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0),
 				chSsrc));
-		
+
 		// notify the eventprocessor that the channel was closed
 		mEventQueue.put(closechannel);
 
 		// sleep some time
 		Thread.sleep(TIME_OUT_MILIS - SPAN_TIME_MILIS);
 		mEventQueue.put(endsessionreq);
-	
+
 		// this should be a endSessionResult, because a no timeout should happen
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkEndSessionResult(as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * Run newsession, close channel, run a number of renewSession requests and
 	 * close the channel after each renewSession. Simulates keeping a session
 	 * alive using renewSession. At the end do an endSession and expect an
 	 * endSessionResult.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -185,11 +185,11 @@ public class TimerTest extends TestCase {
 		Event endsessionreq = TestEventCreator.createEndSessionRequest(
 				clId, chSsrc, SESSION_ID, true);
 		mEventQueue.put(newsessionreq);
-		
+
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-		
+
 		// notify the eventprocessor that the channel was closed
 		mEventQueue.put(closechannel);
 		while (c < 3) {
@@ -211,7 +211,7 @@ public class TimerTest extends TestCase {
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkEndSessionResult(as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * create a new session, close the channel, timer starts. cancel timer
 	 * by doing one renewsession. don't close the channel again.
@@ -225,15 +225,15 @@ public class TimerTest extends TestCase {
 		// hmm... we use the stub, so the first session-id is 0... don't worry...
 		Event endsessionreq = TestEventCreator.createEndSessionRequest(clId,
 				chSsrc, SESSION_ID, false);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-		
+
 		// notify the eventprocessor that the channel was closed
 		mEventQueue.put(closechannel);
-		
+
 		Thread.sleep(TIME_OUT_MILIS - SPAN_TIME_MILIS);
 		Event renewsession = TestEventCreator.createRenewSessionRequest(clId,
 				chSsrc, SESSION_ID, true);
@@ -241,8 +241,8 @@ public class TimerTest extends TestCase {
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkRenewSessionResult(as.getActions().get(0),chSsrc));
-		
-		
+
+
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 
 		mEventQueue.put(endsessionreq);
@@ -251,12 +251,12 @@ public class TimerTest extends TestCase {
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkEndSessionResult(as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * create a new session, start a poll, close the SSRC, wait for TIME_OUT + SPAN
 	 * end the session using another SSRC request.
 	 * Results in endSessionResult on SSRC and ARC
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -268,22 +268,22 @@ public class TimerTest extends TestCase {
 				clId, chSsrc, SESSION_ID, true);
 		Event poll = TestEventCreator.createPollRequest(clId, chArc, SESSION_ID,
 				true);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-		
+
 		mEventQueue.put(poll);
 		mEventQueue.put(closechannel);
-		
+
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
-		
+
 		mEventQueue.put(endsessionreq);
-		
+
 		as = mActionQueue.get();
 		assertEquals(2, as.getActions().size());
-		
+
 		for (Action a : as.getActions()) {
 			if (a instanceof SendResponseAction) {
 				SendResponseAction sra = (SendResponseAction) a;
@@ -299,14 +299,14 @@ public class TimerTest extends TestCase {
 			}
 		}
 	}
-	
+
 	/**
 	 * If a client opened a ARC and used it for a poll, the TCP connection
 	 * of this ARC may still be opened. We don't have to start a timer in
 	 * this case.
-	 * 
+	 *
 	 * TODO: This is going to fail, because it is not implemented that way.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public void testTimer_NoTimerIfArcOpen() throws InterruptedException {
 		Event newsessionreq = TestEventCreator.createNewSessionRequest(
@@ -320,12 +320,12 @@ public class TimerTest extends TestCase {
 				clId, chSsrc, SESSION_ID, true);
 		Event poll = TestEventCreator.createPollRequest(clId, chArc, SESSION_ID,
 				true);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-	
+
 		// create a subscription
 		mEventQueue.put(subscribe);
 		as = mActionQueue.get();
@@ -337,12 +337,12 @@ public class TimerTest extends TestCase {
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkPollResult(as.getActions().get(0), chArc));
-		
+
 		// we don't have a poll pending, but the ARC is still open.
 		// close the SSRC and wait TIME_OUT + SPAN and see whether the
 		// session is still open
 		mEventQueue.put(closessrc);
-		
+
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(endsessionreq);
 		// this should be a endSessionResult, because a no timeout should happen
@@ -351,19 +351,19 @@ public class TimerTest extends TestCase {
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkEndSessionResult(as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * Same as above, but this time wait some time before closing the ARC:
 	 * do a poll, leave the ARC open.
 	 * close the SSRC.
-	 * wait TIME_OUT + SPAN 
+	 * wait TIME_OUT + SPAN
 	 * try renewsession (should work because the ARC is still open)
 	 * close ARC
 	 * wait TIME_OUT + SPAN
 	 * try endSession (shouldn't work because no channel was open)
-	 * 
-	 * 
-	 * @throws InterruptedException 
+	 *
+	 *
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void testTimer_NoTimerUntilArcClosed() throws InterruptedException {
@@ -381,12 +381,12 @@ public class TimerTest extends TestCase {
 				true);
 		Event renewsession = TestEventCreator.createRenewSessionRequest(clId,
 				chSsrc, SESSION_ID, true);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-	
+
 		// create a subscription
 		mEventQueue.put(subscribe);
 		as = mActionQueue.get();
@@ -398,15 +398,15 @@ public class TimerTest extends TestCase {
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkPollResult(as.getActions().get(0), chArc));
-		
+
 		// we don't have a poll pending, but the ARC is still open.
 		// close the SSRC and wait TIME_OUT + SPAN and see whether the
 		// session is still open
 		mEventQueue.put(closessrc);
-		
+
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(renewsession);
-		
+
 		// no timeout should have occurred because ARC is still open
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
@@ -418,18 +418,18 @@ public class TimerTest extends TestCase {
 
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(endsessionreq);
-		
+
 		// timer has expired
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkErrorResponse(ErrorCode.InvalidSessionID.toString(),
 				as.getActions().get(0),chSsrc));
 	}
-	
+
 	/**
 	 * Same as with the ARC, but this time the SSRC is closed last.
-	 * 
-	 * @throws InterruptedException 
+	 *
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void testTimer_NoTimerUntilSsrcClosed() throws InterruptedException {
@@ -446,12 +446,12 @@ public class TimerTest extends TestCase {
 		Event poll = TestEventCreator.createPollRequest(clId, chArc, SESSION_ID, true);
 		Event renewsession = TestEventCreator.createRenewSessionRequest(clId,
 				chSsrc, SESSION_ID, true);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-	
+
 		// create a subscription
 		mEventQueue.put(subscribe);
 		as = mActionQueue.get();
@@ -463,14 +463,14 @@ public class TimerTest extends TestCase {
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkPollResult(as.getActions().get(0), chArc));
-		
+
 		// close the ARC, this shouldn't start a timer, because the SSRC is
 		// still open.
 		mEventQueue.put(closearc);
-		
+
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(renewsession);
-		
+
 		// no timeout should have occurred because SSRC is still open
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
@@ -481,14 +481,14 @@ public class TimerTest extends TestCase {
 
 		Thread.sleep(TIME_OUT_MILIS + SPAN_TIME_MILIS);
 		mEventQueue.put(endsessionreq);
-		
+
 		// timer has expired
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkErrorResponse(ErrorCode.InvalidSessionID.toString(),
 				as.getActions().get(0),chSsrc));
 	}
-	
+
 	private static final String IDENTIFIER =
 		"<device>" + "<name>devName</name>" + "</device>";
 }

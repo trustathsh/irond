@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,59 +55,59 @@ import de.fhhannover.inform.iron.mapserver.exceptions.SessionNotFoundException;
 import de.fhhannover.inform.iron.mapserver.exceptions.StillMappedException;
 
 public class SessionRepositoryTest extends TestCase {
-	
+
 	private SessionRepository mSessionRep;
 	private ClientIdentifier clientIdent1;
 	private ClientIdentifier clientIdent11; // the same as client1
 	private ClientIdentifier clientIdent2;
-	
+
 	private ChannelIdentifier channelIdent1;
 	private ChannelIdentifier channelIdent11;
 	private ChannelIdentifier channelIdent2;
 	private String sessionId1 = "sessionid01";
 	private String sessionId11= "sessionid01";
 	private String sessionId2 = "sessionid02";
-	
+
 	public void setUp() {
 		mSessionRep = new SessionRepositoryImpl();
-		
+
 		clientIdent1 = new ClientIdentifier("client1");
 		clientIdent11 = new ClientIdentifier("client1");
 		clientIdent2 = new ClientIdentifier("client2");
-		
+
 		channelIdent1 = new ChannelIdentifier("192.168.0.1", 4321, 0);
-		channelIdent11 = new ChannelIdentifier("192.168.0.1", 4321, 0); 
+		channelIdent11 = new ChannelIdentifier("192.168.0.1", 4321, 0);
 		channelIdent2 = new ChannelIdentifier("192.168.0.1", 5321, 1);
-		
+
 		sessionId1 = "sessionid01";
 		sessionId11= "sessionid01";
 		sessionId2 = "sessionid02";
 	}
-	
-	
+
+
 	/**
 	 * Create a session and store/remove it in/from the repository
 	 */
 	public void testSessionRepository_SimpleStore() {
-		
+
 		Session session = new Session(clientIdent1, "ABCDEFGH");
 		try {
 			mSessionRep.store(session);
 		} catch (AlreadyStoredException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.store(session);
 			fail();
 		} catch (AlreadyStoredException e) {
 			// on purpose
 		}
-		
+
 		assertSame(mSessionRep.getBy(clientIdent1), session);
 		assertSame(mSessionRep.getBy(clientIdent11), session);
 		assertSame(mSessionRep.getBy(clientIdent1), mSessionRep.getBy(clientIdent11));
-		
+
 		try {
 			mSessionRep.drop(session);
 		} catch (SessionNotFoundException e) {
@@ -126,24 +126,24 @@ public class SessionRepositoryTest extends TestCase {
 		}
 		assertNull(mSessionRep.getBy(clientIdent1));
 	}
-	
+
 	public void testSessionRepository_StoreCollision() {
 		Session session1 = new Session(clientIdent1, "ABCD");
 		Session session2 = new Session(clientIdent11, "EFGH");
-		
+
 		try {
 			mSessionRep.store(session1);
 		} catch (AlreadyStoredException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.store(session2);
 			fail();
 		} catch (AlreadyStoredException e) {
 			// on purpose
 		}
-		
+
 		try {
 			mSessionRep.drop(session2);
 		} catch (SessionNotFoundException e) {
@@ -151,7 +151,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (StillMappedException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.drop(session1);
 			fail();
@@ -161,19 +161,19 @@ public class SessionRepositoryTest extends TestCase {
 			fail();
 		}
 	}
-	
+
 	public void testSessionRepository_MapChannelId() {
-		
+
 		Session session1 = new Session(clientIdent1, "ABCDEF");
 		Session session2 = new Session(clientIdent11, "ABCDEF");
 		Session session3 = new Session(clientIdent2, "ABCDEF");
-		
+
 		try {
 			mSessionRep.store(session1);
 		} catch (AlreadyStoredException e) {
 			fail();
 		}
-	
+
 		try {
 			mSessionRep.map(session1, channelIdent1);
 		} catch (SessionNotFoundException e) {
@@ -218,14 +218,14 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (SessionNotFoundException e) {
 		} catch (AlreadyMappedException e) {
 		}
-		
+
 		Session recv1 = mSessionRep.getBy(channelIdent1);
 		Session recv11 = mSessionRep.getBy(channelIdent11);
 		Session recv2 = mSessionRep.getBy(channelIdent2);
 		assertNotNull(recv1);
 		assertSame(recv1, recv11);
 		assertNull(recv2);
-		
+
 		try {
 			mSessionRep.drop(session1);
 			fail();
@@ -243,7 +243,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (StillMappedException e) {
 			// yes, we still have mappings
 		}
-		
+
 		// this one isn't in the rep at all...
 		try {
 			mSessionRep.drop(session3);
@@ -252,7 +252,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (StillMappedException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.unmap(session1, channelIdent1);
 		} catch (SessionNotFoundException e) {
@@ -260,7 +260,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (NoMappingException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.drop(session1);
 		} catch (SessionNotFoundException e) {
@@ -278,22 +278,22 @@ public class SessionRepositoryTest extends TestCase {
 			fail();
 		}
 	}
-	
+
 	/**
 	 * The same as for the ChannelId but this time with SessionId
 	 */
 	public void testSessionRepository_MapSessionId() {
-	
+
 		Session session1 = new Session(clientIdent1, "ABCDEF");
 		Session session2 = new Session(clientIdent11, "ABCDEF");
 		Session session3 = new Session(clientIdent2, "ABCDEF");
-		
+
 		try {
 			mSessionRep.store(session1);
 		} catch (AlreadyStoredException e) {
 			fail();
 		}
-	
+
 		try {
 			mSessionRep.map(session1, sessionId1);
 		} catch (SessionNotFoundException e) {
@@ -338,14 +338,14 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (SessionNotFoundException e) {
 		} catch (AlreadyMappedException e) {
 		}
-		
+
 		Session recv1 = mSessionRep.getBy(sessionId1);
 		Session recv11 = mSessionRep.getBy(sessionId11);
 		Session recv2 = mSessionRep.getBy(sessionId2);
 		assertNotNull(recv1);
 		assertSame(recv1, recv11);
 		assertNull(recv2);
-		
+
 		try {
 			mSessionRep.drop(session1);
 			fail();
@@ -363,7 +363,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (StillMappedException e) {
 			// yes, we still have mappings
 		}
-		
+
 		// this one isn't in the rep at all...
 		try {
 			mSessionRep.drop(session3);
@@ -372,7 +372,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (StillMappedException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.unmap(session1, sessionId1);
 		} catch (SessionNotFoundException e) {
@@ -380,7 +380,7 @@ public class SessionRepositoryTest extends TestCase {
 		} catch (NoMappingException e) {
 			fail();
 		}
-		
+
 		try {
 			mSessionRep.drop(session1);
 		} catch (SessionNotFoundException e) {

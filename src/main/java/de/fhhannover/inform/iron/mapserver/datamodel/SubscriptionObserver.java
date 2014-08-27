@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,23 +51,23 @@ import de.fhhannover.inform.iron.mapserver.datamodel.search.PollResult;
  * Interface a class which wants to observer subscriptions needs to implement.
  * It can register itself with a {@link SubscriptionNotifier} through a call
  * to registerSubscriptionNotifier().
- * 
+ *
  * Extensive documentation is provided for the methods.
- * 
+ *
  * @author aw
  */
 
 /*
  * created: 01.05.10
- * 
+ *
  * changes:
  *  01.05.10 aw - ...
  *  15.06.10 aw - removed endSessionPollResult(), this should be managed
  *  	in the communication layer alone.
- * 
+ *
  */
 public interface SubscriptionObserver {
-	
+
 	/**
 	 * This method is called by an object of class {@link SubscriptionNotifier}
 	 * if an open session has a {@link PollResult} available. For a given sessionId this
@@ -77,7 +77,7 @@ public interface SubscriptionObserver {
 	 * changes later on.
 	 * The caller is responsible to remember whether or not this method has been
 	 * called.
-	 * 
+	 *
 	 * A scenario might be the following:
 	 * 	- MAPC sends a subscribe request.
 	 *  - Datamodel generates the first PollResult and notifies using pollResultAvailable()
@@ -90,8 +90,8 @@ public interface SubscriptionObserver {
 	 *    and calls SubscriptionNotifier#getPollResultFor(String) to get the
 	 *    current PollResult
 	 *  - After a call to getPollResultFor() the next time the Subscription is changed
-	 *    a pollResultAvailable() call will be made. 
-	 * 
+	 *    a pollResultAvailable() call will be made.
+	 *
 	 * @param sessionId
 	 */
 	public void pollResultAvailable(String sessionId);

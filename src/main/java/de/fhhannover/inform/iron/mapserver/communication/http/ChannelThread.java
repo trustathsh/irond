@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -90,12 +90,12 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * Accepts the http-request from client, and if authenticated, creates an event
  * and put it in the event-queue.
- * 
+ *
  * @author tr, aw
- * 
+ *
  */
 public class ChannelThread implements Runnable {
-	
+
 	private static final String sName = "ChannelThread";
 
 	private static Logger sLogger;
@@ -103,7 +103,7 @@ public class ChannelThread implements Runnable {
 		sLogger = LoggingProvider.getTheLogger();
 	}
 
-	
+
 	/**
 	 * indicates whether this is the first request, will always be false after
 	 * the second one.
@@ -111,7 +111,7 @@ public class ChannelThread implements Runnable {
 	private final ChannelIdentifier mChannelIdentifier;
 	private final ChannelAuth mChannelAuth;
 	private final SSLSocket mSocket;
-	private final Queue<Event> mQueue;	
+	private final Queue<Event> mQueue;
 	private volatile boolean mFirstRequest;
 	private volatile boolean mDone;
 	private volatile boolean mBroken;
@@ -125,7 +125,7 @@ public class ChannelThread implements Runnable {
 		NullCheck.check(auth, ", auth is null");
 		NullCheck.check(cid, "cid is null");
 		NullCheck.check(queue, "queue is null");
-		
+
 		mSocket = (SSLSocket)socket;
 		mChannelAuth = auth;
 		mChannelIdentifier = cid;
@@ -169,7 +169,7 @@ public class ChannelThread implements Runnable {
 
 	/**
 	 * Send a reply to the client for this channel.
-	 * 
+	 *
 	 * We use HTTP request/response. This method is called by the {@link ActionProcessor}
 	 * after it was instructed by the {@link EventProcessor} to send out a
 	 * reply. This can only happen after we received a request on this channel.
@@ -177,19 +177,19 @@ public class ChannelThread implements Runnable {
 	 * Be aware, the {@link Thread} sending out the reply is not the {@link Thread}
 	 * executing this {@link ChannelThread} instance.
 	 * <br/>
-	 * 
+	 *
 	 * @param reply
 	 */
 	public void reply(InputStream reply) {
 		sLogger.debug(sName + ": Sending reply to " + getClientIdentifier());
 		try {
-			
+
 			// if we don't expect to send a response log it, but continue
 			if (!isExpectResponse()) {
 				sLogger.error(sName + ": UNEXPECTED: sending of response on "
 						+ getChannelIdentifier() + " which is not expecting a " +
 								"response");
-				
+
 				while (!isExpectResponse() && !isBroken() && isDone()) {
 					try {
 						this.wait();
@@ -198,24 +198,24 @@ public class ChannelThread implements Runnable {
 			}
 
 			if (isBroken()) {
-				sLogger.warn(sName + ": " + getChannelIdentifier() + 
+				sLogger.warn(sName + ": " + getChannelIdentifier() +
 						" is broken, can not send response");
-				
+
 				// try to abort again
 				abort();
 				return;
 			}
-			
+
 			if (isDone()) {
 				sLogger.error(sName + ": UNEXPECTED: sending of response on "
 						+ getChannelIdentifier() + " which is in state 'DONE'");
 				return;
 			}
-			
+
 			BasicHeader header = null;
 
-			
-			
+
+
 			HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1,
 					HttpStatus.SC_OK, "");
 			header = new BasicHeader("Content-Type", "application/soap+xml");
@@ -229,13 +229,13 @@ public class ChannelThread implements Runnable {
 				response.addHeader(new BasicHeader("Content-Encoding", "gzip"));
 				reply = compress(reply);
 			}
-			
+
 			int size = reply.available();
 			sLogger.trace(sName + ": Length of reply on wire=" + size + " bytes");
 			header = new BasicHeader("Content-Length", "" + size);
 			response.addHeader(header);
-			
-			
+
+
 			synchronized (this) {
 				HttpEntity respEntity = new InputStreamEntity(reply, size);
 				response.setEntity(respEntity);
@@ -246,7 +246,7 @@ public class ChannelThread implements Runnable {
 				mExpectResponse = false;
 				this.notify();
 			}
-			
+
 		} catch (HttpException e) {
 			sLogger.error(sName + ": Sending response failed: " + e.getMessage());
 			sLogger.error(sName + ": Setting channel " +  getChannelIdentifier() +
@@ -262,9 +262,9 @@ public class ChannelThread implements Runnable {
 						// doesn't guarantee receipt by the MAPC, but it's good
 						// enough to simply take it as a "closed after sending"
 						sLogger.trace(sName + ": " + getClientIdentifier() +
-								" closed " + getChannelIdentifier() + 
+								" closed " + getChannelIdentifier() +
 								" directly after sending response.");
-						
+
 						// we just set it to done, the ClosedChannelEvent
 						// is created in run(), after the closed channel is
 						// detected.
@@ -279,7 +279,7 @@ public class ChannelThread implements Runnable {
 					// with ByteArrayInputStream, so that shouldn't happen.
 					sLogger.error(sName + ": Could not get remaining bytes");
 					sLogger.error(sName + ": " + e.getMessage());
-					sLogger.error(sName + ": Setting channel " 
+					sLogger.error(sName + ": Setting channel "
 							+ getChannelIdentifier() + " into state 'BROKEN'");
 					broken();
 				}
@@ -291,22 +291,22 @@ public class ChannelThread implements Runnable {
 	@Override
 	public void run() {
 
-		
+
 		while (!isDone() && !isBroken()) {
 			Event event = null;
 			try {
 				InputStream body = receiveRequestBodyContent();
-				
+
 				event = new RequestChannelEvent(getChannelIdentifier(),
 						getClientIdentifier(), body,  mFirstRequest);
 				mFirstRequest = false;
-				
+
 				synchronized (this) {
 					if (mExpectResponse == true) {
 						sLogger.error(sName + ": UNEXPECTED: Received next "
 								+ "request before reply was sent to client. "
 								+ getClientIdentifier() + " on " + getChannelIdentifier());
-						
+
 						// wait until something happens
 						while (isExpectResponse() && !isBroken() && !isDone()) {
 							try {
@@ -316,41 +316,41 @@ public class ChannelThread implements Runnable {
 					}
 				}
 				mExpectResponse = true;
-				
+
 				// put the created event into the queue.
 				putIntoQueue(event);
 			} catch (HttpException e) {
-				sLogger.error(sName + ": Receiving request failed: " 
+				sLogger.error(sName + ": Receiving request failed: "
 						+ e.getMessage());
 				sLogger.error(sName + ": Setting channel " +  getChannelIdentifier()
 						+ " into state 'BROKEN'");
 				// interpret this as an error and close channel
 				broken();
-				
+
 			} catch (IOException e) {
 				if (e.getMessage() != null && e.getMessage().equals("Client closed connection")) {
 					sLogger.debug(sName + ": " + mChannelIdentifier + " closed");
 					setDone();
 				} else {
 					sLogger.error(sName + ": Receiving request failed");
-					
+
 					if (e instanceof SSLHandshakeException) {
 						sLogger.error(sName + ": SSLHandshakeException: Client "
 								+ "doesn't know about our certificate (?)");
 					}
-					
+
 					sLogger.error(sName + ": Setting channel " +  getChannelIdentifier() +
 						" into state 'BROKEN'");
 					broken();
 				}
-				
+
 			} catch (ChannelAuthException e) {
 				sLogger.warn(sName + ": Authentication on "
 						+ mChannelIdentifier + " failed: " +  e.getMessage());
 				sendUnauthorizedResponse();
 			}
 		} // end while (!isDone && isBroken)
-					
+
 		// If we end up with a broken channel, create a BadChannelEvent,
 		// else a ClosedChannelEvent.
 		if (isBroken())
@@ -358,7 +358,7 @@ public class ChannelThread implements Runnable {
 		else
 			putIntoQueue(new ClosedChannelEvent(getChannelIdentifier()));
 	}
-	
+
 	private void putIntoQueue(Event event) {
 		while (event != null) {
 			try {
@@ -371,8 +371,8 @@ public class ChannelThread implements Runnable {
 			}
 		}
 	}
-	
-	private void sendUnauthorizedResponse() {		
+
+	private void sendUnauthorizedResponse() {
 		String html = "<html><head><title>401 Unauthorized</title></head></html>";
 		HttpResponse denied = new BasicHttpResponse(HttpVersion.HTTP_1_1,
 				HttpStatus.SC_UNAUTHORIZED, "Unauthorized");
@@ -381,12 +381,12 @@ public class ChannelThread implements Runnable {
 
 		denied.addHeader(header);
 		header = new BasicHeader("Content-length", "" + html.length());
-		denied.addHeader(header);				
+		denied.addHeader(header);
 		try {
 			StringEntity entity = new StringEntity(html);
-			denied.setEntity(entity);			
+			denied.setEntity(entity);
 			mHttpConnection.sendResponseHeader(denied);
-			mHttpConnection.sendResponseEntity(denied);			
+			mHttpConnection.sendResponseEntity(denied);
 			EntityUtils.consume(entity);
 		} catch (HttpException e) {
 			sLogger.error(sLogger + " Could not send unauthorized response");
@@ -401,7 +401,7 @@ public class ChannelThread implements Runnable {
 
 	/**
 	 * Hackery
-	 * 
+	 *
 	 * @return the HTTP body as {@link InputStream}
 	 * @throws HttpException
 	 * @throws IOException
@@ -412,66 +412,66 @@ public class ChannelThread implements Runnable {
 		HttpEntity reqEntity = null;
 		boolean entityGzipped = false;
 		HttpRequest req = mHttpConnection.receiveRequestHeader();
-		
+
 		if (req instanceof HttpEntityEnclosingRequest) {
 			mHttpConnection
 					.receiveRequestEntity((HttpEntityEnclosingRequest) req);
 			reqEntity = ((HttpEntityEnclosingRequest) req).getEntity();
 		}
-		
+
 		try {
 			mChannelAuth.authenticate(req);
 		} catch (ChannelAuthException e) {
 			if (reqEntity != null)
 				EntityUtils.consume(reqEntity);
-			
+
 			throw e;
 		}
-		
-		sLogger.debug(sName + ": Client " + getClientIdentifier() + 
+
+		sLogger.debug(sName + ": Client " + getClientIdentifier() +
 				" authenticated successfully on channel " + mChannelIdentifier);
-	
+
 		// here we are authenticated
-	
+
 		// check the headers for Accept-Encoding: gzip
 		mUseGzip = clientAcceptsGzip(req) ? true : mUseGzip;
 		entityGzipped = isReqEntityGzipped(req);
-		
+
 		if (mUseGzip)
-			sLogger.trace(sName + ": Client " + getClientIdentifier() 
+			sLogger.trace(sName + ": Client " + getClientIdentifier()
 					+ " wants gzipped encoding");
 
 		if (entityGzipped)
 			sLogger.trace(sName + ": Received request is gzipped");
-		
+
 		if (reqEntity == null)
 			throw new HttpException();
-		
+
 		// We bluntly copy the whole stream, but it makes life easier
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		reqEntity.writeTo(baos);
 		baos.close();
 		InputStream is = new ByteArrayInputStream(baos.toByteArray());
-		
-		
+
+
 		if (is.available() <= 0) {
 			throw new IOException("No content received");
 		}
-		
+
 		if (entityGzipped)
 			is = uncompress(is);
-		
+
 		return is;
 	}
 
 	/**
 	 * just look for gzip somewhere and if it's there, use it. ugly.
-	 * 
+	 *
 	 * @param req
 	 * @return
 	 */
 	private boolean clientAcceptsGzip(HttpRequest req) {
-		HeaderElementIterator it = 
+		HeaderElementIterator it =
 			new BasicHeaderElementIterator(req.headerIterator("Accept-Encoding"));
 		while (it.hasNext()) {
 			HeaderElement element = it.nextElement();
@@ -480,12 +480,12 @@ public class ChannelThread implements Runnable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * just look for gzip somewhere and if it's there, use it. ugly.
 	 */
 	private boolean isReqEntityGzipped(HttpRequest req) {
-		HeaderElementIterator it = 
+		HeaderElementIterator it =
 			new BasicHeaderElementIterator(req.headerIterator("Content-Encoding"));
 		while (it.hasNext()) {
 			HeaderElement element = it.nextElement();
@@ -498,19 +498,19 @@ public class ChannelThread implements Runnable {
 	private boolean isBroken() {
 		return mBroken;
 	}
-	
+
 	private InputStream uncompress(InputStream is) throws IOException {
 		int c = 0;
 		// wrap to uncompress
 		is = new GZIPInputStream(is, is.available());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		while ((c = is.read()) >= 0)
 			baos.write(c);
-			
+
 		baos.close();
 		is.close();
-		
+
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
@@ -518,10 +518,10 @@ public class ChannelThread implements Runnable {
 		int read;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		GZIPOutputStream go = new GZIPOutputStream(baos);
-	
+
 		while ((read = is.read()) > 0)
 			go.write(read);
-		
+
 		go.close();
 		baos.close();
 		return new ByteArrayInputStream(baos.toByteArray());
@@ -540,7 +540,7 @@ public class ChannelThread implements Runnable {
 		mBroken = true;
 		abort();
 	}
-	
+
 	/**
 	 * Try to close the underlying socket of this {@link ChannelThread}.
 	 * If the thread executing this {@link ChannelThread} is waiting on
@@ -552,14 +552,14 @@ public class ChannelThread implements Runnable {
 				mSocket.close();
 		} catch (IOException e) {
 			sLogger.warn(sName + ": Exception closing socket: " + e.getMessage());
-		}	
+		}
 	}
 
 	/**
 	 * Try to abort this {@link ChannelThread}. First set mDone to true,
 	 * then try to close the socket. This should do the trick.
 	 */
-	public void abort() {		
+	public void abort() {
 		setDone();
 		close();
 	}

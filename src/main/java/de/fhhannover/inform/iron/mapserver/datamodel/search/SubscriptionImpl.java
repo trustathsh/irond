@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,32 +57,32 @@ import de.fhhannover.inform.iron.mapserver.messages.SearchRequest;
 import de.fhhannover.inform.iron.mapserver.utils.LengthCheck;
 import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
- * A subscription object encapsulates a {@link SearchRequest} and 
+ * A subscription object encapsulates a {@link SearchRequest} and
  * four different {@link SearchRequest} objects. Update, delete, notify and
  * search.
- * 
- * 
+ *
+ *
  * @version 0.1
  * @author aw, vp
  */
 
 /*
  * created: 03.05.10
- * 
+ *
  * changes:
  *  03.05.10 aw, vp  ...
  *  08.06.10 aw - some commenting and minor changes
  *  11.06.10 aw - add names to the search results :-/
- * 
- * 
+ *
+ *
  */
 class SubscriptionImpl implements Subscription {
-	
+
 	/**
 	 * Name of the subscription
 	 */
 	private final String mName;
-	
+
 	/**
 	 * Corresponding searchRequest
 	 */
@@ -93,16 +93,16 @@ class SubscriptionImpl implements Subscription {
 	 * contains.
 	 */
 	private final Map<GraphElement, GraphElement> mGraphElements;
-	
+
 	private boolean changed;
-	
+
 	private boolean exceededSize;
-	
+
 	/**
 	 * Reference to the publisher who is the owner of this subscription.
 	 */
 	private final Publisher mPublisherReference;
-	
+
 	private SearchResult reRunOldResult;
 	private SearchResult reRunNewResult;
 
@@ -111,16 +111,16 @@ class SubscriptionImpl implements Subscription {
 		NullCheck.check(name, "name is null");
 		NullCheck.check(searchRequest, "searchRequest is null");
 		LengthCheck.checkMinMax(name, 1, 20, "subscription name length bad");
-		
+
 		mName = name;
 		mPublisherReference = publisher;
 		mSearchRequest = searchRequest;
 		mGraphElements = new HashMap<GraphElement, GraphElement>();
-		
+
 		changed = false;
 		exceededSize = false;
 	}
-			
+
 
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#getName()
@@ -140,7 +140,7 @@ class SubscriptionImpl implements Subscription {
 	public SearchRequest getSearchRequest() {
 		return mSearchRequest;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#getContainers()
 	 */
@@ -148,7 +148,7 @@ class SubscriptionImpl implements Subscription {
 	public List<GraphElement> getContainers() {
 		return new ArrayList<GraphElement>(mGraphElements.values());
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#addContainer(de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement)
 	 */
@@ -158,7 +158,7 @@ class SubscriptionImpl implements Subscription {
 		if (mGraphElements.put(ge, ge) != null)
 			throw new SystemErrorException("Container " + ge + " was already on"
 					+ " on " + this);
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -167,7 +167,7 @@ class SubscriptionImpl implements Subscription {
 	@Override
 	public void removeGraphElement(GraphElement ge) {
 		NullCheck.check(ge, "mc is null");
-		
+
 		if (mGraphElements.remove(ge) == null)
 			throw new SystemErrorException("Tried to remove non-existend " + ge
 					+ " from " + this);
@@ -212,7 +212,7 @@ class SubscriptionImpl implements Subscription {
 	public void setChanged() {
 		changed = true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#isChanged()
 	 */
@@ -228,7 +228,7 @@ class SubscriptionImpl implements Subscription {
 	public Publisher getPublisherReference() {
 		return mPublisherReference;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#getMaxResultSize()
 	 */
@@ -236,7 +236,7 @@ class SubscriptionImpl implements Subscription {
 	public Integer getMaxResultSize() {
 		return mSearchRequest.getMaxResultSize();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#exceededSize()
 	 */
@@ -244,7 +244,7 @@ class SubscriptionImpl implements Subscription {
 	public boolean exceededSize() {
 		return exceededSize;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.search.Subscription#setExceededSize()
 	 */
@@ -252,7 +252,7 @@ class SubscriptionImpl implements Subscription {
 	public void setExceededSize() {
 		exceededSize = true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

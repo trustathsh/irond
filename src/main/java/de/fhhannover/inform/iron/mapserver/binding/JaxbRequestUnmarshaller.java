@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.binding;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.binding;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -119,24 +119,24 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * Implementation of the {@link RequestTransformer} interface using JAXB
  * for the XML binding.
- * 
+ *
  * Functionality originates from the old MessageTransformer class. It was
  * a mess back then and it's still a mess, but we now hide it behind an
  * interface.
- * 
+ *
  * @author aw
  */
 class JaxbRequestUnmarshaller implements RequestUnmarshaller {
-	
+
 	private static DocumentBuilderFactory sDocumentBuilderFactory;
-	
+
 	private ThreadLocal<Binder<Node>> mBinder;
 	private ThreadLocal<DocumentBuilder> mDocumentBuilder;
-	
-	private final JAXBContext mJaxbCtx; 
+
+	private final JAXBContext mJaxbCtx;
 	private final JaxbIdentifierHelper identifierHelper;
 	private final RequestFactory requestFactory;
-	
+
 	private final MetadataFactory mMetaFac;
 	private final ValidationEventHandlerFactory mValidationEventHandlerFactory;
 
@@ -152,32 +152,32 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 	/**
 	 * Constructer
-	 * @param schemaProvider 
-	 * @param metaFac2 
+	 * @param schemaProvider
+	 * @param metaFac2
 	 */
 	JaxbRequestUnmarshaller(MetadataFactory metaFac, ValidationEventHandlerFactory mvefac,
 			SchemaProvider schemaProvider) {
-		
+
 		try {
 			NullCheck.check(metaFac, "metaFac is null");
 			NullCheck.check(mvefac, "fac is null");
 			NullCheck.check(schemaProvider, "schemaProvider is null");
-		
+
 			// Schema is allowed to be null, in which case we won't do
 			// validation at all
 			mSchema = schemaProvider.provideSchema();
-			
+
 			mMetaFac = metaFac;
 			mValidationEventHandlerFactory = mvefac;
-			
+
 			// FIXME: Move this one out to the initialization?
 			identifierHelper = new JaxbIdentifierHelper();
 			requestFactory = RequestFactory.getInstance();
 			mJaxbCtx = JAXBContext.newInstance(Envelope.class);
-			
+
 			mBinder = new BinderThreadLocal();
 			mDocumentBuilder = new DocumentBuilderThreadLocal();
-			
+
 		} catch (JAXBException e) {
 			// go crazy if we can't initialize the JAXB context or something
 			// JAXB related
@@ -186,20 +186,20 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		}
 	}
 
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Request unmarshal(InputStream requestContent) throws UnmarshalException,
 			InvalidIdentifierException, InvalidMetadataException, InvalidFilterException {
-	
+
 		SimpleValidationEventHandler validationHandler = null;
 		JAXBElement<Envelope> reqEnvJaxb = null;
 		Envelope reqEnv = null;
 		Body soapBody = null;
 		Document requestDocument = null;
-		
+
 		mBinder.set(mJaxbCtx.createBinder());
-	
+
 		// Do we want to validate against the given schema?
 		if (mSchema != null) {
 			mBinder.get().setSchema(mSchema);
@@ -210,7 +210,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 				throw new UnmarshalException(e.getMessage());
 			}
 		}
-		
+
 		try {
 			requestDocument = mDocumentBuilder.get().parse(requestContent);
 			reqEnvJaxb = (JAXBElement<Envelope>) mBinder.get().unmarshal(requestDocument);
@@ -223,10 +223,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		} catch (JAXBException e) {
 			if (validationHandler.hasErrorOccured())
 				throw new UnmarshalException(validationHandler.getErrorMessage());
-			
+
 			e.printStackTrace();
 			throw new UnmarshalException(e.getMessage());
-			
+
 		} finally {
 			try {
 				requestContent.close();
@@ -235,76 +235,76 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (reqEnvJaxb.getDeclaredType() != Envelope.class)
 			throw new UnmarshalException("No SOAP Envelope found");
-		
+
 		reqEnv = reqEnvJaxb.getValue();
-		
+
 		if (reqEnv == null)
 			throw new UnmarshalException("No SOAP Envelope found");
 
 		soapBody = reqEnv.getBody();
-		
+
 		if (soapBody == null)
 			throw new UnmarshalException("No SOAP Body found");
-	
-	
+
+
 		try {
 			if (soapBody.getDump() != null) {
-				
+
 				return transformDumpRequest(soapBody.getDump());
-				
+
 			} else if (soapBody.getEndSession() != null) {
-				
+
 				return transformEndSessionRequest(soapBody.getEndSession());
-				
+
 			} else if (soapBody.getNewSession() != null) {
-				
+
 				return transformNewSessionRequest(soapBody.getNewSession());
-				
+
 			} else if (soapBody.getPoll() != null) {
-				
+
 				return transformPollRequest(soapBody.getPoll());
-				
+
 			} else if (soapBody.getPublish() != null) {
-				
+
 				return transformPublishRequest(soapBody.getPublish());
-				
+
 			} else if (soapBody.getPurgePublisher() != null) {
-				
+
 				return transformPurgePublisherRequest(soapBody.getPurgePublisher());
-				
+
 			} else if (soapBody.getRenewSession() != null) {
-				
+
 				return transformRenewSessionRequest(soapBody.getRenewSession());
-				
+
 			} else if (soapBody.getSearch() != null) {
-				
+
 				return transformSearchRequest(soapBody.getSearch());
-				
+
 			} else if (soapBody.getSubscribe() != null) {
-				
+
 				return transformSubscribeRequest(soapBody.getSubscribe());
-				
+
 			} else {
-				
+
 				throw new UnmarshalException("no IF-MAP operation found in request");
 			}
 		} catch (RequestCreationException e) {
 			throw new UnmarshalException(e.getMessage());
 		}
 	}
-	
+
 	private Map<String, String> extractNsMap(Node node) {
 		Map<String, String> ret = new HashMap<String, String>();
 		extractNsMap(node, ret);
 		return ret;
 	}
-	
+
 	/**
 	 * FIXME: I'm afraid this will not work with default namespaces.
-	 * 
+	 *
 	 * @param w3cNode
 	 * @param nsMap
 	 */
@@ -313,13 +313,13 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		if (w3cNode == null) {
 			return;
 		}
-	
+
 		if (w3cNode.getNodeType() == Node.DOCUMENT_NODE) {
 			return;
 		}
-		
+
 		NamedNodeMap nnm = w3cNode.getAttributes();
-		
+
 		for (int i = 0; i < nnm.getLength(); i++) {
 			Node node = nnm.item(i);
 			if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
@@ -335,11 +335,11 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 				}
 			}
 		}
-		
+
 		extractNsMap(w3cNode.getParentNode(), nsMap);
 	}
 
-	
+
 	private DumpRequest transformDumpRequest(DumpRequestType dump)
 			throws RequestCreationException {
 		String sessionId = dump.getSessionId();
@@ -347,14 +347,14 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return requestFactory.createDumpRequest(sessionId, identifier);
 	}
 
-	
+
 	private EndSessionRequest transformEndSessionRequest(EndSessionType endSession)
 			throws RequestCreationException {
 		String sessionId = endSession.getSessionId();
 		return requestFactory.createEndSessionRequest(sessionId);
 	}
 
-	
+
 	private NewSessionRequest transformNewSessionRequest(NewSessionRequestType newSession)
 			throws RequestCreationException {
 		BigInteger mprsRrecv = newSession.getMaxPollResultSize();
@@ -368,37 +368,37 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return requestFactory.createPollRequest(sessionId);
 	}
 
-	
+
 	private PurgePublisherRequest transformPurgePublisherRequest( PurgePublisherRequestType purgePublisher)
 			throws RequestCreationException {
 		String sessionId = purgePublisher.getSessionId();
 		String publisherId = purgePublisher.getIfmapPublisherId();
 		return requestFactory.createPurgePublisherRequest(sessionId, publisherId);
 	}
-	
+
 
 	private RenewSessionRequest transformRenewSessionRequest(RenewSessionType renewSession)
 			throws RequestCreationException {
 		String sessionId = renewSession.getSessionId();
 		return requestFactory.createRenewSessionRequest(sessionId);
 	}
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param search
 	 * @return
 	 * @throws RequestCreationException
 	 * @throws InvalidIdentifierException
-	 * @throws InvalidFilterException 
-	 * @throws UnmarshalException 
+	 * @throws InvalidFilterException
+	 * @throws UnmarshalException
 	 */
 	private SearchRequest transformSearchRequest(SearchType search, String sessionID)
 			  									throws RequestCreationException,
 			  											InvalidIdentifierException,
 			  											InvalidFilterException,
 			  											UnmarshalException {
-		
+
 		Node w3cSearch = null;
 		SearchRequest searchRequest = null;
 		if (search != null) {
@@ -410,22 +410,22 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			// if no depth is given, process it with zero depth
 			int maxDepthi = (maxDepth == null) ? 0 : maxDepth.intValue();
 			Integer maxSizeI = (maxSize == null) ? null : new Integer(maxSize.intValue());
-			
+
 			Filter matchLinks = FilterFactory.newFilter(search.getMatchLinks(), nsMap);
 			Filter resultFilter = FilterFactory.newFilter(search.getResultFilter(), nsMap);
-			TerminalIdentifiers terminalIdents = 
+			TerminalIdentifiers terminalIdents =
 				new TerminalIdentifiers(search.getTerminalIdentifierType());
-			
+
 			if (search instanceof SearchRequestType)
 				sessionID = ((SearchRequestType)search).getSessionId();
-			
+
 			searchRequest = requestFactory.createSearchRequest(sessionID,
 					maxDepthi, maxSizeI, terminalIdents, ident,
 					matchLinks, resultFilter);
 		}
 		return searchRequest;
 	}
-	
+
 
 
 
@@ -435,9 +435,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 														InvalidFilterException,
 														UnmarshalException {
 		return transformSearchRequest(search, null);
-	}	
-	
-	
+	}
+
+
 	private PublishRequest transformPublishRequest(PublishRequestType publish)
 												throws RequestCreationException,
 														InvalidIdentifierException,
@@ -447,7 +447,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		PublishRequest publishRequest = null;
 		List<Object> list = null;
 		List<SubPublishRequest> reqlist = null;
-		
+
 		if (publish != null){
 			String sid = publish.getSessionId();
 
@@ -458,37 +458,37 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return publishRequest;
 	}
 
-	
-	private SubscribeRequest transformSubscribeRequest (SubscribeRequestType srt) 
+
+	private SubscribeRequest transformSubscribeRequest (SubscribeRequestType srt)
 												throws RequestCreationException,
 														InvalidIdentifierException,
 														InvalidFilterException, UnmarshalException {
-		
+
 		SubscribeRequest sr = null;
 		List<Object> list = null;
 		List<SubSubscribeRequest> sublist = null;
-		
+
 		if (srt != null) {
 			String sid = srt.getSessionId();
 			list = srt.getUpdateOrDelete();
 			sublist = transformToSubSubscribeList(list, srt.getSessionId());
 			sr = requestFactory.createSubscribeRequest(sid, sublist);
 		}
-		
+
 		return sr;
 	}
-	
-	
-	private List<SubSubscribeRequest> transformToSubSubscribeList(List<Object> list, String sessionID) 
+
+
+	private List<SubSubscribeRequest> transformToSubSubscribeList(List<Object> list, String sessionID)
 												throws RequestCreationException,
 														InvalidIdentifierException,
 														InvalidFilterException, UnmarshalException {
-		
+
 		ArrayList<SubSubscribeRequest> ssr = new ArrayList<SubSubscribeRequest>();
-		
+
 		if (list == null)
 			return ssr;
-		
+
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i) instanceof DeleteSearchRequestType) {
 				ssr.add(new SubscribeDelete(
@@ -496,31 +496,31 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			} else if (list.get(i) instanceof SubscribeRequestType.Update) {
 				SearchRequest sr = transformSearchRequest
 							(((SubscribeRequestType.Update)list.get(i)), sessionID);
-				
+
 				ssr.add(requestFactory.createSubscribeUpdate(
 						((SubscribeRequestType.Update)list.get(i)).getName(), sr));
 			} else {
 				throw new UnmarshalException("unknown subscribe operation found");
 			}
 		}
-		
+
 		return ssr;
 	}
-	
-	
+
+
 
 	/**
 	 * Wrapper to transform a list of objects which can be of
 	 * type UpdateType, DeleteType and NotifyType into
-	 * 
-	 * 
+	 *
+	 *
 	 * @param list
 	 * @return
 	 * @throws InvalidIdentifierException
 	 * @throws RequestCreationException
-	 * @throws InvalidMetadataExceptionn 
-	 * @throws InvalidFilterException 
-	 * @throws UnmarshalException 
+	 * @throws InvalidMetadataExceptionn
+	 * @throws InvalidFilterException
+	 * @throws UnmarshalException
 	 */
 	private List<SubPublishRequest> transformToSubPublishRequestList(List<Object> list)
 				throws InvalidIdentifierException, RequestCreationException,
@@ -528,7 +528,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 													InvalidFilterException,
 													UnmarshalException{
 		List<SubPublishRequest> retList = new ArrayList<SubPublishRequest>();
-		
+
 		if (list != null) {
 			for (Object o : list) {
 				SubPublishRequest tret = transformToSubPublishRequest(o);
@@ -538,8 +538,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		}
 		return retList;
 	}
-	
-	
+
+
 
 	private SubPublishRequest transformToSubPublishRequest(Object o)
 			throws RequestCreationException, InvalidIdentifierException,
@@ -563,15 +563,15 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 	/**
 	 * FIXME: Come back here and check what the lifetime should be...
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 * @throws InvalidMetadataExceptionn
 	 * @throws InvalidIdentifierException
 	 * @throws RequestCreationException
-	 * @throws UnmarshalException 
+	 * @throws UnmarshalException
 	 */
-	private SubPublishRequest transformNotifyType(NotifyType value) throws 
+	private SubPublishRequest transformNotifyType(NotifyType value) throws
 												InvalidMetadataException,
 												InvalidIdentifierException,
 												RequestCreationException,
@@ -585,13 +585,13 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			} else {
 				lt = MetadataLifeTime.forever;
 			}
-		
+
 			List<Metadata> mlist = transformMetadata(value.getMetadata(), lt);
 			Identifier idents[] = identifierHelper.extractFromNotify(value, mBinder.get());
 			ret = requestFactory.createPublishNotifyRequest(idents[0], idents[1],
 					mlist, lt);
 		}
-		
+
 		return ret;
 	}
 
@@ -610,13 +610,13 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		}
 		return ret;
 	}
-	
-	
+
+
 
 	private SubPublishRequest transformUpdateType(UpdateType value)
 				throws InvalidIdentifierException, RequestCreationException,
 				InvalidMetadataException, UnmarshalException {
-		
+
 		SubPublishRequest ret = null;
 		if (value != null) {
 			MetadataLifeTime lt;
@@ -631,27 +631,27 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			}
 			if (value.getMetadata() == null) {
 				throw new InvalidMetadataException("No Metadata in update element found.");
-				
+
 			}
 			List<Metadata> mlist = transformMetadata(value.getMetadata(), lt);
 			Identifier idents[] = identifierHelper.extractFromUpdate(value, mBinder.get());
 			ret = requestFactory.createPublishUpdateRequest(idents[0], idents[1], mlist, lt);
 		}
-		
+
 		return ret;
 	}
-	
 
-	
+
+
 	/**
 	 * Method to transform the autogenerated MetadataList into a
-	 * List of datamodel Metadata. 
-	 * 
+	 * List of datamodel Metadata.
+	 *
 	 * This method transforms to the XMLMetadata implementation
 	 * using DOMBuilder from JDOM to create a JDOM Document from
 	 * the Document objects in the MetadataListType.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param metaDataListType
 	 * @return List of Metadata that the datamodel can work with
 	 * @throws InvalidMetadataExceptionn
@@ -660,10 +660,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			MetadataLifeTime lifetime) throws InvalidMetadataException {
 		List<Metadata> lmeta = CollectionHelper.provideListFor(Metadata.class);
 		List<Object> lo = metaDataListType.getAny();
-		
+
 		if (lo == null || lo.size() == 0)
 			throw new InvalidMetadataException("No metadata in metadata list found");
-		
+
 		for (Object o : lo) {
 			Metadata metadata;
 			Element el;
@@ -675,7 +675,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			} catch (Exception e) {
 				throw new InvalidMetadataException(e.getMessage());
 			}
-			
+
 			lmeta.add(metadata);
 		}
 		return lmeta;
@@ -685,7 +685,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	 * Simple thread-local class for the {@link DocumentBuilder}
 	 */
 	private class DocumentBuilderThreadLocal extends ThreadLocal<DocumentBuilder> {
-		
+
 		@Override
 		protected DocumentBuilder initialValue() {
 			try {
@@ -696,12 +696,12 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			}
 		}
 	}
-		
+
 	/**
 	 * Simple thread-local class for the {@link Binder}
 	 */
 	private class BinderThreadLocal extends ThreadLocal<Binder<Node>> {
-		
+
 		@Override
 		protected Binder<Node> initialValue() {
 			return null;

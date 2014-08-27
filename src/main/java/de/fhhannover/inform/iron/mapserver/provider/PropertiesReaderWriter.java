@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.provider;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.provider;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,7 +60,7 @@ import de.fhhannover.inform.iron.mapserver.utils.SortedProperties;
 
 /**
  * Class that encapsulates reading and writing of {@link Properties} files.
- * 
+ *
  * @author aw
  *
  */
@@ -68,7 +68,7 @@ class PropertiesReaderWriter {
 
 	private final String mFilename;
 	private SortedProperties mProperties;
-	
+
 	public PropertiesReaderWriter(String fileName, boolean create) throws IOException {
 		NullCheck.check(fileName, "filename is null");
 		mFilename = fileName;
@@ -79,7 +79,7 @@ class PropertiesReaderWriter {
 	private void loadProperties(boolean create) throws IOException {
 		FileReader fileReader = null;
 		File f = null;
-		
+
 		try {
 			fileReader = new FileReader(mFilename);
 		} catch (FileNotFoundException e) {
@@ -105,14 +105,14 @@ class PropertiesReaderWriter {
 						e.getMessage());
 			}
 		}
-		
+
 		mProperties.load(fileReader);
 		fileReader.close();
 	}
-	
+
 	/**
 	 * Get a value out of the {@link Properties} file.
-	 * 
+	 *
 	 * @param key
 	 * @return the value corresponding to key or null if nothing was found.
 	 */
@@ -120,11 +120,11 @@ class PropertiesReaderWriter {
 		NullCheck.check(key, "key is null");
 		return mProperties.getProperty(key);
 	}
-	
+
 	/**
 	 * Stores a key value pair and writes a new corresponding
 	 * {@link Properties} file.
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @throws IOException
@@ -137,7 +137,7 @@ class PropertiesReaderWriter {
 		mProperties.store(fileWriter, null);
 		fileWriter.close();
 	}
-	
+
 	/**
 	 * @return a list of all keys in the {@link Properties} map.
 	 */
@@ -151,7 +151,7 @@ class PropertiesReaderWriter {
 	public List<String> getAllValues() {
 		return createStringList(mProperties.values());
 	}
-	
+
 	/**
 	 * Checks whether the given key is contained in the properties file.
 	 * @param key
@@ -160,7 +160,7 @@ class PropertiesReaderWriter {
 	public boolean containsKey(String key) {
 		return mProperties.containsKey(key);
 	}
-	
+
 	/**
 	 * @return a list of all String objects in the given {@link Collection}
 	 */

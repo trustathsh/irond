@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,17 +58,17 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * A {@link ResultItem} is a simple object encapsulating a {@link MetadataContainer}
  * and a list of {@link Metadata} objects.
- * 
+ *
  * @author aw
  *
  */
 public class ResultItem implements SearchAble {
-	
+
 	/**
 	 * Represents the {@link MetadataContainer} in the {@link ResultItem}.
 	 */
 	private GraphElement mGraphElement;
-	
+
 	/**
 	 * Represents the {@link Metadata} objects. Can be empty.
 	 */
@@ -79,11 +79,11 @@ public class ResultItem implements SearchAble {
 		mGraphElement = ge;
 		mMetadata = CollectionHelper.provideListFor(Metadata.class);
 	}
-	
+
 	public GraphElement getGraphElement() {
 		return mGraphElement;
 	}
-	
+
 	/**
 	 * Add a {@link Metadata} object to this {@link ResultItem}. No copying.
 	 * @param md
@@ -92,7 +92,7 @@ public class ResultItem implements SearchAble {
 		NullCheck.check(md, "md not allowed to be null");
 		mMetadata.add(md);
 	}
-	
+
 	/**
 	 * @return a read-only list of the {@link Metadata} objects
 	 */
@@ -121,10 +121,10 @@ public class ResultItem implements SearchAble {
 			}
 			sb.append(")");
 		}
-	
+
 		sb.append("}");
 		return sb.toString();
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -134,24 +134,24 @@ public class ResultItem implements SearchAble {
 	public int getByteCount() {
 		return resultItemSize() + identifierSize() + metadataSize();
 	}
-	
+
 	private int identifierSize() {
 		return getGraphElement().getByteCount();
 	}
 
 	private int resultItemSize() {
-		return IfmapConstStrings.RITEM_MIN_CNT; 
+		return IfmapConstStrings.RITEM_MIN_CNT;
 	}
 
 	private int metadataSize() {
 		int ret = IfmapConstStrings.MLIST_MIN_CNT;
-		
+
 		if (getMetdata().isEmpty())
 			return 0;
-		
+
 		for (Metadata m : getMetdata())
 			ret += m.getByteCount();
-		
+
 		return ret;
 	}
 }

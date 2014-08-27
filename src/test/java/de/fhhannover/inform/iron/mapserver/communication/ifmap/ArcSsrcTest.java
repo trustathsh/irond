@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.ifmap;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,24 +62,24 @@ import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
 /**
  * Some simple tests to check what happens if a Poll is send on a SSRC
  * or a SSRC Op is send on an ARC.
- * 
+ *
  * @author aw
  *
  */
 public class ArcSsrcTest extends TestCase {
-	
+
 	private ServerConfigurationProvider mServerConf;
 	private EventProcessor mEventProc = null;
 	private Queue<Event> mEventQueue;
 	private Queue<ActionSeries> mActionQueue;
-	
+
 	private ChannelIdentifier chSsrc, chArc1;
 	private ClientIdentifier clId;
 
 	// this session-id is provided by the stub implementation
 	private static final String SESSION_ID = "0";
 
-	
+
 	@Before
 	public void setUp() {
 		chSsrc = new ChannelIdentifier("192.168.0.1", 8888, 0);
@@ -92,16 +92,16 @@ public class ArcSsrcTest extends TestCase {
 				mEventQueue, mActionQueue);
 		mEventProc.start();
 	}
-	
+
 	@After
 	public void tearDown() {
 		mEventProc.stop();
 	}
-	
+
 	/**
 	 * Create a new session. Run a poll on the SSRC. We expect a
 	 * errorResult in the queue.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -109,7 +109,7 @@ public class ArcSsrcTest extends TestCase {
 		Event newsession = TestEventCreator.createNewSessionRequest(clId, chSsrc, true);
 		Event endsession = TestEventCreator.createEndSessionRequest(clId, chSsrc, SESSION_ID, false);
 		Event poll1 = TestEventCreator.createPollRequest(clId, chSsrc, SESSION_ID, false);
-		
+
 		mEventQueue.put(newsession);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
@@ -117,7 +117,7 @@ public class ArcSsrcTest extends TestCase {
 
 		// this is the poll on the ssrc
 		mEventQueue.put(poll1);
-		
+
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkErrorResponse("errorResult",
@@ -134,7 +134,7 @@ public class ArcSsrcTest extends TestCase {
 	 * Create a new session, a subscription, create a ARC and get the first
 	 * poll result. Then run a renewSession on the ARC. Should result in a
 	 * errorResult, but nothing more.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void testArc_DoubleArcWhenNotPending() throws InterruptedException {
@@ -149,15 +149,15 @@ public class ArcSsrcTest extends TestCase {
 		Event endsessionreq = TestEventCreator.createEndSessionRequest(clId, chSsrc,
 				SESSION_ID, false);
 		Event poll1 = TestEventCreator.createPollRequest(clId, chArc1, SESSION_ID, true);
-		
+
 		Event renewreq = TestEventCreator.createRenewSessionRequest(clId, chArc1,
 				SESSION_ID, false);
-		
+
 		mEventQueue.put(newsessionreq);
 		ActionSeries as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkNewSessionResult(as.getActions().get(0), chSsrc));
-	
+
 		// create a subscription
 		mEventQueue.put(subscribeUp);
 		as = mActionQueue.get();
@@ -169,11 +169,11 @@ public class ArcSsrcTest extends TestCase {
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkPollResult(as.getActions().get(0), chArc1));
-	
-		
+
+
 		// delete the subscription
 		mEventQueue.put(subscribeDel);
-	
+
 		// subscribe received
 		ResponseCheck.checkSubscribeReceived(mActionQueue.get().getActions().get(0),
 				chSsrc);
@@ -181,19 +181,19 @@ public class ArcSsrcTest extends TestCase {
 		// put the renewSessionRequest on the ARC into the queue, we expect
 		// a errorResult
 		mEventQueue.put(renewreq);
-		
+
 		as = mActionQueue.get();
-		
+
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkErrorResponse("errorResult",
 				as.getActions().get(0),  chArc1));
-		
+
 		mEventQueue.put(endsessionreq);
 		as = mActionQueue.get();
 		assertEquals(1, as.getActions().size());
 		assertTrue(ResponseCheck.checkEndSessionResult(as.getActions().get(0),chSsrc));
 	}
-	
+
 	private static final String IDENTIFIER =
 		"<device>" + "<name>devName</name>" + "</device>";
 }

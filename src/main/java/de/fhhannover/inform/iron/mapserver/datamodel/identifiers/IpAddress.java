@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,20 +55,20 @@ import java.net.UnknownHostException;
 
 /**
  * Implementation of the ip-address identifier.
- * 
+ *
  * @since 0.1.0
  * @author aw
  */
 public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 		implements IdentifierWithAdministrativeDomain {
-	
+
 	private final String mValue;
 	private final IpAddressTypeEnum mType;
 	private InetAddress mIpAddress;
-	
+
 	/**
 	 * Construct a IpAddress from value, administrative-domain and type.
-	 * 
+	 *
 	 * @param value
 	 * @param ad
 	 * @param ipat
@@ -77,26 +77,26 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 	public IpAddress(final String value, final String ad, IpAddressTypeEnum ipat)
 			throws InvalidIdentifierException {
 		super(IfmapConstStrings.IP, ad);
-	
+
 		// default to IPv4
 		if (ipat == null)
 			ipat = IpAddressTypeEnum.IPv4;
-		
-		if (value == null || value.length() == 0) 
+
+		if (value == null || value.length() == 0)
 			throw new InvalidIdentifierException("IpAddress: Empty or null "
 					+ "(" + value + ")");
 
 		mType = ipat;
 		mValue = value;
-		
+
 		if (ipat == IpAddressTypeEnum.IPv6 && !IpAddressValidator.validateIPv6(value))
 			throw new InvalidIdentifierException("IpAddress: Invalid " + ipat +
 					mType.toString() + " address (" + value + ")");
-			
+
 		if (ipat == IpAddressTypeEnum.IPv4 && !IpAddressValidator.validateIPv4(value))
 			throw new InvalidIdentifierException("IpAddress: Invalid " + ipat +
 					mType.toString() + " address (" + value + ")");
-		
+
 		try {
 			if (ipat == IpAddressTypeEnum.IPv6)
 				mIpAddress = Inet6Address.getByName(value);
@@ -106,7 +106,7 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 			throw new InvalidIdentifierException("IpAddress: Invalid " +
 					mType.toString() + " format (" + value + ")");
 		}
-		
+
 		// specs say MAPS must reject IP not canonicalized
 		if (!mIpAddress.getHostAddress().equals(mValue))
 			throw new InvalidIdentifierException("IpAddress: not in canonical " +
@@ -116,7 +116,7 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 		setByteCount(IfmapConstStrings.IP_CNT +  mType.toString().length()
 				+ mValue.length()  + getByteCountForAdministrativeDomain());
 	}
-	
+
 	public IpAddress(final String value, final IpAddressTypeEnum ipat)
 			throws InvalidIdentifierException {
 		this(value, "", ipat);
@@ -129,7 +129,7 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 	public IpAddressTypeEnum getIpAddressType() {
 		return mType;
 	}
-	
+
 	protected InetAddress getIpAddress() {
 		return mIpAddress;
 	}
@@ -140,13 +140,13 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 
 		if (this == o)
 			return true;
-		
+
 		if (!super.equals(o))
 			return false;
-		
+
 		if (!(o instanceof IpAddress))
 			return false;
-		
+
 		oIp = (IpAddress) o;
 		return (mType == oIp.getIpAddressType() &&
 				mIpAddress.equals(oIp.getIpAddress()));
@@ -179,4 +179,4 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 		return sb.toString();
 	}
 }
- 
+

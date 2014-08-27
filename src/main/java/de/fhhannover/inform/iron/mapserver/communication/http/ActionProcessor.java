@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.http;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,15 +66,15 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 public class ActionProcessor extends Processor<ActionSeries> {
 
 	private static final String sProcName = "ActionProcessor";
-	
+
 	private static Logger sLogger = LoggingProvider.getTheLogger();
-	
+
 	/**
 	 * In case we have to notify the {@link EventProcessor} about something,
 	 * we need to use this queue.
 	 */
 	private Queue<Event> mEventQueue;
-	
+
 	/**
 	 * represents the global {@link ChannelRep} instance to find the channels.
 	 */
@@ -82,14 +82,14 @@ public class ActionProcessor extends Processor<ActionSeries> {
 
 	public ActionProcessor(Queue<ActionSeries> actionQ, int workers, int forwarders) {
 		super(actionQ, workers, forwarders);
-		
+
 		if (workers != 1)
 			sLogger.warn(sProcName + ": More than 1 worker? I'm not thread-safe :'-(");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.communication.bus.Processor#start()
-	 * 
+	 *
 	 * Overwrite to have some checks whether everything is here...
 	 */
 	@Override
@@ -97,13 +97,13 @@ public class ActionProcessor extends Processor<ActionSeries> {
 		NullCheck.check(mChannelRep, "channel repository not initialized");
 		NullCheck.check(mEventQueue, "event queue not initialized");
 		super.start();
-		sLogger.info(sProcName + ": Running with " + getWorkersCount() + 
+		sLogger.info(sProcName + ": Running with " + getWorkersCount() +
 				" workers and " + getForwardersCount() + " forwarders");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.communication.bus.Processor#stop()
-	 * 
+	 *
 	 * Give us a logging statement.
 	 */
 	public void stop() {
@@ -123,7 +123,7 @@ public class ActionProcessor extends Processor<ActionSeries> {
 	}
 
 	private void processSendResponseAction(SendResponseAction action) {
-		
+
 		ChannelIdentifier channelIdent = action.getChannelIdentifier();
 		ChannelThread channel = mChannelRep.getByChannelId(channelIdent);
 		if (channel != null) {
@@ -135,14 +135,14 @@ public class ActionProcessor extends Processor<ActionSeries> {
 					+ ", but it does not exist anymore.");
 			sLogger.warn(sProcName + ": Notifying EventProcessor by creating" +
 					" a BadChannelEvent for " + channelIdent);
-			
+
 			putIntoEventQueue(new BadChannelEvent(channelIdent));
 		}
 	}
 
 	private void putIntoEventQueue(BadChannelEvent event) {
 		NullCheck.check(event, "event is null");
-		
+
 		do {
 			try {
 				mEventQueue.put(event);
@@ -154,13 +154,13 @@ public class ActionProcessor extends Processor<ActionSeries> {
 	private void processCloseChannelAction(CloseChannelAction action) {
 		ChannelIdentifier channelIdent = action.getChannelIdentifier();
 		ChannelThread channel = mChannelRep.getByChannelId(channelIdent);
-		
+
 		if (channel != null) {
 			channel.abort();
 		}
 	}
-	
-	
+
+
 	public void setChannelRepository(ChannelRep channelRep) {
 		NullCheck.check(channelRep, "channelRep is null");
 		mChannelRep = channelRep;

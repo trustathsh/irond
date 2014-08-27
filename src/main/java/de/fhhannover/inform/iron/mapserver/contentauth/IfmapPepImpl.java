@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.contentauth;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
- * This file is part of irond, version 0.4.0, implemented by the Trust@FHH 
+ *
+ * This file is part of irond, version 0.4.0, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.contentauth;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,14 +89,14 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 
 /**
  * Implementation of the {@link IfmapPep} interface.
- * 
+ *
  * @author aw
  */
 class IfmapPepImpl implements IfmapPep {
-	
+
 	private static final Logger sLogger = LoggingProvider.getDecisionRequestLogger();
 	private static final String sName = "PEP";
-	
+
 	private final IfmapPepHandler mHandler;
 	private final RoleMapperProvider mRoleProvider;
 	private final boolean mDryRun;
@@ -104,13 +104,13 @@ class IfmapPepImpl implements IfmapPep {
 	private final PdpType mPdpType;
 	private final String mPdpParams;
 	private final Map<String, String> mEmptyMap;
-	
+
 	private final Collection<String> mIdentAttrList;
 	private final Collection<String> mMetadataAttrList;
-	
+
 	private final ExecutorService mExecutor;
-	
-	
+
+
 	IfmapPepImpl(ServerConfigurationProvider conf, RoleMapperProvider roleProv) throws ServerInitialException {
 		NullCheck.check(conf, "conf is null");
 		NullCheck.check(roleProv, "roleProv is null");
@@ -123,50 +123,50 @@ class IfmapPepImpl implements IfmapPep {
 		mExecutor = Executors.newFixedThreadPool(conf.getPdpThreads());
 		mEmptyMap = Collections.unmodifiableMap(
 				CollectionHelper.provideMapFor(String.class, String.class));
-		
-		
+
+
 		// Used to extract all top-level attributes from metadata and
 		// identifier elements.
 		mIdentAttrList = conf.getPdpSelectedIdentifierAttributes();
 		mMetadataAttrList = conf.getPdpSelectedMetadataAttributes();
-	
+
 		// If we do caching, put a cache handler around it...
 		if (conf.isEnablePdpCache())
 			tmp = IfmapPepHandlers.getCache(tmp, conf.getPdpCacheTtl(),
 											conf.getPdpCacheMaxEntries());
-		
+
 		mHandler = tmp;
 	}
-	
+
 	@Override
 	public boolean isAuthorized(Publisher pub, PublishRequest req,
 			GraphElementRepository graph) {
-		
+
 		List<Future<DecisionResult>> futures = new ArrayList<Future<DecisionResult>>();
-		
+
 		startPublishDecisionRequest(futures, req, pub, graph);
-		
+
 		return quickWait(futures);
 	}
-	
+
 	private void startPublishDecisionRequest(List<Future<DecisionResult>> results,
 			PublishRequest req, Publisher pub, GraphElementRepository graph) {
-		
+
 		for (SubPublishRequest sreq : req.getSubPublishRequestList()) {
 			List<Identifier> idents = CollectionHelper.provideListFor(Identifier.class);
-		
+
 			if (sreq.getIdent1() != null)
 				idents.add(sreq.getIdent1());
 
 			if (sreq.getIdent2() != null)
 				idents.add(sreq.getIdent2());
-				
+
 			GraphElement ge = graph.getGraphElement(sreq.getIdent1(), sreq.getIdent2());
 			boolean clob = false;
 			ClientIdentifier clId = pub.getClientIdentifier();
-			
+
 			switch (sreq.getType()) {
-		
+
 			case UPDATE:
 				for (Metadata md : ((PublishUpdate)sreq).getMetadataList()) {
 					clob = replaceOthersMetadata(pub, ge, md);
@@ -174,10 +174,10 @@ class IfmapPepImpl implements IfmapPep {
 							DT(clId, IfmapOp.update, idents, md, clob)));
 				}
 				break;
-				
+
 			case DELETE:
 				Filter f = ((PublishDelete)sreq).getFilter();
-				
+
 				for (MetadataHolder mh : ge.getMetadataHolderInGraph(f)) {
 					Metadata md = mh.getMetadata();
 					clob = !samePublisher(pub, mh);
@@ -185,7 +185,7 @@ class IfmapPepImpl implements IfmapPep {
 							DT(clId, IfmapOp.delete, idents, md, clob)));
 				}
 				break;
-				
+
 			case NOTIFY:
 				for (Metadata md : ((PublishNotify)sreq).getMetadataList()) {
 					// notify never clobbers
@@ -193,39 +193,39 @@ class IfmapPepImpl implements IfmapPep {
 					results.add(mExecutor.submit(
 							DT(clId, IfmapOp.notify, idents, md)));
 				}
-				
+
 				break;
-			
+
 			default:
 				throw new SystemErrorException("unknown publish operation");
 			}
 		}
 	}
-	
-	
+
+
 	private boolean makeDecisionRequestFor(ClientIdentifier clId, IfmapOp op,
 			Identifier i, Metadata m, boolean isLink, boolean clob,
 			boolean dryRun, List<String> roles) {
-		
+
 		NullCheck.check(clId, "clId is null");
 		NullCheck.check(i, "i is null");
 		NullCheck.check(m, "i is null");
-		
+
 		boolean isSelfIdent = false; // Figure it out using clId and i
 		boolean isClIdent = false; // Figure it out using i
-		
-		Map<String, String> identAttrs = 
+
+		Map<String, String> identAttrs =
 				CollectionHelper.provideMapFor(String.class, String.class);
 		Map<String, String> metaAttrs =
 				CollectionHelper.provideMapFor(String.class, String.class);
-		
-	
+
+
 		Element identXml = (Element)i.getXmlDocument().getFirstChild();
 		Element mdXml = (Element)m.toW3cDocument().getFirstChild();
-		
+
 		findAttributes(identAttrs, mIdentAttrList, identXml);
 		findAttributes(metaAttrs, mMetadataAttrList, mdXml);
-		
+
 		boolean res = false;
 		IfmapDecisionRequest dreq = null;
 
@@ -241,27 +241,27 @@ class IfmapPepImpl implements IfmapPep {
 				isSelfIdent,
 				isClIdent,
 				roles);
-				
-		
+
+
 		res = mHandler.isAuthorized(dreq);
 
 		sLogger.debug(sName + ": " + (dryRun ? "[dry-run] " : " ")
 				+ (res ? "permit" : "denial") + " for " + dreq.toString());
-		
+
 		return res;
 	}
-	
+
 	private void findAttributes(Map<String, String> attrMap,
 			Collection<String> attrList, Element xmlEl) {
-		
+
 		for (String attrName : attrList) {
-			
+
 			Attr attr = xmlEl.getAttributeNode(attrName);
-			
+
 			if (attr != null) {
 				String val = attr.getValue();
 				attrMap.put(attrName, val);
-				
+
 			} else if (attrName.equals(IfmapConstStrings.ADOM_ATTR)) {
 				// the attribute selector was administrative-domain, but
 				// there was no administrative-domain. Add it with an
@@ -274,7 +274,7 @@ class IfmapPepImpl implements IfmapPep {
 
 	/**
 	 * Wrap the {@link IfmapPepHandler} calls.
-	 * 
+	 *
 	 * @param clId
 	 * @param op
 	 * @param idents
@@ -284,33 +284,33 @@ class IfmapPepImpl implements IfmapPep {
 	 */
 	private boolean isAuthorized(ClientIdentifier clId, IfmapOp op,
 			List<Identifier> idents, Metadata md, boolean clob) {
-		
+
 		List<String> roles = mRoleProvider.getRolesOf(clId);
 		boolean res = true;
 		boolean resDry = false;
 		boolean link = false;
-		
+
 		if (idents.size() == 0 || idents.size() > 2)
 			throw new SystemErrorException("Bad ident count=" + idents.size());
-		
+
 		link = idents.size() == 2;
-		
+
 		for (Identifier i : idents) {
 			res = makeDecisionRequestFor(clId, op, i, md, link, clob, false, roles);
 			resDry = res;
-			
+
 			// if dryRun is enabled, we need to send a second request...
 			if (isDryRun())
 				resDry = makeDecisionRequestFor(clId, op, i, md, link, clob, true, roles);
-			
+
 			if (resDry != res)
 				sLogger.debug(sName + ": Note, dry-run policy different result");
-		
+
 			// quick way out...
 			if (!res)
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -319,27 +319,27 @@ class IfmapPepImpl implements IfmapPep {
 		String ourPubId = pub.getPublisherId();
 		String otherPubId = null;
 		List<MetadataHolder> mhs = null;
-	
+
 		// update multiValue never clobbers
 		if (md.isMultiValue())
 			return false;
-			
+
 		mhs = ge.getMetadataHolder(md.getType());
-			
+
 		for (MetadataHolder mh : mhs) {
 			otherPubId = mh.getPublisher().getPublisherId();
-			
+
 			if (!ourPubId.equals(otherPubId))
 				return true;
 		}
-		
+
 		return false;
 	}
 
 	private boolean samePublisher(Publisher pub, MetadataHolder mh) {
 		return pub.getPublisherId().equals(mh.getPublisher().getPublisherId());
 	}
-	
+
 	private boolean isDryRun() {
 		return mDryRun;
 	}
@@ -349,12 +349,12 @@ class IfmapPepImpl implements IfmapPep {
 		boolean res = false;
 		NullCheck.check(purger, "purger is null");
 		NullCheck.check(pubId, "pubId is null");
-		
+
 		IfmapDecisionRequest dreq = null;
 		ClientIdentifier clId = purger.getClientIdentifier();
 		List<String> roles = mRoleProvider.getRolesOf(clId);
 		boolean clobber = !purger.getPublisherId().equals(pubId);
-		
+
 		dreq = new IfmapDecisionRequest(IfmapOp.purgePublisher,
 				null,
 				mEmptyMap, // ident attrs
@@ -372,23 +372,23 @@ class IfmapPepImpl implements IfmapPep {
 		sLogger.debug(sName + ": " + (isDryRun() ? "dryrun: " : "")
 					+ (res ? "permit" : "denial")
 					+ " for " + dreq.toString());
-		
+
 		return res || isDryRun();
 	}
-	
+
 
 	@Override
 	public List<MetadataHolder> isSearchAuthorized(Publisher pub, List<MetadataHolder> mhs) {
 		List<Future<DecisionResult>> futures = new ArrayList<Future<DecisionResult>>();
 		ClientIdentifier clId = pub.getClientIdentifier();
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
-		
+
 		// Create tasks
 		for (MetadataHolder mh : mhs) {
 			List<Identifier> idents = CollectionHelper.provideListFor(Identifier.class);
 			GraphElement ge = mh.getGraphElement();
 			Metadata meta = mh.getMetadata();
-			
+
 			if (ge instanceof Link) {
 				idents.add(((Link)ge).getNode1().getIdentifier());
 				idents.add(((Link)ge).getNode2().getIdentifier());
@@ -397,31 +397,31 @@ class IfmapPepImpl implements IfmapPep {
 			} else {
 				throw new SystemErrorException("not link nor node?!");
 			}
-			
+
 			futures.add(mExecutor.submit(DT(clId, IfmapOp.search, idents, meta, mh)));
 		}
-		
+
 		List<DecisionResult> results = wait(futures);
-		
+
 		for (DecisionResult dr : results)
 			if (dr.res)
 				ret.add((MetadataHolder)dr.aux);
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * @param futures
 	 * @return all DecisionResult objects after they've been waited for.
 	 */
 	private List<DecisionResult> wait(List<Future<DecisionResult>> futures) {
-		
+
 		DecisionResult result = null;
 		List<DecisionResult> ret = CollectionHelper.provideListFor(DecisionResult.class);
-		
+
 		for (Future<DecisionResult> future : futures) {
 			boolean completed = false;
-			
+
 			while (!completed) {
 				try {
 					result = future.get();
@@ -434,19 +434,19 @@ class IfmapPepImpl implements IfmapPep {
 				}
 			}
 		}
-			
+
 		return ret;
 	}
 
 	/**
 	 * If a single result has res set to false, abort and return false,
 	 * otherwise return true.
-	 * 
+	 *
 	 * @param futures
 	 * @return
 	 */
 	private boolean quickWait(List<Future<DecisionResult>> futures) {
-		
+
 		for (Future<DecisionResult> future : futures) {
 			DecisionResult result = null;
 			while (result == null) {
@@ -458,17 +458,17 @@ class IfmapPepImpl implements IfmapPep {
 					e.printStackTrace();
 				}
 			}
-		
+
 			// Any of the results evaluated to false, we don't really need
 			// to wait for the others, so just cancel *all* of them...
 			if (!result.res) {
 				for (Future<DecisionResult> toCancel : futures)
 					toCancel.cancel(false);
-				
+
 				return false;								// JUMP OUT!
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -497,19 +497,19 @@ class IfmapPepImpl implements IfmapPep {
 		Object aux;
 		boolean res;
 	}
-	
+
 	class DecisionTask implements Callable<DecisionResult> {
-		
+
 		private final ClientIdentifier mClId;
 		private final IfmapOp mOp;
 		private final List<Identifier> mIdents;
 		private final Metadata mMeta;
 		private final boolean mClobber;
 		private final Object mAuxData;
-		
+
 		DecisionTask(ClientIdentifier id, IfmapOp op, List<Identifier> idents,
 				Metadata m, boolean clobber, Object auxData) {
-			
+
 			mClId = id;
 			mOp = op;
 			mIdents = idents;

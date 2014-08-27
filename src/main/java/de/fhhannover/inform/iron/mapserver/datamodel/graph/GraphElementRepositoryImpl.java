@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.graph;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,22 +56,22 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * TODO: Need some way of cleaning up... Either remembering the used Nodes/Links
  *       and upon a cleanup() call checking whether any of the can be removed.
- * 
+ *
  * @since 0.3.0
  * @author aw
  */
 public class GraphElementRepositoryImpl implements GraphElementRepository {
-	
+
 	private MultiMap<Integer, Node> mNodes;
 	private MultiMap<Integer, Link> mLinks;
-	
+
 	/**
 	 * @return a new Instance of a {@link GraphElementRepository} instance.
 	 */
 	public static GraphElementRepository newInstance() {
 		return new GraphElementRepositoryImpl();
 	}
-	
+
 	/**
 	 * Private constructor
 	 */
@@ -91,13 +91,13 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 		 */
 		NullCheck.check(i, "Identifier is null");
 		Node node = findExistingNodeFor(i);
-		
+
 		// there is no such Node, create a new one
 		if (node == null) {
 			node = new NodeImpl(i);
 			mNodes.put(nodeKey(node), node);
 		}
-		
+
 		return node;
 	}
 
@@ -107,7 +107,7 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	@Override
 	public Link getLinkFor(Identifier i1, Identifier i2) {
 		Link l = findExistingLinkFor(i1, i2);
-	
+
 		// if there is no such Link, create a new one based on Nodes from the
 		// repository. These might be created in turn as well.
 		if (l == null) {
@@ -115,13 +115,13 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 			Node linkNode2 = getNodeFor(i2);
 			l = new LinkImpl(linkNode1, linkNode2);
 			linkNode1.addLink(l);
-			
+
 			if (linkNode1 != linkNode2)
 				linkNode2.addLink(l);
-			
+
 			mLinks.put(linkKey(l), l);
 		}
-		
+
 		return l;
 	}
 
@@ -148,24 +148,24 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	@Override
 	public Collection<Node> getAllNodes() {
 		Collection<Node> ret = CollectionHelper.provideCollectionFor(Node.class);
-		
+
 		for (Node n : mNodes.values())
 			ret.add(n.dummy());
-		
+
 		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElementRepository#getAllLinks()
 	 */
-	
+
 	@Override
 	public Collection<Link> getAllLinks() {
 		Collection<Link> ret = CollectionHelper.provideCollectionFor(Link.class);
-		
+
 		for (Link l : mLinks.values())
 			ret.add(l.dummy());
-		
+
 		return ret;
 	}
 
@@ -196,7 +196,7 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 		}
 		System.out.println("END LINKS");
 	}
-	
+
 	/**
 	 * Helper to find a {@link Node} instance which has the given
 	 * {@link Identifier} instance attached.
@@ -207,7 +207,7 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 		for (Node node : mNodes.getAll(nodeKey(i)))
 			if (node.getIdentifier().equals(i))
 				return node;
-		
+
 		return null;
 	}
 
@@ -222,14 +222,14 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 		for (Link link : mLinks.getAll(linkKey(i1, i2)))
 			if (linkHasIdentifiers(link, i1, i2))
 					return link;
-		
+
 		return null;
 	}
 
 	/**
 	 * Helper to check whether a given {@link Link} instance contains the given
 	 * {@link Identifier} instances on the contained {@link Node} instances.
-	 * 
+	 *
 	 * @param link
 	 * @param i1
 	 * @param i2
@@ -240,7 +240,7 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 		Identifier li2 = link.getNode2().getIdentifier();
 		return i1.equals(li1) && i2.equals(li2) || i1.equals(li2) && i2.equals(li1);
 	}
-	
+
 	private int linkKey(Link l) {
 		return linkKey(l.getNode1(), l.getNode2());
 	}
@@ -248,15 +248,15 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	private int linkKey(Node n1, Node n2) {
 		return linkKey(n1.getIdentifier(), n2.getIdentifier());
 	}
-	
+
 	private int linkKey(Identifier i1, Identifier i2) {
 		return nodeKey(i1) + nodeKey(i2);
 	}
-	
+
 	private int nodeKey(Node n) {
 		return nodeKey(n.getIdentifier());
 	}
-	
+
 	private int nodeKey(Identifier i) {
 		return i.hashCode();
 	}

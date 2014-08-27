@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,24 +59,24 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
 /**
  * Class to encapsulate all state concerning subscriptions for a single
  * {@link Publisher}
- * 
+ *
  * @author aw
  */
 public class SubscriptionState {
-	
+
 	private boolean mNotified;
 	private Integer  maxPollResultSize;
 	private boolean mPollResGrewTooBig;
-	
+
 	private final Map<String, Subscription> mSubscriptions;
 	private ModifiablePollResult mPollResult;
-	
+
 	public SubscriptionState() {
 		mSubscriptions = new HashMap<String, Subscription>();
 		mPollResult = new PollResultImpl();
 		mPollResGrewTooBig = false;
 	}
-	
+
 	/**
 	 * @return read-only copy of the {@link Subscription} instances
 	 */
@@ -84,36 +84,36 @@ public class SubscriptionState {
 		return Collections.unmodifiableList(
 				new ArrayList<Subscription>(mSubscriptions.values()));
 	}
-	
+
 	/**
 	 * Add a {@link Subscription} to this {@link SubscriptionState}.
 	 * Goes crazy if the {@link Subscription} existed.
-	 * 
+	 *
 	 * @param sub
 	 */
 	public void addSubscription(Subscription sub) {
 		NullCheck.check(sub, "sub is null");
 		if (mSubscriptions.containsKey(sub.getName()))
-			throw new SystemErrorException("subscription " + sub.getName() 
+			throw new SystemErrorException("subscription " + sub.getName()
 					+ " exists!");
-		
+
 		mSubscriptions.put(sub.getName(), sub);
 	}
-	
+
 	/**
 	 * Removes the given {@link Subscription} from this {@link SubscriptionState}
 	 * and cleans the {@link PollResult}.
-	 * 
+	 *
 	 * @param sub
 	 */
 	public void removeSubscription(Subscription sub) {
 		NullCheck.check(sub, "sub is null");
 		NullCheck.check(sub.getName(), "sub.getName() returns null");
-		
+
 		if (!mSubscriptions.containsKey(sub.getName()))
 			throw new SystemErrorException("Cannot remove nonexistent subscription"
 					+ sub.getName());
-		
+
 		mSubscriptions.remove(sub.getName());
 		mPollResult.removeResultsOf(sub.getName());
 	}
@@ -133,18 +133,18 @@ public class SubscriptionState {
 	public void clearSubscriptions() {
 		for (Subscription sub : getSubscriptions())
 			removeSubscription(sub);
-	
+
 		// Sanity
 		if (mSubscriptions.size() != 0)
 			throw new SystemErrorException("All subscriptions should be gone");
-		
+
 		if (mPollResult.getResults().size() != 0)
 			throw new SystemErrorException("PollResult should be empty");
-		
+
 		if (mPollResult.getByteCount() != IfmapConstStrings.PRES_MIN_CNT)
 			throw new SystemErrorException("PollResult size should be zero");
 	}
-	
+
 	public Integer getMaxPollSize() {
 		return maxPollResultSize;
 	}
@@ -152,15 +152,15 @@ public class SubscriptionState {
 	public void setMaxPollResultSize(Integer mprs) {
 		maxPollResultSize = mprs;
 	}
-	
+
 	public void setNotified() {
 		mNotified = true;
 	}
-	
+
 	public void unsetNotified() {
 		mNotified = false;
 	}
-	
+
 	public boolean isNotified() {
 		return mNotified;
 	}
@@ -168,24 +168,24 @@ public class SubscriptionState {
 	public void setPollResultsTooBig() {
 		mPollResGrewTooBig = true;
 	}
-	
+
 	void unsetPollResultsTooBig() {
 		mPollResGrewTooBig = false;
 	}
-	
+
 	public boolean isPollResultsTooBig() {
 		if (mPollResult.getByteCount() > getMaxPollSize())
 			mPollResGrewTooBig = true;
-		
+
 		return (mPollResult.getByteCount() > getMaxPollSize())
 				|| mPollResGrewTooBig;
 	}
-	
+
 	public void resetPollResult() {
 		unsetPollResultsTooBig();
 		mPollResult = new PollResultImpl();
 	}
-	
+
 	public ModifiablePollResult getPollResult() {
 		return mPollResult;
 	}

@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.communication.bus.messages;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.communication.bus.messages;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,16 +56,16 @@ import de.fhhannover.inform.iron.mapserver.utils.NullCheck;
  * objects in order to process them in a series.
  * We use a {@link List} instead of a {@link Collection} in order to enforce
  * some ordering if needed.
- * 
+ *
  * @author aw
  */
 public class ActionSeries {
-	
+
 	/**
 	 * Stores all {@link Action} objects of this {@link ActionSeries}.
 	 */
 	private final List<Action> mActions;
-	
+
 	/**
 	 * Construct a {@link ActionSeries} with an empty list of {@link Action}
 	 * objects.
@@ -73,11 +73,11 @@ public class ActionSeries {
 	public ActionSeries() {
 		mActions = new LinkedList<Action>();
 	}
-	
+
 	/**
 	 * Construct a {@link ActionSeries} where the list contains the given
 	 * {@link Action} object in the beginning.
-	 * 
+	 *
 	 * @param action
 	 * @throws NullPointerException if action is null;
 	 */
@@ -89,7 +89,7 @@ public class ActionSeries {
 	/**
 	 * Construct a {@link ActionSeries} where the list containing all the
 	 * {@link Action} objects given in the actions list.
-	 * 
+	 *
 	 * @param action
 	 * @throws NullPointerException if actions is null;
 	 */
@@ -98,17 +98,17 @@ public class ActionSeries {
 		NullCheck.check(actions, "actions is null");
 		add(actions);
 	}
-	
+
 	/**
 	 * @return copy of the list containing {@link Action} objects.
 	 */
 	public List<Action> getActions() {
 		return new LinkedList<Action>(mActions);
 	}
-	
+
 	/**
 	 * Add a {@link Action} to this {@link ActionSeries}.
-	 * 
+	 *
 	 * @param action
 	 * @throws NullPointerException if the given {@link Action} object is null.
 	 */
@@ -116,11 +116,11 @@ public class ActionSeries {
 		NullCheck.check(action, "action is null");
 		mActions.add(action);
 	}
-	
+
 	/**
 	 * Add all {@link Action} objects in the given list to this
 	 * {@link ActionSeries}.
-	 * 
+	 *
 	 * @param actions
 	 * @throws NullPointerException if actions is null or any element in the
 	 *			      list is null

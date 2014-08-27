@@ -9,22 +9,22 @@ package de.fhhannover.inform.iron.mapserver.utils;
  *    | | | |  | |_| \__ \ |_| | (_| |  _| |  _  |  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_|   |_| |_|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
- * Fachhochschule Hannover 
+ *
+ * Fachhochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.inform.fh-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.4.2, implemented by the Trust@FHH
  * research group at the Fachhochschule Hannover.
- * 
+ *
  * irond is an an *experimental* IF-MAP 2.0 compliant MAP server written in
- * JAVA. irond supports both basic authentication and certificate-based 
+ * JAVA. irond supports both basic authentication and certificate-based
  * authentication (using X.509 certificates) of MAP clients. irond is
  * maintained by the Trust@FHH group at the Fachhochschule Hannover, initial
  * developement was carried out during the ESUKOM research project.
@@ -34,9 +34,9 @@ package de.fhhannover.inform.iron.mapserver.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,9 +70,9 @@ import de.fhhannover.inform.iron.mapserver.provider.ServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.StubProvider;
 
 public class PrefixNamespaceMapTest extends TestCase {
-	
+
 	private RequestUnmarshaller unmarshaller;
-	
+
 	public void setUp() {
 		ServerConfigurationProvider conf = StubProvider.getServerConfStub(1);
 		MetadataTypeRepository mdtr = MetadataTypeRepositoryImpl.newInstance();
@@ -83,38 +83,38 @@ public class PrefixNamespaceMapTest extends TestCase {
 		} catch (ProviderInitializationException e) {
 			e.printStackTrace();
 		}
-		
+
 		unmarshaller = RequestUnmarshallerFactory.newRequestUnmarshaller(mfac, schemaProv);
 		DataModelService.setServerConfiguration(conf);
 	}
 
 	public void testBuildNamespaceMap_SearchRequest() {
-		
+
 		ByteArrayInputStream fis = new ByteArrayInputStream(SEARCH_REQUEST.getBytes());
 		Request req = null;
 		Map<String, String> nsMap = null;
 		String val = null;
-	
+
 		try {
 			req = unmarshaller.unmarshal(fis);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		
+
 		assertTrue(req instanceof SearchRequest);
 		SearchRequest searchRequest = (SearchRequest) req;
 		Filter matchLinksFilter = searchRequest.getMatchLinksFilter();
 		Filter resultFiler = searchRequest.getResultFilter();
-	
+
 		assertNotNull(matchLinksFilter.getNamespaceMap());
 		assertEquals(matchLinksFilter.getNamespaceMap(), resultFiler.getNamespaceMap());
-		
-	
+
+
 		nsMap = matchLinksFilter.getNamespaceMap();
-		
+
 		assertEquals(nsMap.size(), 3);
-		
+
 		val = nsMap.get("env");
 		assertNotNull(val);
 		assertEquals(val, "http://www.w3.org/2003/05/soap-envelope");
@@ -127,38 +127,38 @@ public class PrefixNamespaceMapTest extends TestCase {
 		assertNotNull(val);
 		assertEquals(val, "http://blub.com");
 	}
-	
+
 	/**
 	 * basically the same as for the search, but this time declare
 	 * blub two times, http://blub.de is the right one (the most inner one)
 	 */
 	public void testBuildNamespaceMap_PublishDelete() {
-		
+
 		ByteArrayInputStream fis = new ByteArrayInputStream(PUBLISH_DELETE_REQUEST.getBytes());
 		Request req = null;
 		Map<String, String> nsMap = null;
 		String val = null;
-	
+
 		try {
 			req = unmarshaller.unmarshal(fis);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
-		
+
 		assertTrue(req instanceof PublishRequest);
 		PublishRequest publishRequest = (PublishRequest) req;
 		// yeah yeah i'm sure...
 		PublishDelete publishDelete = (PublishDelete) publishRequest.getSubPublishRequestList().get(0);
 		Filter deleteFilter = publishDelete.getFilter();
-	
+
 		assertNotNull(deleteFilter);
-		
-	
+
+
 		nsMap = deleteFilter.getNamespaceMap();
-		
+
 		assertEquals(nsMap.size(), 3);
-		
+
 		val = nsMap.get("env");
 		assertNotNull(val);
 		assertEquals(val, "http://www.w3.org/2003/05/soap-envelope");
@@ -171,42 +171,42 @@ public class PrefixNamespaceMapTest extends TestCase {
 		assertNotNull(val);
 		assertEquals(val, "http://blub.de");
 	}
-	
+
 	/**
 	 * this time it's http://blub.org ;-)
 	 */
 	public void testBuildNamespaceMap_SubscribeUpdat() {
-		
+
 		ByteArrayInputStream fis = new ByteArrayInputStream(SUBSCRIBE_UPDATE_REQUEST.getBytes());
 		Request req = null;
 		Map<String, String> nsMap = null;
 		String val = null;
-	
+
 		try {
 			req = unmarshaller.unmarshal(fis);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
-		
+
 		assertTrue(req instanceof SubscribeRequest);
 		SubscribeRequest subRequest = (SubscribeRequest) req;
 		// yeah yeah i'm sure...
 		SubscribeUpdate subUpdate = (SubscribeUpdate) subRequest.getSubSubscribeRequests().get(0);
 		Filter matchLinksFilter = subUpdate.getSearchRequest().getMatchLinksFilter();
 		Filter resultFilter = subUpdate.getSearchRequest().getResultFilter();
-		
+
 		assertNotNull(matchLinksFilter);
-	
+
 		assertNotNull(matchLinksFilter);
 		assertNotNull(resultFilter);
-		
+
 		assertEquals(matchLinksFilter.getNamespaceMap(), resultFilter.getNamespaceMap());
-		
+
 		nsMap = matchLinksFilter.getNamespaceMap();
-		
+
 		assertEquals(nsMap.size(), 3);
-		
+
 		val = nsMap.get("env");
 		assertNotNull(val);
 		assertEquals(val, "http://www.w3.org/2003/05/soap-envelope");
@@ -219,11 +219,11 @@ public class PrefixNamespaceMapTest extends TestCase {
 		assertNotNull(val);
 		assertEquals(val, "http://blub.org");
 	}
-	
-	
-	
-	
-	private static final String SEARCH_REQUEST = 
+
+
+
+
+	private static final String SEARCH_REQUEST =
 		"<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\""  +
 		" xmlns:ifmap=\"http://www.trustedcomputinggroup.org/2010/IFMAP/2\">\n"   +
 		"<env:Body>\n" +
@@ -233,30 +233,30 @@ public class PrefixNamespaceMapTest extends TestCase {
 		"</ifmap:search>\n" +
 			  "</env:Body>\n" +
 			"</env:Envelope>";
-	
-	
+
+
 	private static final String PUBLISH_DELETE_REQUEST =
 		"<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\""  +
 		" xmlns:ifmap=\"http://www.trustedcomputinggroup.org/2010/IFMAP/2\">\n"   +
 		"<env:Body>\n" +
-		"<ifmap:publish xmlns:blub=\"http://blub.com\" session-id=\"65125CEB1C00BE6C5F6EC580360BB630\">\n" + 
+		"<ifmap:publish xmlns:blub=\"http://blub.com\" session-id=\"65125CEB1C00BE6C5F6EC580360BB630\">\n" +
 		"<delete filter=\"blub:glucks\" xmlns:blub=\"http://blub.de\">\n" +
 		"<ip-address value=\"192.168.0.1\"/>\n" +
 		"</delete>\n" +
-		"</ifmap:publish>" + 
+		"</ifmap:publish>" +
 			  "</env:Body>\n" +
 			"</env:Envelope>";
 
-	
+
 	private static final String SUBSCRIBE_UPDATE_REQUEST =
 		"<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\""  +
 		" xmlns:ifmap=\"http://www.trustedcomputinggroup.org/2010/IFMAP/2\">\n"   +
 		"<env:Body>\n" +
-		"<ifmap:subscribe xmlns:blub=\"http://blub.com\" session-id=\"65125CEB1C00BE6C5F6EC580360BB630\">\n" + 
+		"<ifmap:subscribe xmlns:blub=\"http://blub.com\" session-id=\"65125CEB1C00BE6C5F6EC580360BB630\">\n" +
 		"<update name=\"mysub\" result-filter=\"ifmap:nothing\" match-links=\"blub:glucks\" xmlns:blub=\"http://blub.org\">\n" +
 		"<ip-address value=\"192.168.0.1\"/>\n" +
 		"</update>\n" +
-		"</ifmap:subscribe>" + 
+		"</ifmap:subscribe>" +
 			  "</env:Body>\n" +
 			"</env:Envelope>";
 }
