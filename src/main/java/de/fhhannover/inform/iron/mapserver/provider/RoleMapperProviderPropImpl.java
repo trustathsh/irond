@@ -76,14 +76,16 @@ public class RoleMapperProviderPropImpl implements RoleMapperProvider {
 	public List<String> getRolesOf(ClientIdentifier clientId) {
 		String clString = clientId.getUserameOrCertFingerPrint();
 
-		if (clString.contains(" "))
+		if (clString.contains(" ")) {
 			throw new SystemErrorException("Space found in clStr:" + clString);
+		}
 
 
 		String groups = mProperties.getProperty(clString);
 
-		if (groups == null)
+		if (groups == null) {
 			return new ArrayList<String>();
+		}
 
 		return Collections.unmodifiableList(Arrays.asList(groups.split(",")));
 	}

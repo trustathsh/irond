@@ -100,9 +100,10 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	protected SearchResultImpl(String name, SearchResultType type) {
 		NullCheck.check(type, "type is null");
 
-		if (name != null)
+		if (name != null) {
 			LengthCheck.checkMinMax(name, 1, 20, "name is set, so length should" +
 					" be > 0 && <= 20");
+		}
 
 		mName = name;
 		mType = type;
@@ -181,8 +182,9 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	private int sizeResultItems() {
 		int ret = 0;
 
-		for (ResultItem ri: getResultItems())
+		for (ResultItem ri: getResultItems()) {
 			ret += ri.getByteCount();
+		}
 
 		return ret;
 	}
@@ -211,11 +213,13 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer("sr{");
 
-		for (ResultItem ri : mResultItems)
+		for (ResultItem ri : mResultItems) {
 			sb.append(ri.toString() + ", ");
+		}
 
 		sb.setLength(sb.length() - 2);
 		sb.append("}");
@@ -230,11 +234,13 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 		NullCheck.check(ge, "ge is null");
 		NullCheck.check(mlist, "mlist is null");
 
-		if (mlist.size() == 0)
+		if (mlist.size() == 0) {
 			addGraphElement(ge);
-		else
-			for (Metadata m : mlist)
+		} else {
+			for (Metadata m : mlist) {
 				addMetadata(ge, m);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -253,8 +259,9 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	public void addResultItems(List<ResultItem> rilist) {
 		NullCheck.check(rilist, "rilist is null");
 
-		for (ResultItem ri : rilist)
+		for (ResultItem ri : rilist) {
 			addResultItem(ri);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -262,14 +269,17 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	 */
 	@Override
 	public boolean sameNameAndType(SearchResult o) {
-		if (o == this)
+		if (o == this) {
 			return true;
+		}
 
-		if (o.getName() == null && getName() == null)
+		if (o.getName() == null && getName() == null) {
 			return true;
+		}
 
-		if (o.getName() == null || getName() == null)
+		if (o.getName() == null || getName() == null) {
 			return false;
+		}
 
 		return o.getType() == getType() && o.getName().equals(getName());
 	}
@@ -277,12 +287,14 @@ abstract class SearchResultImpl implements ModifiableSearchResult {
 	@Override
 	public boolean hasMetadataAndOnlyValidatedMetadata() {
 		boolean result = false;
-		for (ResultItem ri : mResultItems)
+		for (ResultItem ri : mResultItems) {
 			for (Metadata md : ri.getMetdata()) {
-				if (!md.getValidated())
+				if (!md.getValidated()) {
 					return false;
+				}
 				result = true;
 			}
+		}
 		return result;
 	}
 }

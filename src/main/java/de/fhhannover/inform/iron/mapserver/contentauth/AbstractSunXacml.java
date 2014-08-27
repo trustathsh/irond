@@ -265,13 +265,15 @@ abstract class AbstractSunXacml implements IfmapPepHandler {
 		String opStr = op.toString();
 
 		// This looks so like redundancy...
-		if (op == IfmapOp.update || op == IfmapOp.delete || op == IfmapOp.purgePublisher)
+		if (op == IfmapOp.update || op == IfmapOp.delete || op == IfmapOp.purgePublisher) {
 			at.getAttribute().add(BA(clobberUri.toString(), clobber));
+		}
 
-		if (op == IfmapOp.search || op == IfmapOp.subscribe)
+		if (op == IfmapOp.search || op == IfmapOp.subscribe) {
 			at.getAttribute().add(SA(actionUri.toString(), "read"));
-		else
+		} else {
 			at.getAttribute().add(SA(actionUri.toString(), "write"));
+		}
 
 		if (op == IfmapOp.update || op == IfmapOp.delete || op == IfmapOp.notify) {
 			at.getAttribute().add(SA(requestTypeUri.toString(), "publish"));

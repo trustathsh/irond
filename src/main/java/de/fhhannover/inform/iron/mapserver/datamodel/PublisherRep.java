@@ -89,8 +89,9 @@ class PublisherRep {
 	Publisher getPublisherByPublisherId(String id) {
 		Publisher ret = mPublishers.get(id);
 
-		if (ret == null)
+		if (ret == null) {
 			throw new NoSuchPublisherException("no publisher with id=" + id);
+		}
 
 		return ret;
 	}
@@ -117,9 +118,10 @@ class PublisherRep {
 	 */
 	Publisher getPublisherBySessionId(String id) {
 		Publisher ret = mSessions.get(id);
-		if (ret == null)
+		if (ret == null) {
 			throw new NoSuchPublisherException("Publisher with session-id=" + id +
 					" does not exist");
+		}
 		return ret;
 	}
 
@@ -147,8 +149,9 @@ class PublisherRep {
 
 			// Sanity Check: Never should addPublisher() be called for clients
 			// with existing sessions.
-			if (p.getSessionId() != null && mSessions.containsKey(p.getSessionId()))
+			if (p.getSessionId() != null && mSessions.containsKey(p.getSessionId())) {
 				throw new SystemErrorException("Session for " + pId + " not closed");
+			}
 
 			sLogger.trace("Reusing existing publisher object...");
 			p.getSubscriptionState().setMaxPollResultSize(mprs);

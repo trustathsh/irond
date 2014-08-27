@@ -81,9 +81,13 @@ public class ResponseCheck {
 		try {
 			String line = br.readLine();
 			while (line != null) {
-				if (DEBUG) System.out.println(line);
+				if (DEBUG) {
+					System.out.println(line);
+				}
 				for (int i = 0; i < strings.length; i++) {
-					if (line.contains(strings[i])) found[i] = true;
+					if (line.contains(strings[i])) {
+						found[i] = true;
+					}
 				}
 				line = br.readLine();
 			}
@@ -123,7 +127,9 @@ public class ResponseCheck {
 		if (!sra.getChannelIdentifier().equals(to)) {
 				return false;
 		}
-		if (DEBUG) System.out.println("SendResponseAction to " + to);
+		if (DEBUG) {
+			System.out.println("SendResponseAction to " + to);
+		}
 		return findStringsInInputStream(strings, sra.getResponseContent());
 	}
 

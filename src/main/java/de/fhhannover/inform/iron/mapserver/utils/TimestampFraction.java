@@ -11,6 +11,6 @@ public class TimestampFraction {
 	 * @return a double containing the decimal fraction of a second
 	 */
 	public static double getSecondFraction(Date dt) {
-		return (dt.getTime() % 1000) / 1000.0;
+		return dt.getTime() % 1000 / 1000.0;
 	}
 }

@@ -95,9 +95,10 @@ abstract class IdentifierImpl extends SimpleSearchAbleImpl implements Identifier
 	public final String toString() {
 		if (mPrintableString == null) {
 			mPrintableString = getPrintableString();
-			if (mPrintableString == null)
+			if (mPrintableString == null) {
 				throw new SystemErrorException("Could not build string for"
 						+ mIdentifierType);
+			}
 		}
 		return mPrintableString;
 	}
@@ -137,9 +138,10 @@ abstract class IdentifierImpl extends SimpleSearchAbleImpl implements Identifier
 	@Override
 	public Document getXmlDocument() {
 
-		if (mXmlDocument == null)
+		if (mXmlDocument == null) {
 			throw new SystemErrorException("called getXmlDocument() " +
 						"before setXmlDocument()");
+		}
 
 		return mXmlDocument;
 	}
@@ -149,8 +151,9 @@ abstract class IdentifierImpl extends SimpleSearchAbleImpl implements Identifier
 
 		NullCheck.check(doc, "doc is null");
 
-		if (mXmlDocument != null)
+		if (mXmlDocument != null) {
 			throw new SystemErrorException("called setXmlDocument() twice");
+		}
 
 		mXmlDocument = doc;
 	}

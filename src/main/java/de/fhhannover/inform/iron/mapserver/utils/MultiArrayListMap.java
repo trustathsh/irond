@@ -121,8 +121,9 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	public Collection<V> values() {
 		ArrayList<V> ret = new ArrayList<V>();
 
-		for (List<V> list : mMapOfLists.values())
+		for (List<V> list : mMapOfLists.values()) {
 			ret.addAll(list);
+		}
 
 		return ret;
 	}
@@ -132,7 +133,7 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 		List<V> list = mMapOfLists.get(key);
 		int idx = findIndexOf(value, list);
 
-		return (idx >= 0) ? list.get(idx) : null;
+		return idx >= 0 ? list.get(idx) : null;
 	}
 
 	@Override
@@ -144,11 +145,12 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 			mSize--;
 
 			// list is not needed anymore
-			if (list.size() == 0)
+			if (list.size() == 0) {
 				mMapOfLists.remove(key);
+			}
 		}
 
-		return (idx >= 0);
+		return idx >= 0;
 	}
 
 	@Override
@@ -156,8 +158,9 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 		List<V> ret = new ArrayList<V>();
 		List<V> list = mMapOfLists.get(key);
 
-		if (list != null)
+		if (list != null) {
 			ret.addAll(list);
+		}
 
 		return ret;
 	}
@@ -165,9 +168,10 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	@Override
 	public boolean removeAll(K key) {
 		List<V> tmp = mMapOfLists.remove(key);
-		if (tmp != null)
+		if (tmp != null) {
 			mSize -= tmp.size();
-		return (tmp != null && tmp.size() > 0);
+		}
+		return tmp != null && tmp.size() > 0;
 	}
 
 	/**
@@ -178,6 +182,6 @@ public class MultiArrayListMap<K, V> implements MultiMap<K, V>{
 	 * @return -1 if list == null, otherwise list.indexOf(value)
 	 */
 	private int findIndexOf(V value, List<V> list) {
-		return (list == null) ? -1 : list.indexOf(value);
+		return list == null ? -1 : list.indexOf(value);
 	}
 }

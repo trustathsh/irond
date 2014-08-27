@@ -109,7 +109,7 @@ class DeleteSearchHandler implements SearchHandler {
 
 	@Override
 	public boolean travelLink(Link l) {
-		return (l.getSubscriptionEntry(mSubscription) != null);
+		return l.getSubscriptionEntry(mSubscription) != null;
 	}
 
 	@Override
@@ -150,30 +150,34 @@ class DeleteSearchHandler implements SearchHandler {
 
 	@Override
 	public void onEnd() {
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Finished " + mSubscription);
+		}
 	}
 
 	@Override
 	public void nextDepth() {
 		mCurDepth++;
 
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Depth is now " + mCurDepth);
+		}
 	}
 
 	private void cleanGraphElement(GraphElement ge) {
 		SubscriptionEntry entry = ge.getSubscriptionEntry(mSubscription);
 		if (entry == null) {
 
-			if (SearchHandler.SEARCH_HANDLER_DEBUG)
+			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 				sLogger.trace(mName + ": No entry found on " + ge);
+			}
 
 			return;
 		}
 
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Removing entry from " + ge);
+		}
 
 		mDeletedMetadata.addAll(entry.getMetadataHolder());
 		ge.removeSubscriptionEntry(mSubscription);

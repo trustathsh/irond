@@ -72,9 +72,10 @@ public class NewSessionResult extends Result {
 		LengthCheck.checkMin(sessionId, 1, "session-id length=0");
 		LengthCheck.checkMin(publisherId, 1, "publisher-id length=0");
 
-		if ((maxPollResultSize != null) && !(maxPollResultSize >= 0))
-				throw new RuntimeException("max-poll-result-size wrong: " +
-						maxPollResultSize);
+		if (maxPollResultSize != null && !(maxPollResultSize >= 0)) {
+			throw new RuntimeException("max-poll-result-size wrong: " +
+					maxPollResultSize);
+		}
 
 		mSessionId = sessionId;
 		mPublisherId = publisherId;

@@ -221,8 +221,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			e.printStackTrace();
 			throw new UnmarshalException(e.getMessage());
 		} catch (JAXBException e) {
-			if (validationHandler.hasErrorOccured())
+			if (validationHandler.hasErrorOccured()) {
 				throw new UnmarshalException(validationHandler.getErrorMessage());
+			}
 
 			e.printStackTrace();
 			throw new UnmarshalException(e.getMessage());
@@ -236,18 +237,21 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			}
 		}
 
-		if (reqEnvJaxb.getDeclaredType() != Envelope.class)
+		if (reqEnvJaxb.getDeclaredType() != Envelope.class) {
 			throw new UnmarshalException("No SOAP Envelope found");
+		}
 
 		reqEnv = reqEnvJaxb.getValue();
 
-		if (reqEnv == null)
+		if (reqEnv == null) {
 			throw new UnmarshalException("No SOAP Envelope found");
+		}
 
 		soapBody = reqEnv.getBody();
 
-		if (soapBody == null)
+		if (soapBody == null) {
 			throw new UnmarshalException("No SOAP Body found");
+		}
 
 
 		try {
@@ -358,7 +362,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	private NewSessionRequest transformNewSessionRequest(NewSessionRequestType newSession)
 			throws RequestCreationException {
 		BigInteger mprsRrecv = newSession.getMaxPollResultSize();
-		Integer mprs = (mprsRrecv == null) ? null : new Integer(mprsRrecv.intValue());
+		Integer mprs = mprsRrecv == null ? null : new Integer(mprsRrecv.intValue());
 		return requestFactory.createNewSessionRequest(mprs);
 	}
 
@@ -408,16 +412,17 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			Long maxDepth = search.getMaxDepth();
 			Long maxSize = search.getMaxSize();
 			// if no depth is given, process it with zero depth
-			int maxDepthi = (maxDepth == null) ? 0 : maxDepth.intValue();
-			Integer maxSizeI = (maxSize == null) ? null : new Integer(maxSize.intValue());
+			int maxDepthi = maxDepth == null ? 0 : maxDepth.intValue();
+			Integer maxSizeI = maxSize == null ? null : new Integer(maxSize.intValue());
 
 			Filter matchLinks = FilterFactory.newFilter(search.getMatchLinks(), nsMap);
 			Filter resultFilter = FilterFactory.newFilter(search.getResultFilter(), nsMap);
 			TerminalIdentifiers terminalIdents =
 				new TerminalIdentifiers(search.getTerminalIdentifierType());
 
-			if (search instanceof SearchRequestType)
+			if (search instanceof SearchRequestType) {
 				sessionID = ((SearchRequestType)search).getSessionId();
+			}
 
 			searchRequest = requestFactory.createSearchRequest(sessionID,
 					maxDepthi, maxSizeI, terminalIdents, ident,
@@ -486,8 +491,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 		ArrayList<SubSubscribeRequest> ssr = new ArrayList<SubSubscribeRequest>();
 
-		if (list == null)
+		if (list == null) {
 			return ssr;
+		}
 
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i) instanceof DeleteSearchRequestType) {
@@ -495,7 +501,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 						((DeleteSearchRequestType) list.get(i)).getName()));
 			} else if (list.get(i) instanceof SubscribeRequestType.Update) {
 				SearchRequest sr = transformSearchRequest
-							(((SubscribeRequestType.Update)list.get(i)), sessionID);
+							((SubscribeRequestType.Update)list.get(i), sessionID);
 
 				ssr.add(requestFactory.createSubscribeUpdate(
 						((SubscribeRequestType.Update)list.get(i)).getName(), sr));
@@ -532,8 +538,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		if (list != null) {
 			for (Object o : list) {
 				SubPublishRequest tret = transformToSubPublishRequest(o);
-				if (tret != null)
+				if (tret != null) {
 					retList.add(tret);
+				}
 			}
 		}
 		return retList;
@@ -661,8 +668,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		List<Metadata> lmeta = CollectionHelper.provideListFor(Metadata.class);
 		List<Object> lo = metaDataListType.getAny();
 
-		if (lo == null || lo.size() == 0)
+		if (lo == null || lo.size() == 0) {
 			throw new InvalidMetadataException("No metadata in metadata list found");
+		}
 
 		for (Object o : lo) {
 			Metadata metadata;

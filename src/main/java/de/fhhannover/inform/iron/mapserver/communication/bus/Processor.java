@@ -133,8 +133,9 @@ public abstract class Processor<T>  {
 	 * {@link ForwardTask}s. These in turn will start up {@link WorkTask}s.
 	 */
 	public void start() {
-		for (int i = 0; i < mForwardersCount; i++)
+		for (int i = 0; i < mForwardersCount; i++) {
 			mFwdExecService.execute(new ForwardTask());
+		}
 	}
 
 	/**
@@ -221,6 +222,7 @@ public abstract class Processor<T>  {
 		// We break out of the while() when a InterruptException occurs,
 		// we do not enter the while() anymore if the interrupt flag is set.
 
+		@Override
 		public void run() {
 			while (!Thread.currentThread().isInterrupted()) {
 				T work;

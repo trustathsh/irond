@@ -80,8 +80,9 @@ class NodeImpl extends GraphElementImpl implements Node {
 	@Override
 	public void addLink(Link l) {
 		NullCheck.check(l, "link is null");
-		if (mLinks.containsKey(l.hashCode()))
+		if (mLinks.containsKey(l.hashCode())) {
 			throw new SystemErrorException("Link " + l + " already on " + this);
+		}
 
 		mLinks.put(l.hashCode(), l);
 	}
@@ -89,8 +90,9 @@ class NodeImpl extends GraphElementImpl implements Node {
 	@Override
 	public void removeLink(Link l) {
 		NullCheck.check(l, "link is null");
-		if (!mLinks.containsKey(l.hashCode()))
+		if (!mLinks.containsKey(l.hashCode())) {
 			throw new SystemErrorException("Link " + l + " not on "  + this);
+		}
 
 		mLinks.remove(l.hashCode());
 	}
@@ -107,11 +109,13 @@ class NodeImpl extends GraphElementImpl implements Node {
 
 	@Override
 	public boolean equalsIdentifiers(GraphElement o) {
-		if (o == this)
+		if (o == this) {
 			return true;
+		}
 
-		if (!(o instanceof Node))
+		if (!(o instanceof Node)) {
 			return false;
+		}
 
 		return ((Node)o).getIdentifier().equals(getIdentifier());
 	}

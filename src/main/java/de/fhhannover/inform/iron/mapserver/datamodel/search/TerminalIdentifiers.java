@@ -48,10 +48,7 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.lf5.viewer.configure.MRUFileManager;
-
 import de.fhhannover.inform.iron.mapserver.IfmapConstStrings;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
 
@@ -106,20 +103,23 @@ public class TerminalIdentifiers {
 	@SuppressWarnings("rawtypes")
 	private void validatedFill(String terminalIdentStr) throws InvalidIdentifierException {
 		if (terminalIdentStr.charAt(0) == ','
-			|| terminalIdentStr.charAt(terminalIdentStr.length() -1) == ',')
+			|| terminalIdentStr.charAt(terminalIdentStr.length() -1) == ',') {
 			throw new InvalidIdentifierException("Bad terminal-identifiers: "
 					+ terminalIdentStr);
+		}
 
 		String[] splitted = terminalIdentStr.split(",");
-		if (splitted.length == 0)
+		if (splitted.length == 0) {
 			throw new InvalidIdentifierException("Bad terminal-identifiers: "
 					+ terminalIdentStr);
+		}
 
 		for (String str : splitted) {
 
-			if (str.length() == 0)
+			if (str.length() == 0) {
 				throw new InvalidIdentifierException("Bad terminal-identifiers: "
 						+ "<,,> specified? : "+ terminalIdentStr);
+			}
 
 			//Check identifier types as well as patterns for other and extended types (Ifmap 2.2)
 			if(!IfmapConstStrings.IDENTIFIERS.contains(str)) {

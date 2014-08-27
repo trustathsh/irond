@@ -70,13 +70,15 @@ public class MacAddress extends IdentifierWithAdministrativeDomainImpl
 	public MacAddress(final String value, final String ad) throws InvalidIdentifierException {
 		super(IfmapConstStrings.MAC, ad);
 
-		if (value == null || value.length() == 0)
+		if (value == null || value.length() == 0) {
 			throw new InvalidIdentifierException("MacAddress: Empty or no value "
 					+ "(" + value + ")");
+		}
 
-		if (!MacAddressValidator.validateMacAddress(value))
+		if (!MacAddressValidator.validateMacAddress(value)) {
 			throw new InvalidIdentifierException("MacAddress: Invalid format " +
 					"(" + value + ")");
+		}
 		mValue = value;
 
 		setByteCount(IfmapConstStrings.MAC_CNT + mValue.length()
@@ -104,14 +106,17 @@ public class MacAddress extends IdentifierWithAdministrativeDomainImpl
 	@Override
 	public boolean equals(Object o) {
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!super.equals(o))
+		if (!super.equals(o)) {
 			return false;
+		}
 
-		if (!(o instanceof MacAddress))
+		if (!(o instanceof MacAddress)) {
 			return false;
+		}
 
 		return mValue.equals(((MacAddress)o).getValue());
 	}

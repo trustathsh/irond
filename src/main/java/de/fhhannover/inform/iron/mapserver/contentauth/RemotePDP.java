@@ -163,8 +163,9 @@ public class RemotePDP {
 					mConn.sendResponseHeader(response);
 					mConn.sendResponseEntity(response);
 
-					if (errorClose)
+					if (errorClose) {
 						mConn.close();
+					}
 				}
 			} catch (ConnectionClosedException e) {
 				System.out.println(nameDate() + clientName + " gone");

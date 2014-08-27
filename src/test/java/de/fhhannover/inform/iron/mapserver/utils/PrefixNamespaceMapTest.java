@@ -73,6 +73,7 @@ public class PrefixNamespaceMapTest extends TestCase {
 
 	private RequestUnmarshaller unmarshaller;
 
+	@Override
 	public void setUp() {
 		ServerConfigurationProvider conf = StubProvider.getServerConfStub(1);
 		MetadataTypeRepository mdtr = MetadataTypeRepositoryImpl.newInstance();

@@ -111,16 +111,18 @@ public class NameSpaceStripper {
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);
 
-			if (child.getNodeType() == Node.ELEMENT_NODE)
+			if (child.getNodeType() == Node.ELEMENT_NODE) {
 				stripUnusedNamespaces((Element)child, entries);
+			}
 		}
 
 		// look through the last count entries in the list, and if usage count
 		// is 0, remove them from the element node
 		for (int i = 0; i < count; i++) {
 			Tuple<String, Integer, NamedNodeMap> t = entries.removeLast();
-			if (t.y == 0)
+			if (t.y == 0) {
 				t.z.removeNamedItem("xmlns:" + t.x);
+			}
 		}
 	}
 

@@ -48,7 +48,6 @@ package de.fhhannover.inform.iron.mapserver;
 import java.util.Arrays;
 import java.util.List;
 
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.*;
 import de.fhhannover.inform.iron.mapserver.messages.ErrorCode;
 
 /**

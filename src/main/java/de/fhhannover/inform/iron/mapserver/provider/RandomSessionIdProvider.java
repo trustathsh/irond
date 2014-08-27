@@ -82,13 +82,16 @@ public class RandomSessionIdProvider implements SessionIdProvider {
 
 		int next = mRandom.nextInt();
 		// make sure the first one is positive
-		next = (next < 0) ? (-next) : next;
+		next = next < 0 ? -next : next;
 
 		sb.append(next);
 		while (sb.length() < SESSION_ID_MIN_LENGTH) {
 			next = mRandom.nextInt();
-			if (next == 0) continue;			// don't want 0
-			next = (next > 0) ? (-next) : next; // neg looks like - separated
+			if (next == 0)
+			 {
+				continue;			// don't want 0
+			}
+			next = next > 0 ? -next : next; // neg looks like - separated
 			sb.append(next);
 		}
 		return sb.toString();

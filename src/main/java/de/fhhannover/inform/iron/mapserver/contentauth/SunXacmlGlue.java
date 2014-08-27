@@ -99,8 +99,9 @@ class SunXacmlGlue {
 		ResponseType respType = new ResponseType();
 		List<ResultType> rtResults = respType.getResult();
 
-		for (Object r : results)
+		for (Object r : results) {
 			rtResults.add(result2ResultType((Result)r));
+		}
 
 		return respType;
 	}
@@ -158,10 +159,11 @@ class SunXacmlGlue {
 		rt.setDecision(intDecision2DecisonEnum(r.getDecision()));
 		// We are not taking Obligations into account!!!!
 
-		if (r.getObligations().size() > 0)
+		if (r.getObligations().size() > 0) {
 			System.err.println("WARNING: result contains "
 								+ r.getObligations().size()
 								+ " obligations.");
+		}
 
 		rt.setObligations(null);
 		rt.setResourceId(r.getResource());
@@ -175,8 +177,9 @@ class SunXacmlGlue {
 		StatusType st = new StatusType();
 		st.setStatusCode(statusCode2StatusCodeType(status.getCode()));
 
-		if (status.getDetail() != null)
+		if (status.getDetail() != null) {
 			st.setStatusDetail(statusDetail2StatusDetailType(status.getDetail()));
+		}
 
 		st.setStatusMessage(status.getMessage());
 
@@ -186,7 +189,7 @@ class SunXacmlGlue {
 	private static StatusDetailType statusDetail2StatusDetailType(
 			StatusDetail detail) {
 		StatusDetailType sdt = new StatusDetailType();
-		sdt.getAny().add((detail.getDetail()));
+		sdt.getAny().add(detail.getDetail());
 		return sdt;
 	}
 
@@ -194,9 +197,10 @@ class SunXacmlGlue {
 	private static StatusCodeType statusCode2StatusCodeType(List code) {
 		StatusCodeType sct = new StatusCodeType();
 
-		if (code.size() == 0 || code.size() > 1)
+		if (code.size() == 0 || code.size() > 1) {
 			System.err.println("WARNING: result contains "
 								+ code.size() + " codes.");
+		}
 
 		sct.setValue((String) code.get(0));
 
@@ -269,8 +273,9 @@ class SunXacmlGlue {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			int myByte = 0;
 
-			while ((myByte = bais.read()) >= 0)
+			while ((myByte = bais.read()) >= 0) {
 				baos.write(myByte);
+			}
 
 		} catch (JAXBException e) {
 			// well. logging failed... too bad...

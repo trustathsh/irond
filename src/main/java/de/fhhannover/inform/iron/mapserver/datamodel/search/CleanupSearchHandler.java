@@ -79,9 +79,10 @@ class CleanupSearchHandler implements SearchHandler {
 
 	@Override
 	public void onStart() {
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName +": Start for " + mSubscription + " at "
 					+ getStartIdentifier());
+		}
 	}
 
 	@Override
@@ -96,7 +97,7 @@ class CleanupSearchHandler implements SearchHandler {
 
 	@Override
 	public boolean travelLink(Link l) {
-		return (l.getRemovedSubscriptionEntry(mSubscription) != null);
+		return l.getRemovedSubscriptionEntry(mSubscription) != null;
 	}
 
 	@Override
@@ -117,8 +118,9 @@ class CleanupSearchHandler implements SearchHandler {
 
 	@Override
 	public void onEnd() {
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Finished " + mSubscription);
+		}
 	}
 
 	@Override
@@ -129,19 +131,22 @@ class CleanupSearchHandler implements SearchHandler {
 	private void cleanGraphElement(GraphElement ge) {
 		SubscriptionEntry entry = ge.getRemovedSubscriptionEntry(mSubscription);
 
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Cleaning " + ge);
+		}
 
 		if (entry == null) {
-			if (SearchHandler.SEARCH_HANDLER_DEBUG)
+			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 				sLogger.trace(mName + ": No entry here anymore");
+			}
 			return;
 		}
 
 
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Removing old sub entry from " + ge + " for "
 					+ mSubscription);
+		}
 
 		ge.removeRemovedSubscriptionEntry(mSubscription);
 	}

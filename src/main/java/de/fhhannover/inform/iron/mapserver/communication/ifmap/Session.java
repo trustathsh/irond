@@ -155,9 +155,10 @@ class Session {
 	}
 
 	public void setPollResultAvailable() {
-		if (mPollState == PollState.POLL_PENDING)
+		if (mPollState == PollState.POLL_PENDING) {
 			throw new SystemErrorException("Can't have PollResultAvailable "
 					+ "and PollPending");
+		}
 
 			mPollState = PollState.POLL_AVAILABLE;
 	}
@@ -167,9 +168,10 @@ class Session {
 	}
 
 	public void setPollPending() {
-		if (mPollState == PollState.POLL_AVAILABLE)
+		if (mPollState == PollState.POLL_AVAILABLE) {
 			throw new SystemErrorException("Can't have PollResultAvailable "
 					+ "and PollPending");
+		}
 
 		mPollState = PollState.POLL_PENDING;
 	}
@@ -187,6 +189,7 @@ class Session {
 	}
 
 	// TODO: implement this
+	@Override
 	public String toString() {
 		return "FIXME TODO Session.toString()";
 	}

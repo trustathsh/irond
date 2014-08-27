@@ -93,9 +93,10 @@ public class SubscriptionState {
 	 */
 	public void addSubscription(Subscription sub) {
 		NullCheck.check(sub, "sub is null");
-		if (mSubscriptions.containsKey(sub.getName()))
+		if (mSubscriptions.containsKey(sub.getName())) {
 			throw new SystemErrorException("subscription " + sub.getName()
 					+ " exists!");
+		}
 
 		mSubscriptions.put(sub.getName(), sub);
 	}
@@ -110,9 +111,10 @@ public class SubscriptionState {
 		NullCheck.check(sub, "sub is null");
 		NullCheck.check(sub.getName(), "sub.getName() returns null");
 
-		if (!mSubscriptions.containsKey(sub.getName()))
+		if (!mSubscriptions.containsKey(sub.getName())) {
 			throw new SystemErrorException("Cannot remove nonexistent subscription"
 					+ sub.getName());
+		}
 
 		mSubscriptions.remove(sub.getName());
 		mPollResult.removeResultsOf(sub.getName());
@@ -131,18 +133,22 @@ public class SubscriptionState {
 	 * Remove all {@link Subscription} instances and clean the {@link PollResult}.
 	 */
 	public void clearSubscriptions() {
-		for (Subscription sub : getSubscriptions())
+		for (Subscription sub : getSubscriptions()) {
 			removeSubscription(sub);
+		}
 
 		// Sanity
-		if (mSubscriptions.size() != 0)
+		if (mSubscriptions.size() != 0) {
 			throw new SystemErrorException("All subscriptions should be gone");
+		}
 
-		if (mPollResult.getResults().size() != 0)
+		if (mPollResult.getResults().size() != 0) {
 			throw new SystemErrorException("PollResult should be empty");
+		}
 
-		if (mPollResult.getByteCount() != IfmapConstStrings.PRES_MIN_CNT)
+		if (mPollResult.getByteCount() != IfmapConstStrings.PRES_MIN_CNT) {
 			throw new SystemErrorException("PollResult size should be zero");
+		}
 	}
 
 	public Integer getMaxPollSize() {
@@ -174,10 +180,11 @@ public class SubscriptionState {
 	}
 
 	public boolean isPollResultsTooBig() {
-		if (mPollResult.getByteCount() > getMaxPollSize())
+		if (mPollResult.getByteCount() > getMaxPollSize()) {
 			mPollResGrewTooBig = true;
+		}
 
-		return (mPollResult.getByteCount() > getMaxPollSize())
+		return mPollResult.getByteCount() > getMaxPollSize()
 				|| mPollResGrewTooBig;
 	}
 

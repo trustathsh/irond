@@ -152,12 +152,13 @@ public class SubscriptionService {
 		sLogger.debug(sName + ": subscribe for " + pub.getPublisherId());
 
 		for (SubSubscribeRequest ssr : subReq.getSubSubscribeRequests()) {
-			if (ssr instanceof SubscribeUpdate)
-					processSubscribeUpdate(pub, (SubscribeUpdate)ssr);
-			else if (ssr instanceof SubscribeDelete)
-					processSubscribeDelete(pub, (SubscribeDelete)ssr);
-			else
+			if (ssr instanceof SubscribeUpdate) {
+				processSubscribeUpdate(pub, (SubscribeUpdate)ssr);
+			} else if (ssr instanceof SubscribeDelete) {
+				processSubscribeDelete(pub, (SubscribeDelete)ssr);
+			} else {
 				throw new SystemErrorException("Unknown SubscribeRequest Impl");
+			}
 		}
 	}
 
@@ -180,9 +181,10 @@ public class SubscriptionService {
 
 		if (sub != null) {
 			// Sanity if mapping worked before
-			if (!sub.getName().equals(ssr.getName()))
+			if (!sub.getName().equals(ssr.getName())) {
 				throw new SystemErrorException("Bad subscription mapping for "
 						+ ssr.getName() + ", got " + sub.getName());
+			}
 
 			sLogger.debug(sName + ": Deleting subscription \"" + sub.getName()
 					+ "\" of " + pub);
@@ -288,19 +290,22 @@ public class SubscriptionService {
 		for (GraphElement ge : visitedGraphElement.keySet()) {
 			initSres.addGraphElement(ge);
 
-			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder())
+			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder()) {
 				initSres.addMetadata(ge, mh.getMetadata());
+			}
 		}
 
 		// Need to check max-size manually as ContinueSearchHandler does not care
-		if (initSres.getByteCount() > msrs)
+		if (initSres.getByteCount() > msrs) {
 			throw new SearchResultsTooBigException("SearchResult grew too big",
 	 											   msrs, initSres.getByteCount());
+		}
 
 		// Sanitize check: An initial search never leads to new Starters.
-		if (starters.size() > 0)
+		if (starters.size() > 0) {
 			throw new SystemErrorException("Initial Subscription Search lead "
 					+ " to Starters");
+		}
 
 		return initSres;
 	}
@@ -339,8 +344,9 @@ public class SubscriptionService {
 		doResultNotifications();
 		cleanup();
 
-		if (mConf.isSanityChecksEnabled())
+		if (mConf.isSanityChecksEnabled()) {
 			sanitizeState();
+		}
 	}
 
 	private void buildNewResults() {
@@ -362,11 +368,13 @@ public class SubscriptionService {
 		SubscriptionState state = sub.getPublisherReference().getSubscriptionState();
 		ModifiableSearchResult sres = mSearchFac.newCopySearchResult(sub.getName(), type);
 
-		if (results.size() == 0)
+		if (results.size() == 0) {
 			return;
+		}
 
-		for (MetadataHolder mh : results)
+		for (MetadataHolder mh : results) {
 			sres.addMetadata(mh.getGraphElement(), mh.getMetadata());
+		}
 
 		state.getPollResult().addSearchResult(sres);
 
@@ -407,8 +415,9 @@ public class SubscriptionService {
 
 		for (Node starter : subcs.mDeleteStarters) {
 			// might not have to run it anymore
-			if (starter.getRemovedSubscriptionEntry(sub) == null)
+			if (starter.getRemovedSubscriptionEntry(sub) == null) {
 				continue;
+			}
 
 			SearchHandler handler = mSearchFac.newCleanupSearchHandler(
 					starter.getIdentifier(), sub);
@@ -427,8 +436,9 @@ public class SubscriptionService {
 		for (Node starter : subcs.mDeleteStarters) {
 
 			// might not have to run it anymore if another delete searcher removed us.
-			if (starter.getSubscriptionEntry(sub) == null)
+			if (starter.getSubscriptionEntry(sub) == null) {
 				continue;
+			}
 
 			handler = mSearchFac.newDeleteSearchHandler(
 					starter.getIdentifier(),
@@ -465,8 +475,9 @@ public class SubscriptionService {
 
 				// If a DeleteSearcher came along and removed the entry, we
 				// shouldn't run it again.
-				if (starter.getSubscriptionEntry(sub) == null)
+				if (starter.getSubscriptionEntry(sub) == null) {
 					continue;
+				}
 
 				handler = mSearchFac.newContinueSearchHandler(
 						starter.getIdentifier(),
@@ -535,8 +546,9 @@ public class SubscriptionService {
 		for (MetadataHolder mh : mChangedMetadata) {
 
 			// skip non-notify
-			if (!mh.isNotify())
+			if (!mh.isNotify()) {
 				continue;
+			}
 
 			ge = mh.getGraphElement();
 
@@ -544,8 +556,9 @@ public class SubscriptionService {
 				sub = entry.getSubscription();
 				subcs = getSubChangeState(sub);
 
-				if (matchesOnSubscription(mh, sub))
+				if (matchesOnSubscription(mh, sub)) {
 					subcs.mNotifyMetadataHolders.add(mh);
+				}
 			}
 
 			toRemove.add(mh);
@@ -567,11 +580,13 @@ public class SubscriptionService {
 				break;
 			case REPLACED:
 				// Sanity Check: REPLACED is always singleValue
-				if (!mh.getMetadata().isSingleValue())
+				if (!mh.getMetadata().isSingleValue()) {
 					throw new SystemErrorException("REPLACED not singleValue");
+				}
 
-				if (mConf.isSanityChecksEnabled())
+				if (mConf.isSanityChecksEnabled()) {
 					replaceSanitize(mh);
+				}
 
 				// Forget about it;
 				mh.getGraphElement().removeMetadataHolder(mh);
@@ -597,13 +612,16 @@ public class SubscriptionService {
 		List<MetadataHolder> mhs = ge.getMetadataHolder(type);
 		List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh2 : mhs)
-			if (mh2.isNew())
+		for (MetadataHolder mh2 : mhs) {
+			if (mh2.isNew()) {
 				tmp.add(mh2);
+			}
+		}
 
 		// We checked singleValue before and expect a single NEW one
-		if (tmp.size() != 1)
+		if (tmp.size() != 1) {
 			throw new SystemErrorException("metadata replaced by " + tmp.size());
+		}
 	}
 
 	/**
@@ -668,11 +686,13 @@ public class SubscriptionService {
 	private void checkForAddedSubGraph(GraphElement ge, MetadataHolder mh) {
 
 		// Not possible for nodes
-		if (isNode(ge))
+		if (isNode(ge)) {
 			return;
+		}
 
-		if (!isLink(ge))
+		if (!isLink(ge)) {
 			throw new SystemErrorException("GraphElement not Link nor Identifier");
+		}
 
 		Link l = (Link)ge;
 		Node n1 = l.getNode1();
@@ -686,14 +706,17 @@ public class SubscriptionService {
 
 
 		// create the sets
-		for (SubscriptionEntry entry : l.getSubscriptionEntries())
+		for (SubscriptionEntry entry : l.getSubscriptionEntries()) {
 			subLinkSet.add(entry.getSubscription());
+		}
 
-		for (SubscriptionEntry entry : n1.getSubscriptionEntries())
+		for (SubscriptionEntry entry : n1.getSubscriptionEntries()) {
 			subSetN1.add(entry.getSubscription());
+		}
 
-		for (SubscriptionEntry entry : n2.getSubscriptionEntries())
+		for (SubscriptionEntry entry : n2.getSubscriptionEntries()) {
 			subSetN2.add(entry.getSubscription());
+		}
 
 		res1.addAll(subSetN1);
 		res1.removeAll(subLinkSet);
@@ -713,11 +736,13 @@ public class SubscriptionService {
 			addToContinueStarterIfMatching(mh, sub, lowerDepth);
 		}
 
-		for (Subscription sub : res1)
+		for (Subscription sub : res1) {
 			addToContinueStarterIfMatching(mh, sub, n1);
+		}
 
-		for (Subscription sub : res2)
+		for (Subscription sub : res2) {
 			addToContinueStarterIfMatching(mh, sub, n2);
+		}
 
 	}
 
@@ -726,19 +751,22 @@ public class SubscriptionService {
 		SubscriptionChangeState subcs = getSubChangeState(sub);
 		Publisher pub = sub.getPublisherReference();
 
-		if (isAuthorizedAndMatching(pub, mh, matchLinksFilter))
+		if (isAuthorizedAndMatching(pub, mh, matchLinksFilter)) {
 			subcs.mContinueStarter.add(n);
+		}
 	}
 
 	private void checkForDeletedSubGraph(GraphElement ge, SubscriptionEntry entry,
 			SubscriptionChangeState subcs) {
 
 		// Not possible for nodes
-		if (isNode(ge))
+		if (isNode(ge)) {
 			return;
+		}
 
-		if (!isLink(ge))
+		if (!isLink(ge)) {
 			throw new SystemErrorException("GraphElement not Link nor Identifier");
+		}
 
 		Link l = (Link)ge;
 		Node n1 = l.getNode1();
@@ -751,20 +779,24 @@ public class SubscriptionService {
 		SubscriptionEntry e2 = n2.getSubscriptionEntry(sub);
 
 		// Sanity
-		if (e1 == null && e2 == null)
+		if (e1 == null && e2 == null) {
 			throw new SystemErrorException("UNEXPECTED: link had sub, but none "
 					+ " of the nodes");
+		}
 
 		// There's still metadata on the link for this subscription, so we don't
 		// need to worry.
-		if (entry.getMetadataHolder().size() > 0)
+		if (entry.getMetadataHolder().size() > 0) {
 			return;
+		}
 
 		// There is NEW metadata which will take over. We do not delete the
 		// the subscription in this case.
-		for (MetadataHolder mh : ge.getMetadataHolderNew(matchLinks))
-			if (isAuthorized(pub, mh))
+		for (MetadataHolder mh : ge.getMetadataHolderNew(matchLinks)) {
+			if (isAuthorized(pub, mh)) {
 				return;
+			}
+		}
 
 		// We don't need a rerun if the depth of both is the same, then
 		// n1 and n2 are reached on different ways through the graph and
@@ -772,7 +804,7 @@ public class SubscriptionService {
 		// Otherwise we start the deleter from the node with the greater
 		// depth.
 		if (e1 != null && e2 != null && e1.getDepth() != e2.getDepth()) {
-			greaterDepth = (e1.getDepth() < e2.getDepth()) ? n2 : n1;
+			greaterDepth = e1.getDepth() < e2.getDepth() ? n2 : n1;
 			subcs.mDeleteStarters.add(greaterDepth);
 			// remove the entry from the link, so the deleter won't travel it
 			l.removeSubscriptionEntry(sub);
@@ -831,8 +863,9 @@ public class SubscriptionService {
 		res = isAuthorizedAndMatching(sub.getPublisherReference(), mh, rFilter);
 
 		// Links need to match the match-links-filter as well?
-		if (res && isLink(ge))
+		if (res && isLink(ge)) {
 			res &= mh.getMetadata().matchesFilter(lFilter);
+		}
 
 		return res;
 	}
@@ -890,8 +923,9 @@ public class SubscriptionService {
 		SubscriptionState subState = pub.getSubscriptionState();
 		PollResult ret = null;
 
-		if (!subState.isNotified())
+		if (!subState.isNotified()) {
 			throw new SystemErrorException("getPollResultFor() but never notified");
+		}
 
 		try {
 			if (subState.isPollResultsTooBig()) {
@@ -902,13 +936,16 @@ public class SubscriptionService {
 			ret = subState.getPollResult();
 			subState.resetPollResult();
 
-			if (ret.isEmpty())
+			if (ret.isEmpty()) {
 				throw new SystemErrorException("empty pollResult for poll");
+			}
 
 			// Remove subscriptions that lead to an error
-			for (Subscription sub : subState.getSubscriptions())
-				if (sub.exceededSize())
+			for (Subscription sub : subState.getSubscriptions()) {
+				if (sub.exceededSize()) {
 					subState.removeSubscription(sub);
+				}
+			}
 
 			return ret;
 		} finally {
@@ -924,8 +961,9 @@ public class SubscriptionService {
 	 *  registered before
 	 */
 	public void setSubscriptionObserver(SubscriptionObserver subObs) throws AlreadyObservedException {
-		if (mObserver != null)
+		if (mObserver != null) {
 			throw new AlreadyObservedException("Only one SubscriptionObserver is allowed!");
+		}
 
 		mObserver = subObs;
 	}
@@ -942,9 +980,10 @@ public class SubscriptionService {
 		SubscriptionState subState = pub.getSubscriptionState();
 
 		// sanity check
-		if (pub.getSessionId() == null)
+		if (pub.getSessionId() == null) {
 			throw new SystemErrorException("Publisher " + pub.getPublisherId()
 					+ " has no session");
+		}
 
 		if (!subState.isNotified()) {
 			sLogger.trace(sName + ": " + pub.getPublisherId() +
@@ -984,8 +1023,9 @@ public class SubscriptionService {
 			int size = pollResult.getByteCountOf(name);
 			int maxSize = mConf.getDefaultMaxSearchResultSize();
 
-			if (sreq.maxSizeGiven())
+			if (sreq.maxSizeGiven()) {
 				maxSize = sreq.getMaxResultSize();
+			}
 
 			if (size > maxSize) {
 				pollResult.removeResultsOf(name);
@@ -1030,8 +1070,9 @@ public class SubscriptionService {
 		NullCheck.check(pub, "pub is null");
 		SubscriptionState subState = pub.getSubscriptionState();
 
-		for (Subscription sub : subState.getSubscriptions())
+		for (Subscription sub : subState.getSubscriptions()) {
 			clearContainers(sub);
+		}
 
 		subState.clearSubscriptions();
 		subState.unsetNotified();
@@ -1053,17 +1094,19 @@ public class SubscriptionService {
 		}
 
 		// Sanity
-		if (sub.getContainers().size() != 0)
+		if (sub.getContainers().size() != 0) {
 			throw new SystemErrorException("Subscription" + sub.getName()
 					+ " should not have any containers anymore");
+		}
 	}
 
 	private void increaseLogicalTimeStamp() {
 
 		long old = mLogicalTimeStamp++;
 
-		if (mLogicalTimeStamp < old)
+		if (mLogicalTimeStamp < old) {
 			throw new SystemErrorException("timestamp overflow");
+		}
 
 		sLogger.trace(sName + ": Logical timestamp: " + mLogicalTimeStamp);
 	}
@@ -1076,26 +1119,30 @@ public class SubscriptionService {
 		sLogger.trace(sName + ": Checking graph state");
 		for (GraphElement dummyGe : mGraph.getAllElements()) {
 			GraphElement ge = null;
-			if (isNode(dummyGe))
+			if (isNode(dummyGe)) {
 				ge = mGraph.getNodeFor(((Node)dummyGe).getIdentifier());
-			else if (isLink(dummyGe))
+			} else if (isLink(dummyGe)) {
 				ge = mGraph.getLinkFor(((Link)dummyGe).getNode1().getIdentifier(),
 						((Link)dummyGe).getNode2().getIdentifier());
-			else
+			} else {
 				throw new SystemErrorException("IMPOSSIBLE");
+			}
 
 
 			if (ge.getRemovedSubscriptionEntries().size() > 0) {
 				sLogger.warn(sName + ": Found removed sub entries on " + dummyGe +
 						" for ");
-				for (SubscriptionEntry entry : dummyGe.getSubscriptionEntries())
+				for (SubscriptionEntry entry : dummyGe.getSubscriptionEntries()) {
 					sLogger.warn(sName + ": " + entry.getSubscription());
+				}
 			}
 
-			for (MetadataHolder mh : ge.getMetadataHolder())
-				if (mh.getState() != MetadataState.UNCHANGED)
+			for (MetadataHolder mh : ge.getMetadataHolder()) {
+				if (mh.getState() != MetadataState.UNCHANGED) {
 					sLogger.warn(sName + ": Found metadata with state " +
 							mh.getState() + " on " + ge);
+				}
+			}
 		}
 	}
 

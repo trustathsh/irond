@@ -84,8 +84,9 @@ public class PublishUpdate extends SubPublishRequest {
 
 		super(ident1, ident2, type);
 
-		if (ml == null)
+		if (ml == null) {
 			throw new RequestCreationException("Metadata List is null");
+		}
 
 		if (ml.size() == 0) {
 			throw new RequestCreationException("Metadata List is empty");

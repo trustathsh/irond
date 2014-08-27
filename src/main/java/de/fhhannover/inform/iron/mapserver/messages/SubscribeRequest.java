@@ -75,8 +75,9 @@ public class SubscribeRequest extends RequestWithSessionId {
 												throws RequestCreationException {
 		super(sessionId);
 
-		if (ssrlist == null || ssrlist.size() == 0)
+		if (ssrlist == null || ssrlist.size() == 0) {
 			throw new RequestCreationException("No SubSubscriptionRequests given");
+		}
 
 		ssrList = ssrlist;
 	}

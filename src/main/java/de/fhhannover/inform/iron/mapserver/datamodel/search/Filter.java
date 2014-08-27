@@ -107,8 +107,9 @@ public class Filter {
 	}
 
 	public String getFilterString() {
-		if (isMatchEverything() || isMatchNothing())
+		if (isMatchEverything() || isMatchNothing()) {
 			throw new SystemErrorException("get filter for match all/nothing");
+		}
 
 		return mFilterString;
 	}
@@ -132,21 +133,24 @@ public class Filter {
 		return mPrefixUriMap;
 	}
 
+	@Override
 	public String toString() {
-		if (toStringString == null)
+		if (toStringString == null) {
 			toStringString = buildToStringString();
+		}
 		return toStringString;
 	}
 
 	private String buildToStringString() {
 		StringBuffer sb = new StringBuffer("filter{");
 
-		if (isMatchEverything())
+		if (isMatchEverything()) {
 			sb.append("match everything");
-		else if (isMatchNothing())
+		} else if (isMatchNothing()) {
 			sb.append("match nothing");
-		else
+		} else {
 			sb.append(mFilterString);
+		}
 
 		sb.append("}");
 		return sb.toString();

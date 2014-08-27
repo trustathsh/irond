@@ -97,8 +97,9 @@ class RemoteSunXacml extends AbstractSunXacml {
 		try {
 			InputStream is = SunXacmlGlue.request2Is(reqType);
 
-			if (mRawLog)
+			if (mRawLog) {
 				is = log(is, false, req);
+			}
 
 			conn = (HttpURLConnection)mUrl.openConnection();
 			conn.setRequestMethod("POST");
@@ -109,8 +110,9 @@ class RemoteSunXacml extends AbstractSunXacml {
 			int val = 0;
 			ResponseType respType = null;
 
-			while ((val = is.read()) >= 0)
+			while ((val = is.read()) >= 0) {
 				cOs.write(val);
+			}
 
 			is.close();
 			cOs.flush();
@@ -118,8 +120,9 @@ class RemoteSunXacml extends AbstractSunXacml {
 
 			InputStream cIs = conn.getInputStream();
 
-			if (mRawLog)
+			if (mRawLog) {
 				cIs = log(cIs, true, req);
+			}
 
 			respType = SunXacmlGlue.is2ResponseType(cIs);
 			cIs.close();
@@ -127,8 +130,9 @@ class RemoteSunXacml extends AbstractSunXacml {
 			return SunXacmlGlue.responseType2Results(respType);
 
 		} catch (IOException e) {
-			if (conn != null)
+			if (conn != null) {
 				conn.disconnect();
+			}
 			throw e;
 		} catch (JAXBException e) {
 			throw e;
@@ -145,7 +149,7 @@ class RemoteSunXacml extends AbstractSunXacml {
 
 		synchronized (this) {
 			sLogger.trace(String.format("Request %d %s\n%s", req,
-															 (in ? "in" : "out"),
+															 in ? "in" : "out",
 															 baos.toString()));
 		}
 

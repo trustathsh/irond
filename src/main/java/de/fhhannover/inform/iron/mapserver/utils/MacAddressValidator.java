@@ -71,8 +71,9 @@ public class MacAddressValidator {
 	public static boolean validateMacAddress(String value) {
 		boolean res = true;
 
-		if (value == null)
+		if (value == null) {
 			return false;
+		}
 
 		try {
 			String doubles[] = value.split(":");

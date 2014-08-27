@@ -81,9 +81,10 @@ public class SchemaProviderImpl implements SchemaProvider {
 
 		String[] schemas = serverConf.getSchemaFileNames();
 
-		if (schemas.length == 0)
+		if (schemas.length == 0) {
 			throw new ProviderInitializationException("irond.xml.validate=true,"
 					+ " but no schemas in config file?");
+		}
 
 		Source[] fileSources = new Source[schemas.length];
 

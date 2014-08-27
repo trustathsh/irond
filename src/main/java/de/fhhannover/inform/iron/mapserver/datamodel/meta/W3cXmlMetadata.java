@@ -111,11 +111,13 @@ public class W3cXmlMetadata extends Metadata {
 
 		mXmlDocument = doc;
 
-		if (mXmlDocument.getChildNodes().getLength() != 1)
+		if (mXmlDocument.getChildNodes().getLength() != 1) {
 			throw new InvalidMetadataException("wrong number of elements");
+		}
 
-		if (mXmlDocument.getFirstChild().getNodeType() != Node.ELEMENT_NODE)
+		if (mXmlDocument.getFirstChild().getNodeType() != Node.ELEMENT_NODE) {
 			throw new InvalidMetadataException("node is not element node");
+		}
 
 		mXmlElement = (Element) mXmlDocument.getFirstChild();
 		createStrings();
@@ -248,8 +250,9 @@ public class W3cXmlMetadata extends Metadata {
 		mPrefixElementName = mXmlElement.getNodeName();
 
 		// only set the byte count if we are fully initialzied
-		if (mTimeStamp != null && mPublisherId != null)
+		if (mTimeStamp != null && mPublisherId != null) {
 			setByteCount(mMetadataAsString.length());
+		}
 	}
 
 	@Override

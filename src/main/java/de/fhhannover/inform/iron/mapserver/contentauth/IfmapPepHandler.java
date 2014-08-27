@@ -131,18 +131,22 @@ public interface IfmapPepHandler {
 						(mIsClientIdent ? 1093 : 1097) +
 						(mIsSelfIdent ? 1103 : 1109);
 
-			for (String role : getRoles())
+			for (String role : getRoles()) {
 				ret += role.hashCode();
+			}
 
-			for (Map.Entry<String, String> entry : mIdentAttrs.entrySet())
+			for (Map.Entry<String, String> entry : mIdentAttrs.entrySet()) {
 				ret += (entry.getKey() + entry.getValue()).hashCode();
+			}
 
-			for (Map.Entry<String, String> entry : mMetadataAttrs.entrySet())
+			for (Map.Entry<String, String> entry : mMetadataAttrs.entrySet()) {
 				ret += (entry.getKey() + entry.getValue()).hashCode();
+			}
 
 			return ret;
 		}
 
+		@Override
 		public final String toString() {
 			return "dreq{roles=" + mRoles
 					+ " op=" + mOp
@@ -207,11 +211,13 @@ public interface IfmapPepHandler {
 
 			IfmapDecisionRequest ot = null;
 
-			if (o == null)
+			if (o == null) {
 				return false;
+			}
 
-			if (!(o instanceof IfmapDecisionRequest))
+			if (!(o instanceof IfmapDecisionRequest)) {
 				return false;
+			}
 
 			ot = (IfmapDecisionRequest)o;
 
@@ -223,51 +229,66 @@ public interface IfmapPepHandler {
 			// 4) the identifier type is the same
 			// 5) the roles are the same
 
-			if (ot.getOp() != getOp())
+			if (ot.getOp() != getOp()) {
 				return false;
+			}
 
-			if (ot.isClobber() != isClobber())
+			if (ot.isClobber() != isClobber()) {
 				return false;
+			}
 
-			if (ot.isOnLink() != isOnLink())
+			if (ot.isOnLink() != isOnLink()) {
 				return false;
+			}
 
-			if (ot.isDryRun() != isDryRun())
+			if (ot.isDryRun() != isDryRun()) {
 				return false;
+			}
 
-			if (ot.getMetadataType() == null && getMetadataType() != null)
+			if (ot.getMetadataType() == null && getMetadataType() != null) {
 				return false;
+			}
 
-			if (getMetadataType() == null && ot.getMetadataType() != null)
+			if (getMetadataType() == null && ot.getMetadataType() != null) {
 				return false;
+			}
 
-			if (getMetadataType() != null && ot.getMetadataType() != null)
-				if (!getMetadataType().equals(ot.getMetadataType()))
+			if (getMetadataType() != null && ot.getMetadataType() != null) {
+				if (!getMetadataType().equals(ot.getMetadataType())) {
 					return false;
+				}
+			}
 
-			if (ot.getIdentifierType() == null && getIdentifierType() != null)
+			if (ot.getIdentifierType() == null && getIdentifierType() != null) {
 				return false;
+			}
 
-			if (getIdentifierType() == null && ot.getIdentifierType() != null)
+			if (getIdentifierType() == null && ot.getIdentifierType() != null) {
 				return false;
+			}
 
-			if (getIdentifierType() != null && ot.getIdentifierType() != null)
-				if (!getIdentifierType().equals(ot.getIdentifierType()))
+			if (getIdentifierType() != null && ot.getIdentifierType() != null) {
+				if (!getIdentifierType().equals(ot.getIdentifierType())) {
 					return false;
+				}
+			}
 
 			Set<String> roles1 = CollectionHelper.provideSetFor(String.class);
 			Set<String> roles2 = CollectionHelper.provideSetFor(String.class);
 			roles1.addAll(getRoles());
 			roles2.addAll(ot.getRoles());
 
-			if (!roles1.equals(roles2))
+			if (!roles1.equals(roles2)) {
 				return false;
+			}
 
-			if (!getIdentAttrs().equals(ot.getIdentAttrs()))
+			if (!getIdentAttrs().equals(ot.getIdentAttrs())) {
 				return false;
+			}
 
-			if (!getMetadataAttrs().equals(ot.getMetadataAttrs()))
+			if (!getMetadataAttrs().equals(ot.getMetadataAttrs())) {
 				return false;
+			}
 
 			return true;
 		}

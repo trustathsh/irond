@@ -105,11 +105,13 @@ class DummyNodeImpl extends DummyGraphElement implements Node {
 	 */
 	@Override
 	public boolean equalsIdentifiers(GraphElement o) {
-		if (o == this)
+		if (o == this) {
 			return true;
+		}
 
-		if (!(o instanceof Node))
+		if (!(o instanceof Node)) {
 			return false;
+		}
 
 		return ((Node)o).getIdentifier().equals(getIdentifier());
 	}

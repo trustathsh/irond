@@ -83,6 +83,7 @@ public class TimerTest extends TestCase {
 
 	private static final String SESSION_ID = "0";
 
+	@Override
 	@Before
 	public void setUp() {
 		chSsrc = new ChannelIdentifier("192.168.0.1", 8888, 0);
@@ -96,6 +97,7 @@ public class TimerTest extends TestCase {
 		mEventProc.start();
 	}
 
+	@Override
 	@After
 	public void tearDown() {
 		mEventProc.stop();

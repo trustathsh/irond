@@ -193,8 +193,9 @@ class CachedPepHandler implements IfmapPepHandler {
 		} else {
 			res  = mPep.isAuthorized(dreq);
 
-			if (mMap.size() >= mMaxEntries)
+			if (mMap.size() >= mMaxEntries) {
 				evictCacheEntries();
+			}
 
 			mMap.put(dreq, new CacheEntry(now(), res));
 			mStats.mMisses.incrementAndGet();
@@ -207,8 +208,9 @@ class CachedPepHandler implements IfmapPepHandler {
 		// If you want to see each cache entry, use this...
 		if (false) {
 			synchronized (this) {
-				for (Entry<IfmapDecisionRequest, CacheEntry> entry : mMap.entrySet())
+				for (Entry<IfmapDecisionRequest, CacheEntry> entry : mMap.entrySet()) {
 					sLogger.debug(sName + ": " + entry.getKey() + " --> " + entry.getValue());
+				}
 			}
 		}
 
@@ -220,8 +222,9 @@ class CachedPepHandler implements IfmapPepHandler {
 		synchronized (mMap) {
 
 			// If there was another thread cleaning up things, skip our run
-			if (mMap.size() < mMaxEntries)
+			if (mMap.size() < mMaxEntries) {
 				return;
+			}
 
 			long now = now();
 
@@ -237,31 +240,35 @@ class CachedPepHandler implements IfmapPepHandler {
 
 				// After the first valid one, there are only valid ones to
 				// follow, so break out.
-				if (isValid(entry.getValue().getTimeStamp(), now))
+				if (isValid(entry.getValue().getTimeStamp(), now)) {
 					break;
+				}
 
 				mMap.remove(entry.getKey());
 			}
 
 			// If we were able to clean some entries, jump out...
-			if (mMap.size() < mMaxEntries)
+			if (mMap.size() < mMaxEntries) {
 				return;
+			}
 
 			// If we didn't, we need to drop some valid ones.
 			it = entries.iterator();
-			while (mMap.size() >= mMaxEntries && it.hasNext())
+			while (mMap.size() >= mMaxEntries && it.hasNext()) {
 				mMap.remove(it.next().getKey());
+			}
 
 			// Sanity: We should have at least cleaned up some...
-			if (mMap.size() >= mMaxEntries)
+			if (mMap.size() >= mMaxEntries) {
 				throw new SystemErrorException(sName + ": Cache eviction failed");
+			}
 
 			mStats.mEvictionRuns.incrementAndGet();
 		}
 	}
 
 	private boolean isValid(long ttlEntry, long now) {
-		return (now - ttlEntry) < (mTtl * 1000);
+		return now - ttlEntry < mTtl * 1000;
 
 	}
 

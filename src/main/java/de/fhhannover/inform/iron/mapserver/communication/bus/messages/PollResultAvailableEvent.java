@@ -66,8 +66,9 @@ public class PollResultAvailableEvent implements Event {
 
 	public PollResultAvailableEvent(String sessionId) {
 		NullCheck.check(sessionId, "sessionId is null");
-		if (sessionId.length() == 0)
+		if (sessionId.length() == 0) {
 			throw new RuntimeException("PROGRAMMING ERROR: bad session-id lenght");
+		}
 
 		mSessionId = sessionId;
 	}

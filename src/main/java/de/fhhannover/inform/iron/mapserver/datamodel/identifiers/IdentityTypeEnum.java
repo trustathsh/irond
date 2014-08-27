@@ -58,14 +58,24 @@ package de.fhhannover.inform.iron.mapserver.datamodel.identifiers;
  *
  */
 public enum IdentityTypeEnum {
-	aikName { public String toString() { return "aik-name"; } },
-	distinguishedName { public String toString() { return "distinguished-name"; } },
-	dnsName { public String toString() { return "dns-name"; } },
-	emailAddress { public String toString() { return "email-address"; } },
-	hipHit { public String toString() { return "hip-hit"; } },
-	kerberosPrincipal { public String toString() { return "kerberos-principal"; } },
-	userName { public String toString() { return "username"; } },
-	sipUri { public String toString() { return "sip-uri"; } },
-	telUri { public String toString() { return "tel-uri"; } },
-	other { public String toString() { return "other"; } },
+	aikName { @Override
+	public String toString() { return "aik-name"; } },
+	distinguishedName { @Override
+	public String toString() { return "distinguished-name"; } },
+	dnsName { @Override
+	public String toString() { return "dns-name"; } },
+	emailAddress { @Override
+	public String toString() { return "email-address"; } },
+	hipHit { @Override
+	public String toString() { return "hip-hit"; } },
+	kerberosPrincipal { @Override
+	public String toString() { return "kerberos-principal"; } },
+	userName { @Override
+	public String toString() { return "username"; } },
+	sipUri { @Override
+	public String toString() { return "sip-uri"; } },
+	telUri { @Override
+	public String toString() { return "tel-uri"; } },
+	other { @Override
+	public String toString() { return "other"; } },
 }

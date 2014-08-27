@@ -127,7 +127,8 @@ public class ActionSeries {
 	 */
 	public void add(List<Action> actions) {
 		NullCheck.check(actions, "actions is null");
-		for (Action action : actions)
+		for (Action action : actions) {
 			add(action);
+		}
 	}
 }

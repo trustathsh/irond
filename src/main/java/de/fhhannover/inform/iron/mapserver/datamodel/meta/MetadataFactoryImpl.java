@@ -85,32 +85,37 @@ public class MetadataFactoryImpl implements MetadataFactory {
 		MetaCardinalityType card = null;
 		boolean validated = false;
 
-		if (doc == null)
+		if (doc == null) {
 			throw new InvalidMetadataException("no doc?");
+		}
 
-		if (doc.getChildNodes().getLength() != 1)
+		if (doc.getChildNodes().getLength() != 1) {
 			throw new InvalidMetadataException("bad child count in doc");
+		}
 
 		Node rootNode = doc.getChildNodes().item(0);
 
-		if (rootNode.getNodeType() != Node.ELEMENT_NODE)
+		if (rootNode.getNodeType() != Node.ELEMENT_NODE) {
 			throw new InvalidMetadataException("rootNode not element");
+		}
 
 		Element root = (Element)rootNode;
 
 		// Get the local name, if this returns null, we get the name
 		name = root.getLocalName();
-		name = (name == null) ? root.getNodeName() : name;
+		name = name == null ? root.getNodeName() : name;
 
-		ns = (root.getNamespaceURI() == null) ? "" : root.getNamespaceURI();
+		ns = root.getNamespaceURI() == null ? "" : root.getNamespaceURI();
 
-		if (name == null || name.length() == 0)
+		if (name == null || name.length() == 0) {
 			throw new InvalidMetadataException("Bad metadata root elment?");
+		}
 
 		cardString = root.getAttribute(CARDINALITYSTRING);
 
-		if (cardString == null || cardString.length() == 0)
+		if (cardString == null || cardString.length() == 0) {
 			throw new InvalidMetadataException("No ifmap-cardinality given?");
+		}
 
 		try {
 			card = MetaCardinalityType.valueOf(cardString);
@@ -121,18 +126,21 @@ public class MetadataFactoryImpl implements MetadataFactory {
 
 		// validate the metadata against a XML schema
 		if (mConf.getXmlValidatationMetadata()) {
-			if (ns.isEmpty())
+			if (ns.isEmpty()) {
 				throw new InvalidMetadataException("No namespace for " + name);
+			}
 
 			StreamSource schema = mConf.getMetadataSchema(ns);
 			Boolean lockdown = mConf.getXmlValidationMetadataLockDownMode();
 
-			if (schema == null && lockdown)
+			if (schema == null && lockdown) {
 				throw new InvalidMetadataException("No schema for " + ns);
+			}
 
 			try {
-				if (schema != null)
+				if (schema != null) {
 					DomHelpers.validate(root.getOwnerDocument(), schema);
+				}
 			} catch (ValidationFailedException e) {
 				throw new InvalidMetadataException("validation failed: " +
 						e.getMessage());

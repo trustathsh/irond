@@ -125,8 +125,9 @@ public class CertificateChannelAuth extends ChannelAuth {
 			ret.append(cutOffAtFirstComma(cn));
 		}
 
-		if (ret.length() == 0)
+		if (ret.length() == 0) {
 			ret.append("CommonName");
+		}
 
 		// return result, replace spaces with underscores
 		return ret.toString().replace(' ', '_');

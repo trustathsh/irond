@@ -133,8 +133,9 @@ class SessionTimer implements Runnable {
 	 * Puts this {@link SessionTimer} to execution by the scheduled service.
 	 */
 	public void start() {
-		if (mFuture != null)
+		if (mFuture != null) {
 			throw new RuntimeException("A timer can only be started once");
+		}
 
 		mRunning = true;
 		mFuture = sScheduleService.schedule(this, mDelay, TimeUnit.MILLISECONDS);
@@ -145,7 +146,9 @@ class SessionTimer implements Runnable {
 	 * Cancels the timer if it was already started.
 	 */
 	public void cancel() {
-		if (mFuture != null) mFuture.cancel(true);
+		if (mFuture != null) {
+			mFuture.cancel(true);
+		}
 		mFuture = null;
 		mRunning = false;
 	}

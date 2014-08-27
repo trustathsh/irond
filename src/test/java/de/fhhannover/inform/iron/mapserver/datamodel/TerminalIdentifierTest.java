@@ -48,24 +48,15 @@ package de.fhhannover.inform.iron.mapserver.datamodel;
 import junit.framework.TestCase;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.AccessRequest;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Device;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.DeviceTypeEnum;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IpAddress;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IpAddressTypeEnum;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.MacAddress;
 import de.fhhannover.inform.iron.mapserver.datamodel.search.TerminalIdentifiers;
 import de.fhhannover.inform.iron.mapserver.exceptions.InvalidIdentifierException;
 
 public class TerminalIdentifierTest extends TestCase {
 	String ar, ip, id, dev, mac, id_user, id_dns, id_other, id_extended;
 
+	@Override
 	@Before
 	public void setUp() {
 		DataModelService.setServerConfiguration(DummyDataModelConf.getDummyConf());

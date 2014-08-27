@@ -179,7 +179,7 @@ public class TerminalIdentifierChecker {
 	    while ( m.find() ) {
 	        ent = m.group(2);
 	        hashmark = m.group(1);
-	        if ( (hashmark != null) && (hashmark.length() > 0) ) {
+	        if ( hashmark != null && hashmark.length() > 0 ) {
 	            code = Integer.parseInt( ent );
 	            entity = Character.toString( (char) code );
 	        } else {

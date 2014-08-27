@@ -92,8 +92,9 @@ class SearcherImpl implements Searcher {
 
 		nodes = traverse(mGraph.getNodeFor(mHandler.getStartIdentifier()));
 
-		while (nodes.size() > 0)
+		while (nodes.size() > 0) {
 			nodes = traverseDepth(nodes);
+		}
 
 		mHandler.onEnd();
 	}
@@ -137,21 +138,24 @@ class SearcherImpl implements Searcher {
 
 		mHandler.onNode(cur);
 
-		if (!mHandler.travelLinksOf(cur))
+		if (!mHandler.travelLinksOf(cur)) {
 			return ret;
+		}
 
 
 		for (Link l : cur.getLinks()) {
 
 			// Should we skip it?
-			if (!mHandler.travelLink(l))
+			if (!mHandler.travelLink(l)) {
 				continue;
+			}
 
 			mHandler.onLink(l);
 
 			// Is the neighbor node subjected to be visited?
-			if (mHandler.traverseTo(l.getNeighborNode(cur)))
+			if (mHandler.traverseTo(l.getNeighborNode(cur))) {
 				ret.add(l.getNeighborNode(cur));
+			}
 		}
 
 		mHandler.afterNode(cur);
@@ -167,8 +171,9 @@ class SearcherImpl implements Searcher {
 		Set<Node> ret = CollectionHelper.provideSetFor(Node.class);
 		mHandler.nextDepth();
 
-		for (Node next : nextNodes)
+		for (Node next : nextNodes) {
 			ret.addAll(traverse(next));
+		}
 
 		return ret;
 	}

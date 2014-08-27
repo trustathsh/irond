@@ -79,16 +79,20 @@ public class MetadataTypeImpl implements MetadataType {
 		return mCardinality;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		MetadataType ot;
-		if (o == null)
+		if (o == null) {
 			return false;
+		}
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!(o instanceof MetadataType))
+		if (!(o instanceof MetadataType)) {
 			return false;
+		}
 
 		ot = (MetadataType) o;
 		return ot.getTypeString().equals(getTypeString());

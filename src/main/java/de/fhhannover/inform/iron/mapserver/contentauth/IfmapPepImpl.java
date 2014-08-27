@@ -131,9 +131,10 @@ class IfmapPepImpl implements IfmapPep {
 		mMetadataAttrList = conf.getPdpSelectedMetadataAttributes();
 
 		// If we do caching, put a cache handler around it...
-		if (conf.isEnablePdpCache())
+		if (conf.isEnablePdpCache()) {
 			tmp = IfmapPepHandlers.getCache(tmp, conf.getPdpCacheTtl(),
 											conf.getPdpCacheMaxEntries());
+		}
 
 		mHandler = tmp;
 	}
@@ -155,11 +156,13 @@ class IfmapPepImpl implements IfmapPep {
 		for (SubPublishRequest sreq : req.getSubPublishRequestList()) {
 			List<Identifier> idents = CollectionHelper.provideListFor(Identifier.class);
 
-			if (sreq.getIdent1() != null)
+			if (sreq.getIdent1() != null) {
 				idents.add(sreq.getIdent1());
+			}
 
-			if (sreq.getIdent2() != null)
+			if (sreq.getIdent2() != null) {
 				idents.add(sreq.getIdent2());
+			}
 
 			GraphElement ge = graph.getGraphElement(sreq.getIdent1(), sreq.getIdent2());
 			boolean clob = false;
@@ -290,8 +293,9 @@ class IfmapPepImpl implements IfmapPep {
 		boolean resDry = false;
 		boolean link = false;
 
-		if (idents.size() == 0 || idents.size() > 2)
+		if (idents.size() == 0 || idents.size() > 2) {
 			throw new SystemErrorException("Bad ident count=" + idents.size());
+		}
 
 		link = idents.size() == 2;
 
@@ -300,15 +304,18 @@ class IfmapPepImpl implements IfmapPep {
 			resDry = res;
 
 			// if dryRun is enabled, we need to send a second request...
-			if (isDryRun())
+			if (isDryRun()) {
 				resDry = makeDecisionRequestFor(clId, op, i, md, link, clob, true, roles);
+			}
 
-			if (resDry != res)
+			if (resDry != res) {
 				sLogger.debug(sName + ": Note, dry-run policy different result");
+			}
 
 			// quick way out...
-			if (!res)
+			if (!res) {
 				return false;
+			}
 		}
 
 		return true;
@@ -321,16 +328,18 @@ class IfmapPepImpl implements IfmapPep {
 		List<MetadataHolder> mhs = null;
 
 		// update multiValue never clobbers
-		if (md.isMultiValue())
+		if (md.isMultiValue()) {
 			return false;
+		}
 
 		mhs = ge.getMetadataHolder(md.getType());
 
 		for (MetadataHolder mh : mhs) {
 			otherPubId = mh.getPublisher().getPublisherId();
 
-			if (!ourPubId.equals(otherPubId))
+			if (!ourPubId.equals(otherPubId)) {
 				return true;
+			}
 		}
 
 		return false;
@@ -403,9 +412,11 @@ class IfmapPepImpl implements IfmapPep {
 
 		List<DecisionResult> results = wait(futures);
 
-		for (DecisionResult dr : results)
-			if (dr.res)
+		for (DecisionResult dr : results) {
+			if (dr.res) {
 				ret.add((MetadataHolder)dr.aux);
+			}
+		}
 
 		return ret;
 	}
@@ -462,8 +473,9 @@ class IfmapPepImpl implements IfmapPep {
 			// Any of the results evaluated to false, we don't really need
 			// to wait for the others, so just cancel *all* of them...
 			if (!result.res) {
-				for (Future<DecisionResult> toCancel : futures)
+				for (Future<DecisionResult> toCancel : futures) {
 					toCancel.cancel(false);
+				}
 
 				return false;								// JUMP OUT!
 			}

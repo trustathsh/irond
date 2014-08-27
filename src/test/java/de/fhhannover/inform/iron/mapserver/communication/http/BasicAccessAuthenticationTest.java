@@ -80,6 +80,7 @@ public class BasicAccessAuthenticationTest extends TestCase {
 
 	private String testConf;
 
+	@Override
 	@Before
 	public void setUp() {
 
@@ -112,6 +113,7 @@ public class BasicAccessAuthenticationTest extends TestCase {
 		mBasicAuth = new BasicChannelAuth(s, provider);
 	}
 
+	@Override
 	@After
 	public void tearDown() {
 		// delete the created file

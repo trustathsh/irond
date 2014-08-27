@@ -86,7 +86,6 @@ import de.fhhannover.inform.iron.mapserver.messages.SubPublishRequest;
 import de.fhhannover.inform.iron.mapserver.provider.DataModelServerConfigurationProvider;
 import de.fhhannover.inform.iron.mapserver.provider.LoggingProvider;
 import de.fhhannover.inform.iron.mapserver.utils.CollectionHelper;
-import de.fhhannover.inform.iron.mapserver.utils.Iso8601DateTime;
 
 /**
  * Publish or delete metadata.
@@ -307,14 +306,15 @@ class PublishService {
 		sLogger.trace(sName + ": " + publisher + " with " + list.size() + " requests");
 
 		for (SubPublishRequest sreq : list) {
-			if (sreq instanceof PublishNotify)
+			if (sreq instanceof PublishNotify) {
 				processPublishNotify(pub, (PublishNotify) sreq, changes);
-			else if (sreq instanceof PublishUpdate)
+			} else if (sreq instanceof PublishUpdate) {
 				processPublishUpdate(pub, (PublishUpdate)sreq, changes);
-			else if (sreq instanceof PublishDelete)
+			} else if (sreq instanceof PublishDelete) {
 				processPublishDelete(pub, (PublishDelete)sreq, changes);
-			else
+			} else {
 				throw new SystemErrorException("Unknown SubPublishRequest implementation");
+			}
 		}
 
 		// set timestamp and publisher id _now_ and set references to
@@ -323,8 +323,9 @@ class PublishService {
 		for (MetadataHolder mh : changes) {
 			Metadata m = mh.getMetadata();
 
-			if (mh.isNew() || mh.isNotify())
+			if (mh.isNew() || mh.isNotify()) {
 				addOperationalAttributes(m, now, mh.getPublisher().getPublisherId());
+			}
 		}
 		// FIXME!!
 		//mdentifierRep.setTimestamp(System.currentTimeMillis());
@@ -400,10 +401,12 @@ class PublishService {
 				mh.setState(MetadataState.DELETED);
 
 				// Sanity Check: REPLACED metadata should always be in changes.
-				if (mConf.isSanityChecksEnabled())
-					if (!changes.contains(mh))
+				if (mConf.isSanityChecksEnabled()) {
+					if (!changes.contains(mh)) {
 						throw new SystemErrorException("replaced metadata "
 								+ "not in changes");
+					}
+				}
 
 				mh.setState(MetadataState.DELETED);
 				break;
@@ -455,8 +458,9 @@ class PublishService {
 		for (Metadata m : mlist) {
 
 			/* singleValue metadata replaces existing metadata */
-			if (m.isSingleValue())
+			if (m.isSingleValue()) {
 				removeExistingSingleValueMetadata(m, graphElement, changes);
+			}
 
 
 			mh = mMetaHolderFac.newMetadataHolder(m, lt, graphElement, pub);
@@ -480,49 +484,59 @@ class PublishService {
 		List<MetadataHolder> mhs = null, tmpMhs = null;
 
 		// somebody called us without checking m :-/
-		if (!m.isSingleValue())
+		if (!m.isSingleValue()) {
 			return;
+		}
 
 		mhs = ge.getMetadataHolder(m.getType());
 
 		// no metadata of the same type, shortcut
-		if (mhs.size() == 0)
+		if (mhs.size() == 0) {
 			return;
+		}
 
 		// filter out all notify metadata
 		tmpMhs = CollectionHelper.provideListFor(MetadataHolder.class);
-		for (MetadataHolder mh : mhs)
-			if (!mh.isNotify())
+		for (MetadataHolder mh : mhs) {
+			if (!mh.isNotify()) {
 				tmpMhs.add(mh);
+			}
+		}
 
 		mhs = tmpMhs;
 
 		// Sanity check: Never should there be more than a single singleValue
 		// metadata object on a graph object, unless it's notify, but we
 		// filtered that before.
-		if (mhs.size() > 1)
+		if (mhs.size() > 1) {
 			throw new SystemErrorException("singleValue occures more than once");
+		}
 
 		// Nothing really  to remove here
-		if (mhs.size() == 0)
+		if (mhs.size() == 0) {
 			return;
+		}
 
 		removeMe = mhs.get(0);
 
 		// Sanity Check: If metadata is in state NEW or DELETED, it'd better also
 		// be in the list of changes
 		if (removeMe.isNew() || removeMe.isDeleted()) {
-			if (mConf.isSanityChecksEnabled())
-				if (!changes.contains(removeMe))
+			if (mConf.isSanityChecksEnabled()) {
+				if (!changes.contains(removeMe)) {
 					throw new SystemErrorException("metadata not in changes");
+				}
+			}
 
 			// We don't have to do anything here?
 		} else {
 			// Sanity Check: Neither NEW nor DELTED, so it should *not* be
 			// in the list of changes
-			if (mConf.isSanityChecksEnabled())
-				if (changes.contains(removeMe))
+			if (mConf.isSanityChecksEnabled()) {
+				if (changes.contains(removeMe)) {
 					throw new SystemErrorException("metadata in changes");
+				}
+			}
 
 			changes.add(removeMe);
 		}

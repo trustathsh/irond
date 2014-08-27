@@ -80,15 +80,17 @@ public class ClientIdentifier {
 	public ClientIdentifier(String readableIdent, String subject, String issuer,
 			String fp) {
 
-		if (readableIdent == null || readableIdent.length() == 0)
+		if (readableIdent == null || readableIdent.length() == 0) {
 			throw new SystemErrorException("simpleUser not given");
+		}
 
-		if (fp == null || fp.length() == 0)
+		if (fp == null || fp.length() == 0) {
 			throw new SystemErrorException("fp not given");
+		}
 
 		mUsername = readableIdent;
-		mSubject = (subject != null) ? subject : "";
-		mIssuer = (issuer != null) ? issuer : "";
+		mSubject = subject != null ? subject : "";
+		mIssuer = issuer != null ? issuer : "";
 		mUsernameOrFp = fp;
 		mHashCode = calculateHashCode();
 	}
@@ -174,17 +176,21 @@ public class ClientIdentifier {
 	public boolean equals(Object o) {
 		ClientIdentifier oClId = (ClientIdentifier) o;
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (o == null)
+		if (o == null) {
 			return false;
+		}
 
-		if (mHashCode != o.hashCode())
+		if (mHashCode != o.hashCode()) {
 			return false;
+		}
 
-		if (!(o instanceof ClientIdentifier))
+		if (!(o instanceof ClientIdentifier)) {
 			return false;
+		}
 		oClId = (ClientIdentifier) o;
 
 		return mUsername.equals(oClId.getUsername()) &&

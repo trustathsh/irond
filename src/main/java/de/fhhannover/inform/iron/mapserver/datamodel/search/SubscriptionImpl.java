@@ -155,9 +155,10 @@ class SubscriptionImpl implements Subscription {
 	@Override
 	public void addGraphElement(GraphElement ge) {
 		NullCheck.check(ge, "mc is null");
-		if (mGraphElements.put(ge, ge) != null)
+		if (mGraphElements.put(ge, ge) != null) {
 			throw new SystemErrorException("Container " + ge + " was already on"
 					+ " on " + this);
+		}
 
 	}
 
@@ -168,9 +169,10 @@ class SubscriptionImpl implements Subscription {
 	public void removeGraphElement(GraphElement ge) {
 		NullCheck.check(ge, "mc is null");
 
-		if (mGraphElements.remove(ge) == null)
+		if (mGraphElements.remove(ge) == null) {
 			throw new SystemErrorException("Tried to remove non-existend " + ge
 					+ " from " + this);
+		}
 	}
 
 	/* (non-Javadoc)

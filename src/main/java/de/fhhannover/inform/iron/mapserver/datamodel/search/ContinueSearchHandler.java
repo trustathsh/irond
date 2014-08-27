@@ -97,9 +97,10 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Starting for " + mSubscription + " at "
 					+ getStartIdentifier());
+		}
 	}
 
 	@Override
@@ -111,11 +112,13 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 	public boolean travelLinksOf(Node cur) throws SearchException {
 
 		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
-			if (getCurrentDepth() >= getMaxDepth())
+			if (getCurrentDepth() >= getMaxDepth()) {
 				sLogger.trace(mName + ": max-depth reached at " + cur);
+			}
 
-			if (!TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes))
+			if (!TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes)) {
 				sLogger.trace(mName + ": terminal identifier at " + cur);
+			}
 		}
 
 		return mCurDepth < mMaxDepth &&  !TerminalIdentifierChecker.isTerminalIdentifier(cur, mTermIdentTypes);
@@ -129,8 +132,9 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		List<MetadataHolder> nextMatching;
 
 
-		if (entry != null && remEntry != null && entry != remEntry)
+		if (entry != null && remEntry != null && entry != remEntry) {
 			throw new SystemErrorException("removed entries should be reused");
+		}
 
 		if (remEntry != null) {
 			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
@@ -141,16 +145,19 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		}
 
 		// might be a circle search?
-		if (entry != null && entry.getDepth() <= getCurrentDepth())
+		if (entry != null && entry.getDepth() <= getCurrentDepth()) {
 			return false;
+		}
 
 		// There might be some metadata from before here.
-		if (entry != null && entry.getMetadataHolder().size() > 0)
+		if (entry != null && entry.getMetadataHolder().size() > 0) {
 			return true;
+		}
 
 		// We can try to use the metedata of the old entry if one exists:
-		if (remEntry != null && remEntry.getMetadataHolder().size() > 0)
+		if (remEntry != null && remEntry.getMetadataHolder().size() > 0) {
 			return true;
+		}
 
 		// Just check whether there is some new Metadata that matches,
 		// assuming this is always a subset of the Next metadata
@@ -159,8 +166,9 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		// Only for what the client is authorized
 		newMatching = authorized(newMatching);
 
-		if (newMatching.size() > 0)
+		if (newMatching.size() > 0) {
 			return true;
+		}
 
 		// Only now check whether there is metadata that would match in
 		// the next graph state.
@@ -209,8 +217,9 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		// a lower depth.
 		if (entry.getDepth() < getCurrentDepth() - 1) {
 
-			if (SearchHandler.SEARCH_HANDLER_DEBUG)
+			if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 				sLogger.trace(mName + ": Found new continue starter at " + nextNode);
+			}
 
 			mStarters.add(nextNode);
 		}
@@ -230,8 +239,9 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 
 	@Override
 	public void onEnd() {
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Finished " + mSubscription);
+		}
 	}
 
 	private void visitGraphElementGeneric(GraphElement ge) {
@@ -239,14 +249,16 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		SubscriptionEntry remEntry = ge.getRemovedSubscriptionEntry(mSubscription);
 		List<MetadataHolder> toAdd = null;
 
-		if (SearchHandler.SEARCH_HANDLER_DEBUG)
+		if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 			sLogger.trace(mName + ": Visiting " + ge + " at depth " + getCurrentDepth());
+		}
 
 		if (entry == null) {
 			if (remEntry != null) {
 
-				if (SearchHandler.SEARCH_HANDLER_DEBUG)
+				if (SearchHandler.SEARCH_HANDLER_DEBUG) {
 					sLogger.trace(mName + ": Reusing old entry on " + ge);
+				}
 
 				entry = remEntry;
 				toAdd = remEntry.getMetadataHolder();
@@ -266,9 +278,11 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 					List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
 					toAdd = ge.getMetadataHolder(getMatchLinksFilter());
 
-					for (MetadataHolder mh : toAdd)
-						if (mh.getMetadata().matchesFilter(getResultFilter()))
+					for (MetadataHolder mh : toAdd) {
+						if (mh.getMetadata().matchesFilter(getResultFilter())) {
 							tmp.add(mh);
+						}
+					}
 
 					toAdd = tmp;
 				}
@@ -295,10 +309,11 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 		}
 
 		// go null if we don't have any elements
-		toAdd = (toAdd == null || toAdd.size() == 0) ? null : toAdd;
+		toAdd = toAdd == null || toAdd.size() == 0 ? null : toAdd;
 
-		if (toAdd != null)
+		if (toAdd != null) {
 			mNewMetadata.addAll(toAdd);
+		}
 
 		entry.setDepth(getCurrentDepth());
 		getVisitedElements().put(ge, null);

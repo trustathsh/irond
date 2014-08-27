@@ -86,9 +86,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolder(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : mMetadataHolder)
-			if (mh.getMetadata().matchesFilter(f))
+		for (MetadataHolder mh : mMetadataHolder) {
+			if (mh.getMetadata().matchesFilter(f)) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 	}
@@ -97,9 +99,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolder(MetadataType type) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : mMetadataHolder)
-			if (mh.getMetadata().getType() == type)
+		for (MetadataHolder mh : mMetadataHolder) {
+			if (mh.getMetadata().getType() == type) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 	}
@@ -108,9 +112,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolderInGraph() {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : mMetadataHolder)
-			if (mh.isUnchanged() || mh.isDeleted())
+		for (MetadataHolder mh : mMetadataHolder) {
+			if (mh.isUnchanged() || mh.isDeleted()) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 	}
@@ -119,9 +125,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolderInGraph(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : getMetadataHolderInGraph())
-			if (mh.getMetadata().matchesFilter(f))
+		for (MetadataHolder mh : getMetadataHolderInGraph()) {
+			if (mh.getMetadata().matchesFilter(f)) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 	}
@@ -130,9 +138,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolderNext(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : getMetadataHolder())
-			if ((mh.isNew() || mh.isUnchanged()) && mh.getMetadata().matchesFilter(f))
+		for (MetadataHolder mh : getMetadataHolder()) {
+			if ((mh.isNew() || mh.isUnchanged()) && mh.getMetadata().matchesFilter(f)) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 	}
@@ -141,9 +151,11 @@ abstract class GraphElementImpl implements GraphElement {
 	public List<MetadataHolder> getMetadataHolderNew(Filter f) {
 		List<MetadataHolder> ret = CollectionHelper.provideListFor(MetadataHolder.class);
 
-		for (MetadataHolder mh : getMetadataHolder())
-			if (mh.isNew() && mh.getMetadata().matchesFilter(f))
+		for (MetadataHolder mh : getMetadataHolder()) {
+			if (mh.isNew() && mh.getMetadata().matchesFilter(f)) {
 				ret.add(mh);
+			}
+		}
 
 		return ret;
 
@@ -152,9 +164,10 @@ abstract class GraphElementImpl implements GraphElement {
 	@Override
 	public void addMetadataHolder(MetadataHolder m) {
 		NullCheck.check(m, "MetadataHolder is null");
-		if (mMetadataHolder.contains(m))
+		if (mMetadataHolder.contains(m)) {
 			throw new SystemErrorException("MetadataHolder " + m + " already on "
 					+ this);
+		}
 
 		mMetadataHolder.add(m);
 	}
@@ -164,8 +177,9 @@ abstract class GraphElementImpl implements GraphElement {
 		NullCheck.check(m, "MetadataHolder is null");
 		int idx = mMetadataHolder.indexOf(m);
 
-		if (idx < 0)
+		if (idx < 0) {
 			throw new SystemErrorException("MetadataHolder " + m + " not on " + this);
+		}
 
 		mMetadataHolder.remove(idx);
 	}
@@ -189,16 +203,18 @@ abstract class GraphElementImpl implements GraphElement {
 	public void addSubscriptionEntry(SubscriptionEntry entry) {
 		NullCheck.check(entry, "entry is null");
 		NullCheck.check(entry.getSubscription(), "sub is null");
-		if (mSubscriptionEntries.put(entry.getSubscription(), entry) != null)
+		if (mSubscriptionEntries.put(entry.getSubscription(), entry) != null) {
 			throw new SystemErrorException("entry " + entry
 					+ " already on " + this);
+		}
 	}
 
 	@Override
 	public void removeSubscriptionEntry(Subscription sub) {
 		NullCheck.check(sub, "Subscription is null");
-		if (mSubscriptionEntries.remove(sub) == null)
+		if (mSubscriptionEntries.remove(sub) == null) {
 			throw new SystemErrorException("entry for " + sub + " not on "  + this);
+		}
 	}
 
 	@Override
@@ -220,17 +236,19 @@ abstract class GraphElementImpl implements GraphElement {
 	public void addRemovedSubscriptionEntry(SubscriptionEntry entry) {
 		NullCheck.check(entry, "entry is null");
 		NullCheck.check(entry.getSubscription(), "sub is null");
-		if (mRemovedSubscriptionEntries.put(entry.getSubscription(), entry) != null)
+		if (mRemovedSubscriptionEntries.put(entry.getSubscription(), entry) != null) {
 			throw new SystemErrorException("entry " + entry
 					+ " already removed for  " + this);
+		}
 	 }
 
 	@Override
 	public void removeRemovedSubscriptionEntry(Subscription sub) {
 		NullCheck.check(sub, "Subscription is null");
-		if (mRemovedSubscriptionEntries.remove(sub) == null)
+		if (mRemovedSubscriptionEntries.remove(sub) == null) {
 			throw new SystemErrorException("entry for " + sub + " not removed for "
 					+ this);
+		}
 	}
 
 	@Override

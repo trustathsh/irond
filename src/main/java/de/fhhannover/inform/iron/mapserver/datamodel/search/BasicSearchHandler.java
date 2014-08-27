@@ -51,16 +51,6 @@ import de.fhhannover.inform.iron.mapserver.datamodel.Publisher;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
-import java.util.Map;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
-import de.fhhannover.inform.iron.mapserver.IfmapConstStrings;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.GraphElement;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
-import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identity;
-import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.IdentityTypeEnum;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.Metadata;
 import de.fhhannover.inform.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
@@ -102,10 +92,11 @@ class BasicSearchHandler extends AbstractSearchHandler {
 		mConf = conf;
 		mResult = sres;
 
-		if (!sreq.maxSizeGiven())
+		if (!sreq.maxSizeGiven()) {
 			mMaxResultSize = mConf.getDefaultMaxSearchResultSize();
-		else
+		} else {
 			mMaxResultSize = sreq.getMaxResultSize();
+		}
 	}
 
 	@Override
@@ -136,8 +127,9 @@ class BasicSearchHandler extends AbstractSearchHandler {
 		List<MetadataHolder> matching;
 
 		// Fast path out.
-		if (wasVisited(l))
+		if (wasVisited(l)) {
 			return false;
+		}
 
 		// Matching and authorization is costly, cache the result.
 		matching = authorized(l.getMetadataHolderInGraph(getMatchLinksFilter()));
@@ -150,8 +142,9 @@ class BasicSearchHandler extends AbstractSearchHandler {
 	@Override
 	public void onLink(Link l) throws SearchResultsTooBigException {
 		List<MetadataHolder> matchingMetadata = getVisitedElements().get(l);
-		if (matchingMetadata == null || matchingMetadata.size() == 0)
+		if (matchingMetadata == null || matchingMetadata.size() == 0) {
 			throw new SystemErrorException("on link which never asked for?");
+		}
 
 		appendToResult(l, matchingMetadata);
 		throwIfTooBig();
@@ -180,7 +173,7 @@ class BasicSearchHandler extends AbstractSearchHandler {
 	}
 
 	private String usedTime() {
-		return (getEndTime() - getStartTime()) + "";
+		return getEndTime() - getStartTime() + "";
 	}
 
 	/**
@@ -192,8 +185,9 @@ class BasicSearchHandler extends AbstractSearchHandler {
 		List<MetadataHolder> mhlist =  n.getMetadataHolderInGraph(getResultFilter());
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 
-		for (MetadataHolder mh : authorized(mhlist))
-				toAdd.add(mh.getMetadata());
+		for (MetadataHolder mh : authorized(mhlist)) {
+			toAdd.add(mh.getMetadata());
+		}
 
 		appendToResult(n, toAdd);
 	}
@@ -211,9 +205,11 @@ class BasicSearchHandler extends AbstractSearchHandler {
 	private void appendToResult(Link link, List<MetadataHolder> matchLinksMd) {
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 
-		for (MetadataHolder mh : matchLinksMd)
-			if (mh.getMetadata().matchesFilter(getResultFilter()))
+		for (MetadataHolder mh : matchLinksMd) {
+			if (mh.getMetadata().matchesFilter(getResultFilter())) {
 				toAdd.add(mh.getMetadata());
+			}
+		}
 
 		appendToResult(link, toAdd);
 	}
@@ -230,13 +226,14 @@ class BasicSearchHandler extends AbstractSearchHandler {
 	}
 
 	private void throwIfTooBig() throws SearchResultsTooBigException {
-		if (resultIsTooBig())
+		if (resultIsTooBig()) {
 			throw new SearchResultsTooBigException("SearchResult grew too big",
 					mMaxResultSize, curByteCount());
+		}
 	}
 
 	private boolean resultIsTooBig() {
-		return (!mIgnoreSize && curByteCount() > mMaxResultSize);
+		return !mIgnoreSize && curByteCount() > mMaxResultSize;
 	}
 
 	private int curByteCount() {

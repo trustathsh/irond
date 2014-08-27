@@ -113,18 +113,19 @@ class JaxbIdentifierHelper {
 		NullCheck.check(search, "search null");
 		Object o = null;
 
-		if (search.getAccessRequest() != null)
+		if (search.getAccessRequest() != null) {
 			o = search.getAccessRequest();
-		else if (search.getDevice() != null)
+		} else if (search.getDevice() != null) {
 			o = search.getDevice();
-		else if (search.getIdentity() != null)
+		} else if (search.getIdentity() != null) {
 			o = search.getIdentity();
-		else if (search.getIpAddress() != null)
+		} else if (search.getIpAddress() != null) {
 			o = search.getIpAddress();
-		else if (search.getMacAddress() != null)
+		} else if (search.getMacAddress() != null) {
 			o = search.getMacAddress();
-		else
+		} else {
 			throw new UnmarshalException("identifier not set in search");
+		}
 
 		return transformJaxbObjectToIdentifier(o, binder);
 	}
@@ -190,18 +191,21 @@ class JaxbIdentifierHelper {
 			Binder<Node> binder) throws UnmarshalException, InvalidIdentifierException {
 		Identifier ret[];
 
-		if (olist == null)
+		if (olist == null) {
 			throw new UnmarshalException("no identifiers in publish");
+		}
 
-		if (olist.size() == 0 || olist.size() > max)
-				throw new UnmarshalException("bad number of identifiers in update");
+		if (olist.size() == 0 || olist.size() > max) {
+			throw new UnmarshalException("bad number of identifiers in update");
+		}
 
 		ret = new Identifier[max];
 
 		for (int i = 0; i < olist.size(); i++) {
 			Object o = olist.get(i);
-			if (o == null)
+			if (o == null) {
 				throw new UnmarshalException("invalid identifier");
+			}
 
 			ret[i] = transformJaxbObjectToIdentifier(o, binder);
 		}
@@ -238,16 +242,19 @@ class JaxbIdentifierHelper {
 
 		Node n = binder.getXMLNode(o);
 
-		if (n == null)
+		if (n == null) {
 			throw new SystemErrorException("Could not get XML Node");
+		}
 
-		if (!(n instanceof Element))
+		if (!(n instanceof Element)) {
 			throw new SystemErrorException("Identifier is not Element");
+		}
 
 		Document identDoc = DomHelpers.deepCopy((Element)n);
 
-		if (identDoc == null)
+		if (identDoc == null) {
 			throw new SystemErrorException("deep copy gave null");
+		}
 
 		ret.setXmlDocument(identDoc);
 
@@ -264,19 +271,20 @@ class JaxbIdentifierHelper {
 	Object transformIdentifierToJaxbObject(Identifier identifier) {
 		NullCheck.check(identifier, "identifier is null");
 
-		if (identifier instanceof AccessRequest)
+		if (identifier instanceof AccessRequest) {
 			return transformAR((AccessRequest)identifier);
-		else if (identifier instanceof Device)
+		} else if (identifier instanceof Device) {
 			return transformDevice((Device)identifier);
-		else if (identifier instanceof Identity)
+		} else if (identifier instanceof Identity) {
 			return transformIdentity((Identity)identifier);
-		else if (identifier instanceof IpAddress)
+		} else if (identifier instanceof IpAddress) {
 			return transformIP((IpAddress)identifier);
-		else if (identifier instanceof MacAddress)
+		} else if (identifier instanceof MacAddress) {
 			return transformMacAddress((MacAddress)identifier);
-		else
+		} else {
 			throw new SystemErrorException("Unknown Identifier class: " +
 					identifier.getClass().getCanonicalName());
+		}
 	}
 
 	/**
@@ -511,8 +519,9 @@ class JaxbIdentifierHelper {
 									throws  InvalidIdentifierException {
 		if (type != null) {
 			for (IdentityTypeEnum cur : IdentityTypeEnum.values()) {
-				if (cur.toString().equals(type))
-						return cur;
+				if (cur.toString().equals(type)) {
+					return cur;
+				}
 			}
 		}
 		// if we come here something failed, this can also happen if type is null

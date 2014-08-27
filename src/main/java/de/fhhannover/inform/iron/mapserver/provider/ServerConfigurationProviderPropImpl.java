@@ -217,28 +217,33 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 
 			String val = getOrSetDefaultAndGet(CERT_AUTH_KEYSTORE_FILE_KEY,
 					CERT_AUTH_KEYSTORE_FILE_DEFAULT);
-			if (val.length() == 0)
+			if (val.length() == 0) {
 				exMsg += "\n" + CERT_AUTH_KEYSTORE_FILE_KEY;
+			}
 
 			val = getOrSetDefaultAndGet(CERT_AUTH_KEYSTORE_PWD_KEY,
 					CERT_AUTH_KEYSTORE_PWD_DEFAULT);
-			if (val.length() == 0)
+			if (val.length() == 0) {
 				exMsg += "\n" + CERT_AUTH_KEYSTORE_PWD_KEY;
+			}
 
 			val = getOrSetDefaultAndGet(CERT_AUTH_TRUSTSTORE_FILE_KEY,
 					CERT_AUTH_TRUSTSTORE_FILE_DEFAULT);
-			if (val.length() == 0)
+			if (val.length() == 0) {
 				exMsg += "\n" + CERT_AUTH_TRUSTSTORE_FILE_KEY;
+			}
 
 			val = getOrSetDefaultAndGet(CERT_AUTH_TRUSTSTORE_PWD_KEY,
 					CERT_AUTH_TRUSTSTORE_PWD_DEFAULT);
-			if (val.length() == 0)
+			if (val.length() == 0) {
 				exMsg += "\n" + CERT_AUTH_TRUSTSTORE_PWD_KEY;
+			}
 
-			if (exMsg.length() != 0)
+			if (exMsg.length() != 0) {
 				throw new ProviderInitializationException(
 						"Please set the following entries in " + filename + ":" +
 								exMsg);
+			}
 
 		} catch (IOException e) {
 			throw new ProviderInitializationException(e.getMessage());
@@ -470,7 +475,7 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 	private Map<String, String> getMetadataSchemaFileNames() {
 		Map<String, String> schema = CollectionHelper.provideMapFor(
 				String.class, String.class);
-		for (String key : mProperties.getAllKeys())
+		for (String key : mProperties.getAllKeys()) {
 			if (key.startsWith(XML_METADATA_SCHEMA_URI_KEY)) {
 				int nr = Integer.parseInt(key.substring(
 						key.lastIndexOf(".") + 1));
@@ -480,6 +485,7 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 						XML_METADATA_SCHEMA_FILE_KEY +
 						nr));
 			}
+		}
 		return schema;
 	}
 
@@ -502,30 +508,34 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 
 	@Override
 	public StreamSource getExtendedIdentitySchema(String uri) {
-		if (getExtendedIdentifierSchemaFileNames().containsKey(uri))
+		if (getExtendedIdentifierSchemaFileNames().containsKey(uri)) {
 			return new StreamSource(new File(
 					getExtendedIdentifierSchemaFileNames().get(uri)));
-		else
+		} else {
 			return null;
+		}
 	}
 
 
 	@Override
 	public StreamSource getMetadataSchema(String uri) {
-		if (getMetadataSchemaFileNames().containsKey(uri))
+		if (getMetadataSchemaFileNames().containsKey(uri)) {
 			return new StreamSource(new File(
 					getMetadataSchemaFileNames().get(uri)));
-		else
+		} else {
 			return null;
+		}
 	}
 
 	@Override
 	public String[] getSchemaFileNames() {
 		List<String> fileNames = CollectionHelper.provideListFor(String.class);
 
-		for (String key : mProperties.getAllKeys())
-			if (key.startsWith(XML_SCHEMA_KEY))
+		for (String key : mProperties.getAllKeys()) {
+			if (key.startsWith(XML_SCHEMA_KEY)) {
 				fileNames.add(mProperties.getProperty(key));
+			}
+		}
 
 		if (fileNames.size() == 0) {
 			try {
@@ -610,8 +620,9 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 		String attrs = getOrSetDefaultAndGet(PDP_SELECTED_METADATA_ATTR,
 											 PDP_SELECTED_METADATA_ATTR_DEFAULT);
 
-		if (attrs == null)
+		if (attrs == null) {
 			throw new SystemErrorException("config: no selected attribute values");
+		}
 
 		String attrsArray[] = attrs.split(",");
 
@@ -625,8 +636,9 @@ public class ServerConfigurationProviderPropImpl implements ServerConfigurationP
 		String attrs = getOrSetDefaultAndGet(PDP_SELECTED_IDENTIFIER_ATTR,
 											 PDP_SELECTED_IDENTIFIER_ATTR_DEFAULT);
 
-		if (attrs == null)
+		if (attrs == null) {
 			throw new SystemErrorException("config: no selected attribute values");
+		}
 
 		String attrsArray[] = attrs.split(",");
 

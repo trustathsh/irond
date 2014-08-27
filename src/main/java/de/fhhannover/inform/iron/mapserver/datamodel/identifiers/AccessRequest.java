@@ -70,9 +70,10 @@ public class AccessRequest extends IdentifierWithAdministrativeDomainImpl
 	public AccessRequest(final String name, final String ad) throws InvalidIdentifierException {
 		super(IfmapConstStrings.AR, ad);
 
-		if (name == null || name.length() == 0)
+		if (name == null || name.length() == 0) {
 			throw new InvalidIdentifierException("AccessRequest: " +
 					"name is invalid (" + name + ")");
+		}
 		this.mName = name;
 		setByteCount(IfmapConstStrings.AR_CNT + name.length() +
 				getByteCountForAdministrativeDomain());
@@ -98,14 +99,17 @@ public class AccessRequest extends IdentifierWithAdministrativeDomainImpl
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!super.equals(o))
+		if (!super.equals(o)) {
 			return false;
+		}
 
-		if (!(o instanceof AccessRequest))
+		if (!(o instanceof AccessRequest)) {
 			return false;
+		}
 
 		return mName.equals(((AccessRequest)o).getName());
 	}

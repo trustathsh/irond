@@ -74,11 +74,12 @@ abstract public class SubSubscribeRequest {
 	/*
 	 */
 	public SubSubscribeRequest(String name) throws RequestCreationException {
-		if (name == null )
+		if (name == null ) {
 			throw new RequestCreationException("Subscription name null or length zero");
-		else if (name.length() < 1 || name.length() > 20)
+		} else if (name.length() < 1 || name.length() > 20) {
 			throw new RequestCreationException("Subscription name has bad length="
 					+ name.length() + ". 1 - 20 is allowed.");
+		}
 
 		this.name = new String(name);
 	}

@@ -98,7 +98,8 @@ class CopySearchResultImpl extends SearchResultImpl {
 			mResultItems.add(mLastResultItem);
 		}
 
-		if (m != null)
+		if (m != null) {
 			mLastResultItem.addMetadata(m);
+		}
 	}
 }

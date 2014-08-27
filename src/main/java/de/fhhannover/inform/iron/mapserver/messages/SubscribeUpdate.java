@@ -78,8 +78,9 @@ public class SubscribeUpdate  extends SubSubscribeRequest {
 												throws RequestCreationException {
 		super(name);
 
-		if (searchrequest == null)
+		if (searchrequest == null) {
 			throw new RequestCreationException("Search Request is null");
+		}
 
 		searchRequest = searchrequest;
 	}

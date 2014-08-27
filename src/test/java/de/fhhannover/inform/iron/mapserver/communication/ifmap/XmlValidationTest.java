@@ -87,6 +87,7 @@ public class XmlValidationTest extends TestCase {
 
 	}
 
+	@Override
 	@After
 	public void tearDown() {
 		mEventProc.stop();

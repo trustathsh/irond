@@ -104,10 +104,12 @@ class PollResultImpl implements ModifiablePollResult {
 		LengthCheck.checkMinMax(name, 1, 20, "bad sub name for error result");
 
 		// Sanity
-		for (SearchResult res : mResults)
-			if (res.getName().equals(name))
+		for (SearchResult res : mResults) {
+			if (res.getName().equals(name)) {
 				throw new RuntimeException("SearchResults and ErrorResult in "
 						+ "PollResult for subscription " + name);
+			}
+		}
 
 		mErrors.add(name);
 	}
@@ -124,8 +126,9 @@ class PollResultImpl implements ModifiablePollResult {
 
 		ModifiableSearchResult lastResult = null;
 
-		if (mResults.size() > 0)
+		if (mResults.size() > 0) {
 			lastResult = mResults.get(mResults.size() - 1);
+		}
 
 		if (lastResult != null && sameAsLastResult(sres, lastResult)) {
 			mCurSize -= lastResult.getByteCount();
@@ -159,9 +162,11 @@ class PollResultImpl implements ModifiablePollResult {
 	@Override
 	public int getByteCountOf(String name) {
 		int sum = 0;
-		for (SearchResult sr : mResults)
-			if (sr.getName().equals(name))
+		for (SearchResult sr : mResults) {
+			if (sr.getName().equals(name)) {
 				sum += sr.getByteCount();
+			}
+		}
 		return sum;
 	}
 
@@ -170,8 +175,9 @@ class PollResultImpl implements ModifiablePollResult {
 		boolean result = false;
 		for (ModifiableSearchResult msr : mResults) {
 			result = true;
-			if (!msr.hasMetadataAndOnlyValidatedMetadata())
+			if (!msr.hasMetadataAndOnlyValidatedMetadata()) {
 				return false;
+			}
 		}
 		return result;
 	}
@@ -185,24 +191,27 @@ class PollResultImpl implements ModifiablePollResult {
 			CollectionHelper.provideListFor(ModifiableSearchResult.class);
 		List<String> toRemoveErrs = CollectionHelper.provideListFor(String.class);
 
-		for (ModifiableSearchResult sr : mResults)
+		for (ModifiableSearchResult sr : mResults) {
 			if (sr.getName().equals(name)) {
 				toRemoveSres.add(sr);
 				mCurSize -= sr.getByteCount();
 			}
+		}
 
 		mResults.removeAll(toRemoveSres);
 
-		for (String error : mErrors)
-			if (error.equals(name))
-					toRemoveErrs.add(error);
+		for (String error : mErrors) {
+			if (error.equals(name)) {
+				toRemoveErrs.add(error);
+			}
+		}
 
 		mErrors.removeAll(toRemoveErrs);
 	}
 
 	private boolean sameAsLastResult(SearchResult newRes, SearchResult lastRes) {
-		return (lastRes != null && lastRes.getType() == newRes.getType()
-				&& lastRes.getName().equals(newRes.getName()));
+		return lastRes != null && lastRes.getType() == newRes.getType()
+				&& lastRes.getName().equals(newRes.getName());
 	}
 
 }

@@ -68,6 +68,7 @@ public class SessionRepositoryTest extends TestCase {
 	private String sessionId11= "sessionid01";
 	private String sessionId2 = "sessionid02";
 
+	@Override
 	public void setUp() {
 		mSessionRep = new SessionRepositoryImpl();
 

@@ -216,6 +216,7 @@ public class Publisher {
 		return mSubscriptionState;
 	}
 
+	@Override
 	public String toString() {
 		return "publisher{" + mPublisherId + "}";
 	}

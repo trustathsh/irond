@@ -171,7 +171,7 @@ public class DomHelpers {
 		d1.normalize();
 		d2.normalize();
 		Boolean result = d1.isEqualNode(d2);
-		return (boolean) result;
+		return result;
 	}
 
 	/**
@@ -244,22 +244,25 @@ public class DomHelpers {
 
 		n = doc.getFirstChild();
 
-		if (n.getNodeType() != Node.ELEMENT_NODE)
+		if (n.getNodeType() != Node.ELEMENT_NODE) {
 			throw new SystemErrorException("fixupNamespace() No element!");
+		}
 
 		el = (Element)n;
 
 		prefix = el.getPrefix();
 		nsUri = el.getNamespaceURI();
 
-		if (prefix != null && prefix.length() > 0)
+		if (prefix != null && prefix.length() > 0) {
 			el.setPrefix(null);
-		else
+		} else {
 			prefix = "";
+		}
 
-		if (nsUri == null || nsUri.length() == 0)
+		if (nsUri == null || nsUri.length() == 0) {
 			throw new InvalidIdentifierException("Top-level element of extended " +
 												 "identifier with no namespace");
+		}
 
 		dropNamespaceDecls(el);
 
@@ -282,8 +285,9 @@ public class DomHelpers {
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
 
-			if (n.getNodeType() != Node.ELEMENT_NODE)
+			if (n.getNodeType() != Node.ELEMENT_NODE) {
 				continue;
+			}
 
 			localPrefix = n.getPrefix();
 
@@ -314,12 +318,14 @@ public class DomHelpers {
 
 		for (int i = 0; i < nnm.getLength(); i++) {
 			Attr attr = (Attr)nnm.item(i);
-			if (attr.getName().startsWith("xmlns:"))
+			if (attr.getName().startsWith("xmlns:")) {
 				toDrop.add(attr);
+			}
 		}
 
-		for (Attr attr : toDrop)
+		for (Attr attr : toDrop) {
 			nnm.removeNamedItemNS(attr.getNamespaceURI(), attr.getLocalName());
+		}
 	}
 
 	/**
@@ -332,8 +338,9 @@ public class DomHelpers {
 
 		String ret = input;
 
-		for (int i = 0; i < unwanted.length; i++)
+		for (int i = 0; i < unwanted.length; i++) {
 			ret = ret.replace(unwanted[i], replaceBy[i]);
+		}
 
 		return ret;
 	}
@@ -348,8 +355,9 @@ public class DomHelpers {
 	public static final String unescapeXml(String input) {
 		String ret = input;
 
-		for (int i = 0; i < replaceBy.length; i++)
+		for (int i = 0; i < replaceBy.length; i++) {
 			ret = ret.replace(replaceBy[i], unwanted[i]);
+		}
 
 		return ret;
 	}
@@ -364,7 +372,7 @@ public class DomHelpers {
 			DOMSource source = new DOMSource(doc);
 			t.transform(source, new StreamResult(sw));
 			Integer hc = sw.getBuffer().toString().hashCode();
-			return (int)hc;
+			return hc;
 		} catch (TransformerException e) {
 			return 0;
 		}
@@ -407,16 +415,18 @@ public class DomHelpers {
 		// clients are only allowed to send ifmap-cardinality
 		String[] specifiedIfmapAttributes = { "ifmap-cardinality" };
 
-		if (meta == null)
+		if (meta == null) {
 			return;
+		}
 
 		NamedNodeMap nnm = meta.getAttributes();
 
 		for (int i = 0; nnm != null && i < nnm.getLength(); i++) {
 			Node attrNode = nnm.item(i);
 
-			if (attrNode.getNodeType() != Node.ATTRIBUTE_NODE)
+			if (attrNode.getNodeType() != Node.ATTRIBUTE_NODE) {
 				continue;
+			}
 
 			String attrNodeName = attrNode.getLocalName();
 
@@ -451,8 +461,9 @@ public class DomHelpers {
 		Document ret = getDocumentBuilder().newDocument();
 		Node cpyNode = ret.importNode(el, true);
 
-		if (cpyNode.getNodeType() != Node.ELEMENT_NODE)
+		if (cpyNode.getNodeType() != Node.ELEMENT_NODE) {
 			throw new SystemErrorException("deep copy of non-element nodej");
+		}
 
 		ret.appendChild(cpyNode);
 
@@ -466,6 +477,7 @@ public class DomHelpers {
 	 */
 	private static class DocumentBuilderThreadLocal extends ThreadLocal<DocumentBuilder> {
 
+		@Override
 		protected DocumentBuilder initialValue() {
 			synchronized (sDocumentBuilderFactory) {
 				DocumentBuilder ret = null;
@@ -486,6 +498,7 @@ public class DomHelpers {
 	 */
 	private static class TransformerThreadLocal extends ThreadLocal<Transformer> {
 
+		@Override
 		protected Transformer initialValue() {
 			Transformer ret = null;
 			synchronized (sTransformerFactory) {

@@ -116,8 +116,9 @@ public class ResultItem implements SearchAble {
 			for (Metadata m : mMetadata) {
 				sb.append(m.getPrefixAndElement());
 				i++;
-				if (i != mMetadata.size())
+				if (i != mMetadata.size()) {
 					sb.append(", ");
+				}
 			}
 			sb.append(")");
 		}
@@ -146,11 +147,13 @@ public class ResultItem implements SearchAble {
 	private int metadataSize() {
 		int ret = IfmapConstStrings.MLIST_MIN_CNT;
 
-		if (getMetdata().isEmpty())
+		if (getMetdata().isEmpty()) {
 			return 0;
+		}
 
-		for (Metadata m : getMetdata())
+		for (Metadata m : getMetdata()) {
 			ret += m.getByteCount();
+		}
 
 		return ret;
 	}

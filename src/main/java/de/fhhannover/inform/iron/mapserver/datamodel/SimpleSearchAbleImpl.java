@@ -86,20 +86,24 @@ public abstract class SimpleSearchAbleImpl implements SearchAble {
 	 */
 	protected final void setByteCount(int bytes) {
 
-		if (mByteCountSet)
+		if (mByteCountSet) {
 			throw new SystemErrorException("reinitialization of byte count");
+		}
 
-		if (bytes <= 0)
+		if (bytes <= 0) {
 			throw new SystemErrorException("byte count " + bytes + " invalid");
+		}
 
 		mByteCountSet = true;
 		mByteCount = bytes;
 	}
 
+	@Override
 	public final int getByteCount() {
 
-		if (!mByteCountSet)
+		if (!mByteCountSet) {
 			throw new SystemErrorException("access to uninitialized byte count");
+		}
 
 		return mByteCount;
 	}

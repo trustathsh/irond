@@ -90,10 +90,11 @@ abstract class AbstractSearchHandler implements SearchHandler {
 			int startDepth, Publisher pub, IfmapPep pep) {
 		NullCheck.check(sreq, "sreq is null");
 
-		if (start == null)
+		if (start == null) {
 			mStartIdent = sreq.getStartIdentifier();
-		else
+		} else {
 			mStartIdent = start;
+		}
 
 		NullCheck.check(mStartIdent, "start identifier is null");
 
@@ -106,10 +107,11 @@ abstract class AbstractSearchHandler implements SearchHandler {
 		mTermIdentTypes = sreq.getTerminalIdentifiers();
 		NullCheck.check(mTermIdentTypes, "terminal identifiers is null");
 
-		if (visitedElements == null)
+		if (visitedElements == null) {
 			mVisitedElements = new HashMap<GraphElement, List<MetadataHolder>>();
-		else
+		} else {
 			mVisitedElements = visitedElements;
+		}
 
 		mCurDepth = startDepth;
 

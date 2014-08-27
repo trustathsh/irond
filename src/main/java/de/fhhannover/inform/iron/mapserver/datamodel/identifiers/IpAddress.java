@@ -79,39 +79,45 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 		super(IfmapConstStrings.IP, ad);
 
 		// default to IPv4
-		if (ipat == null)
+		if (ipat == null) {
 			ipat = IpAddressTypeEnum.IPv4;
+		}
 
-		if (value == null || value.length() == 0)
+		if (value == null || value.length() == 0) {
 			throw new InvalidIdentifierException("IpAddress: Empty or null "
 					+ "(" + value + ")");
+		}
 
 		mType = ipat;
 		mValue = value;
 
-		if (ipat == IpAddressTypeEnum.IPv6 && !IpAddressValidator.validateIPv6(value))
+		if (ipat == IpAddressTypeEnum.IPv6 && !IpAddressValidator.validateIPv6(value)) {
 			throw new InvalidIdentifierException("IpAddress: Invalid " + ipat +
 					mType.toString() + " address (" + value + ")");
+		}
 
-		if (ipat == IpAddressTypeEnum.IPv4 && !IpAddressValidator.validateIPv4(value))
+		if (ipat == IpAddressTypeEnum.IPv4 && !IpAddressValidator.validateIPv4(value)) {
 			throw new InvalidIdentifierException("IpAddress: Invalid " + ipat +
 					mType.toString() + " address (" + value + ")");
+		}
 
 		try {
-			if (ipat == IpAddressTypeEnum.IPv6)
-				mIpAddress = Inet6Address.getByName(value);
-			else
-				mIpAddress = Inet4Address.getByName(value);
+			if (ipat == IpAddressTypeEnum.IPv6) {
+				mIpAddress = InetAddress.getByName(value);
+			} else {
+				mIpAddress = InetAddress.getByName(value);
+			}
 		} catch (UnknownHostException e) {
 			throw new InvalidIdentifierException("IpAddress: Invalid " +
 					mType.toString() + " format (" + value + ")");
 		}
 
 		// specs say MAPS must reject IP not canonicalized
-		if (!mIpAddress.getHostAddress().equals(mValue))
+		if (!mIpAddress.getHostAddress().equals(mValue)) {
 			throw new InvalidIdentifierException("IpAddress: not in canonical " +
 					mType.toString() + " format (" + value + " != " +
 					mIpAddress.getHostAddress() + ")");
+		}
 
 		setByteCount(IfmapConstStrings.IP_CNT +  mType.toString().length()
 				+ mValue.length()  + getByteCountForAdministrativeDomain());
@@ -138,18 +144,21 @@ public class IpAddress extends IdentifierWithAdministrativeDomainImpl
 	public boolean equals(Object o) {
 		IpAddress oIp;
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!super.equals(o))
+		if (!super.equals(o)) {
 			return false;
+		}
 
-		if (!(o instanceof IpAddress))
+		if (!(o instanceof IpAddress)) {
 			return false;
+		}
 
 		oIp = (IpAddress) o;
-		return (mType == oIp.getIpAddressType() &&
-				mIpAddress.equals(oIp.getIpAddress()));
+		return mType == oIp.getIpAddressType() &&
+				mIpAddress.equals(oIp.getIpAddress());
 	}
 
 	/**

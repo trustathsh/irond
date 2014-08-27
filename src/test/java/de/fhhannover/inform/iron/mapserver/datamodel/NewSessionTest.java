@@ -62,6 +62,7 @@ public class NewSessionTest extends TestCase {
 	String sessionId = "1111";
 	String publisherId = "2222";
 
+	@Override
 	@Before
 	public void setUp() {
 		IfmapPep pep = new IfmapPepStub();

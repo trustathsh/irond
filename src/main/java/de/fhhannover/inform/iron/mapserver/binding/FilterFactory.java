@@ -93,8 +93,9 @@ public class FilterFactory {
 	 */
 	public static Filter newFilter(String fs, Map<String, String> nm) throws InvalidFilterException {
 		Filter f = new Filter(fs, nm);
-		if (!FilterValidator.validateFilter(f))
+		if (!FilterValidator.validateFilter(f)) {
 			throw new InvalidFilterException("Bad Filter");
+		}
 		return f;
 	}
 }

@@ -355,6 +355,7 @@ public class StubProvider {
 				return new ArrayList<String>();
 			}
 
+			@Override
 			public boolean isRootLinkEnabled() {
 				// TODO Auto-generated method stub
 				return false;

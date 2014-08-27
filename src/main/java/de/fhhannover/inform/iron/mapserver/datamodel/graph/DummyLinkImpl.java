@@ -56,8 +56,9 @@ class DummyLinkImpl extends DummyGraphElement implements Link {
 	DummyLinkImpl(Node n1, Node n2) {
 		NullCheck.check(n1, "node1 is null");
 		NullCheck.check(2, "node2 is null");
-		if (!(n1 instanceof DummyNodeImpl) || !(n2 instanceof DummyNodeImpl))
+		if (!(n1 instanceof DummyNodeImpl) || !(n2 instanceof DummyNodeImpl)) {
 			throw new SystemErrorException("DummyLink with non-DummyNodeImpl :(");
+		}
 
 		mNode1 = n1;
 		mNode2 = n2;
@@ -84,12 +85,13 @@ class DummyLinkImpl extends DummyGraphElement implements Link {
 	 */
 	@Override
 	public Node getNeighborNode(Node cur) {
-		if (mNode1 == cur)
+		if (mNode1 == cur) {
 			return mNode2;
-		else if (mNode2 == cur)
+		} else if (mNode2 == cur) {
 			return mNode1;
-		else
+		} else {
 			throw new SystemErrorException("getNeighborNode with bad Node");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -99,18 +101,20 @@ class DummyLinkImpl extends DummyGraphElement implements Link {
 	public boolean equalsIdentifiers(GraphElement o) {
 		Link l;
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!(o instanceof Link))
+		if (!(o instanceof Link)) {
 			return false;
+		}
 
 		l = (Link)o;
-		return (l.getNode1().equalsIdentifiers(getNode1()) &&
-				l.getNode2().equalsIdentifiers(getNode2()))
+		return l.getNode1().equalsIdentifiers(getNode1()) &&
+				l.getNode2().equalsIdentifiers(getNode2())
 				||
-				(l.getNode1().equalsIdentifiers(getNode2()) &&
-				l.getNode2().equalsIdentifiers(getNode1()));
+				l.getNode1().equalsIdentifiers(getNode2()) &&
+				l.getNode2().equalsIdentifiers(getNode1());
 
 	}
 

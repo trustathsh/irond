@@ -69,9 +69,10 @@ public class Device extends IdentifierImpl implements Identifier {
 	public Device(final String value, final DeviceTypeEnum type) throws InvalidIdentifierException {
 		super(IfmapConstStrings.DEV);
 
-		if (value == null || type == null || value.length() == 0)
+		if (value == null || type == null || value.length() == 0) {
 			throw new InvalidIdentifierException("Device: Invalid value or type"
 					+ " (" + value + "|" + type + ")");
+		}
 
 		mValue = value;
 		mType = type;
@@ -92,11 +93,13 @@ public class Device extends IdentifierImpl implements Identifier {
 	@Override
 	public boolean equals(Object o) {
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
-		if (!(o instanceof Device))
+		if (!(o instanceof Device)) {
 			return false;
+		}
 
 		Device d = (Device) o;
 

@@ -66,7 +66,6 @@ import de.fhhannover.inform.iron.mapserver.exceptions.NoPollResultAvailableExcep
 import de.fhhannover.inform.iron.mapserver.exceptions.NoSuchSubscriptionException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PollResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.PurgePublisherNoAllowedException;
-import de.fhhannover.inform.iron.mapserver.exceptions.ResponseCreationException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SearchResultsTooBigException;
 import de.fhhannover.inform.iron.mapserver.exceptions.SystemErrorException;
@@ -148,9 +147,10 @@ public class DataModelService implements SubscriptionNotifier {
 	}
 
 	public static DataModelServerConfigurationProvider getServerConfiguration() {
-		if (sServerConf == null)
+		if (sServerConf == null) {
 			throw new SystemErrorException("DataModelService: ServerConfiguration"
 					+ " not initialized");
+		}
 
 		return sServerConf;
 	}
@@ -172,8 +172,9 @@ public class DataModelService implements SubscriptionNotifier {
 		checkNull(request);
 		Publisher pub = getPublisher(request);
 
-		if (!mPep.isAuthorized(pub, request, mGraph))
+		if (!mPep.isAuthorized(pub, request, mGraph)) {
 			throw new AccessDeniedException("not allowed");
+		}
 
 
 		publishService.publish(request);
@@ -229,8 +230,9 @@ public class DataModelService implements SubscriptionNotifier {
 		Collection<Identifier> idents =
 			CollectionHelper.provideCollectionFor(Identifier.class);
 
-		for (Node n : mGraph.getAllNodes())
+		for (Node n : mGraph.getAllNodes()) {
 			idents.add(n.getIdentifier());
+		}
 
 		result.setIdentifier(idents);
 		result.setLastUpdateTime(subService.getLogicalTimeStamp());

@@ -66,8 +66,9 @@ public class ReferenceSearchResultImpl extends SearchResultImpl {
 	ReferenceSearchResultImpl(String name) {
 		super(name);
 
-		if (name != null)
+		if (name != null) {
 			throw new SystemErrorException("this should never contain a name");
+		}
 	}
 
 	ReferenceSearchResultImpl() {
@@ -77,10 +78,12 @@ public class ReferenceSearchResultImpl extends SearchResultImpl {
 	/* (non-Javadoc)
 	 * @see de.fhhannover.inform.iron.mapserver.messages.SearchResult#addMetadata(de.fhhannover.inform.iron.mapserver.datamodel.graph.MetadataContainer, de.fhhannover.inform.iron.mapserver.datamodel.graph.meta.Metadata)
 	 */
+	@Override
 	public void addMetadata(GraphElement ge, Metadata m) {
 
-		if (ge == null)
+		if (ge == null) {
 			throw new SystemErrorException("addMetadata() with no MetadataContainer");
+		}
 
 		// If mc is not the same as used in the last ResultItem, we have
 		// to put a new one in the list.
@@ -89,8 +92,9 @@ public class ReferenceSearchResultImpl extends SearchResultImpl {
 			mResultItems.add(mLastResultItem);
 		}
 
-		if (m != null)
+		if (m != null) {
 			mLastResultItem.addMetadata(m);
+		}
 	}
 }
 

@@ -174,13 +174,15 @@ class JaxbResultMarshaller implements ResultMarshaller {
 	 * @param resp
 	 */
 	private void setResponseValidationAttribute(ResponseType resp) {
-		if (resp == null)
+		if (resp == null) {
 			return;
+		}
 		if (resp.getValidation() != null && resp.getValidation().equals(
-				MetadataValidationEnum.METADATAONLY.toString()))
+				MetadataValidationEnum.METADATAONLY.toString())) {
 			resp.setValidation(MetadataValidationEnum.ALL.toString());
-		else
+		} else {
 			resp.setValidation(MetadataValidationEnum.BASEONLY.toString());
+		}
 	}
 
 	private Envelope prepareEnvelopeWithResponse() {
@@ -202,8 +204,9 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		ResponseType resp = getResponseElement(env);
 		NewSessionResultType nsrt = getNsrt(sessionId, publisherId);
 
-		if (maxPollResultSize != null)
+		if (maxPollResultSize != null) {
 			nsrt.setMaxPollResultSize(new BigInteger("" + maxPollResultSize));
+		}
 
 		resp.setNewSessionResult(nsrt);
 		return doMarshal(env);
@@ -270,8 +273,9 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		Envelope env = prepareEnvelopeWithResponse();
 		ResponseType resp = getResponseElement(env);
 		SearchResultType srt = transformSearchResult(searchResult);
-		if (searchResult.hasMetadataAndOnlyValidatedMetadata())
+		if (searchResult.hasMetadataAndOnlyValidatedMetadata()) {
 			resp.setValidation(MetadataValidationEnum.METADATAONLY.toString());
+		}
 		resp.setSearchResult(srt);
 		return doMarshal(env);
 	}
@@ -288,8 +292,9 @@ class JaxbResultMarshaller implements ResultMarshaller {
 		Envelope env = prepareEnvelopeWithResponse();
 		ResponseType resp = getResponseElement(env);
 		PollResultType prt = transformPollResult(pollResult);
-		if (pollResult.hasMetadataAndOnlyValidatedMetadata())
+		if (pollResult.hasMetadataAndOnlyValidatedMetadata()) {
 			resp.setValidation(MetadataValidationEnum.METADATAONLY.toString());
+		}
 		resp.setPollResult(prt);
 		return doMarshal(env);
 	}
@@ -332,8 +337,9 @@ class JaxbResultMarshaller implements ResultMarshaller {
 
 		}
 
-		for (String err : pr.getErrorResults())
+		for (String err : pr.getErrorResults()) {
 			list.add(createErrorPollResult(err));
+		}
 
 		return prt;
 	}
@@ -411,23 +417,28 @@ class JaxbResultMarshaller implements ResultMarshaller {
 
     	dt.setLastUpdate(""+last_update);
 
-    	istr = (istr == null) ? "" : istr.trim().toLowerCase();
+    	istr = istr == null ? "" : istr.trim().toLowerCase();
 
     	// No filter or * --> all identifiers.
 		if(istr.equals("") ||  istr.equals("*")) {
-			for(Identifier id : idents)
-    			add(dt, id);
+			for(Identifier id : idents) {
+				add(dt, id);
+			}
 		} else {
 			StringTokenizer tokenizer = new StringTokenizer(istr,",");
 			ArrayList<String> list = new ArrayList<String>();
 
-			while (tokenizer.hasMoreElements())
+			while (tokenizer.hasMoreElements()) {
 				list.add(tokenizer.nextToken());
+			}
 
-			if(!istr.equals("-"))
-				for(Identifier id : idents)
-					if(list.contains(id.getTypeString()))
+			if(!istr.equals("-")) {
+				for(Identifier id : idents) {
+					if(list.contains(id.getTypeString())) {
 						this.add(dt, id);
+					}
+				}
+			}
 		}
 		return dt;
 	}
@@ -509,14 +520,17 @@ class JaxbResultMarshaller implements ResultMarshaller {
 	private ResultItemType createResultItemFor(Identifier i1, Identifier i2) {
 		ResultItemType ret = mIfmapObjFac.createResultItemType();
 
-		if (i1 != null)
+		if (i1 != null) {
 			addToResultItem(ret, i1);
+		}
 
-		if (i2 != null)
+		if (i2 != null) {
 			addToResultItem(ret, i2);
+		}
 
-		if (ret.getAccessRequestOrIdentityOrIpAddress().size() == 0)
+		if (ret.getAccessRequestOrIdentityOrIpAddress().size() == 0) {
 			throw new SystemErrorException("No Identifier in ResultItem");
+		}
 
 		return ret;
 	}
@@ -601,7 +615,9 @@ class JaxbResultMarshaller implements ResultMarshaller {
 			throw new RuntimeException("UNEXPECTED: Unknown Result!");
 		}
 
-		if (is == null) throw new RuntimeException("UNEXPECTED: stream is null?");
+		if (is == null) {
+			throw new RuntimeException("UNEXPECTED: stream is null?");
+		}
 
 		return is;
 	}

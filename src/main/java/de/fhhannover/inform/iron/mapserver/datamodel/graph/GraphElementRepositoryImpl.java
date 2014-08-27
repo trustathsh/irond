@@ -116,8 +116,9 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 			l = new LinkImpl(linkNode1, linkNode2);
 			linkNode1.addLink(l);
 
-			if (linkNode1 != linkNode2)
+			if (linkNode1 != linkNode2) {
 				linkNode2.addLink(l);
+			}
 
 			mLinks.put(linkKey(l), l);
 		}
@@ -127,14 +128,15 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 
 	@Override
 	public GraphElement getGraphElement(Identifier i1, Identifier i2) {
-		if (i1 == null && i2 == null)
+		if (i1 == null && i2 == null) {
 			throw new NullPointerException("Both Identifiers null"); /* bail out */
-		else if (i1 != null && i2 == null)
+		} else if (i1 != null && i2 == null) {
 			return getNodeFor(i1);
-		else if (i2 != null && i1 == null)
+		} else if (i2 != null && i1 == null) {
 			return getNodeFor(i2);
-		else
+		} else {
 			return getLinkFor(i1, i2);
+		}
 	}
 
 	@Override
@@ -149,8 +151,9 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	public Collection<Node> getAllNodes() {
 		Collection<Node> ret = CollectionHelper.provideCollectionFor(Node.class);
 
-		for (Node n : mNodes.values())
+		for (Node n : mNodes.values()) {
 			ret.add(n.dummy());
+		}
 
 		return ret;
 	}
@@ -163,8 +166,9 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	public Collection<Link> getAllLinks() {
 		Collection<Link> ret = CollectionHelper.provideCollectionFor(Link.class);
 
-		for (Link l : mLinks.values())
+		for (Link l : mLinks.values()) {
 			ret.add(l.dummy());
+		}
 
 		return ret;
 	}
@@ -204,9 +208,11 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	 * @return
 	 */
 	private Node findExistingNodeFor(Identifier i) {
-		for (Node node : mNodes.getAll(nodeKey(i)))
-			if (node.getIdentifier().equals(i))
+		for (Node node : mNodes.getAll(nodeKey(i))) {
+			if (node.getIdentifier().equals(i)) {
 				return node;
+			}
+		}
 
 		return null;
 	}
@@ -219,9 +225,11 @@ public class GraphElementRepositoryImpl implements GraphElementRepository {
 	 * @return
 	 */
 	private Link findExistingLinkFor(Identifier i1, Identifier i2) {
-		for (Link link : mLinks.getAll(linkKey(i1, i2)))
-			if (linkHasIdentifiers(link, i1, i2))
-					return link;
+		for (Link link : mLinks.getAll(linkKey(i1, i2))) {
+			if (linkHasIdentifiers(link, i1, i2)) {
+				return link;
+			}
+		}
 
 		return null;
 	}

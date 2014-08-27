@@ -165,8 +165,9 @@ class ClientService {
 			}
 		}
 
-		if (!mPep.isAuthorized(purger, publisherId))
+		if (!mPep.isAuthorized(purger, publisherId)) {
 			throw new AccessDeniedException("not allowed");
+		}
 
 		// If we don't know about the publisher, log a warning, but don't throw
 		// an exception.
@@ -186,7 +187,8 @@ class ClientService {
 	}
 
 	private void setStateDeleted(List<MetadataHolder> mhlist) {
-		for (MetadataHolder mh : mhlist)
+		for (MetadataHolder mh : mhlist) {
 			mh.setState(MetadataState.DELETED);
+		}
 	}
 }

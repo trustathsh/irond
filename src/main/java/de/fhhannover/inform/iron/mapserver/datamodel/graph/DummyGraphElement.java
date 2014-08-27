@@ -94,6 +94,7 @@ abstract class DummyGraphElement implements GraphElement {
 		throw new SystemErrorException(sErrorString);
 	}
 
+	@Override
 	public List<MetadataHolder> getMetadataHolderNext(Filter f) {
 		throw new SystemErrorException(sErrorString);
 	}

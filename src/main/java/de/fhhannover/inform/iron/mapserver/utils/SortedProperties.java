@@ -61,8 +61,9 @@ public class SortedProperties extends Properties {
 		Vector<String> keyList = new Vector<String>();
 		Enumeration keysEnum = super.keys();
 
-		while(keysEnum.hasMoreElements())
+		while(keysEnum.hasMoreElements()) {
 			keyList.add((String)keysEnum.nextElement());
+		}
 		Collections.sort(keyList);
 
 		return keyList.elements();

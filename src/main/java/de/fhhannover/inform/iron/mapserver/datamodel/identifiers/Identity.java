@@ -95,12 +95,14 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		super(IfmapConstStrings.ID, ad);
 		int byteCount = 0;
 
-		if (name == null || name.length() == 0)
+		if (name == null || name.length() == 0) {
 			throw new InvalidIdentifierException("Identity: name is " +
 					"null or empty string");
+		}
 
-		if (it == null)
+		if (it == null) {
 			throw new InvalidIdentifierException("Identity: type is null");
+		}
 
 		mName = name;
 		mType = it;
@@ -108,15 +110,17 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 		mCaseSensitive = mConf.getIdentityTypeIsCaseSensitive(mType.toString());
 
 		if (mType == IdentityTypeEnum.other &&
-				(otherTypeDef == null || otherTypeDef.length() == 0))
+				(otherTypeDef == null || otherTypeDef.length() == 0)) {
 			throw new InvalidIdentifierException("Identity: type-other "
 					+ "requires other-type-definition");
+		}
 
-		mOtherTypeDefinition = (otherTypeDef == null) ? "" : otherTypeDef;
+		mOtherTypeDefinition = otherTypeDef == null ? "" : otherTypeDef;
 
-		if (mType == IdentityTypeEnum.hipHit && !IpAddressValidator.validateIPv6(name))
-				throw new InvalidIdentifierException("Identity: incorrect "
-						+ "HIP-HIT incorrect format (" + name + ")");
+		if (mType == IdentityTypeEnum.hipHit && !IpAddressValidator.validateIPv6(name)) {
+			throw new InvalidIdentifierException("Identity: incorrect "
+					+ "HIP-HIT incorrect format (" + name + ")");
+		}
 
 		if (isExtendedIdentifier()) {
 
@@ -127,24 +131,26 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 			// If we want to validate extended identfiers, do it.
 			// Throws InvalidIdentifierException if not schema compliant
-			if(mConf.getXmlValidationExtendedIdentity())
+			if(mConf.getXmlValidationExtendedIdentity()) {
 				validateExtendedIdentifier();
+			}
 		}
 
 		if (isDistinguishedName()) {
 			mDistinguishedName = prepareDistinguishedName(name);
 
 			// let the MAPC know if X500 was invalid
-			if (mDistinguishedName == null && mConf.getStrictDistinguishedName())
+			if (mDistinguishedName == null && mConf.getStrictDistinguishedName()) {
 				throw new InvalidIdentifierException("distinguished-name " +
 						" not in X500 format: " + name);
+			}
 
 		} else {
 			mDistinguishedName = null;
 		}
 
-		byteCount += (IfmapConstStrings.ID_CNT + mName.length()
-		+ mType.toString().length() + getByteCountForAdministrativeDomain());
+		byteCount += IfmapConstStrings.ID_CNT + mName.length()
+		+ mType.toString().length() + getByteCountForAdministrativeDomain();
 		if (mType == IdentityTypeEnum.other) {
 			byteCount += IfmapConstStrings.ID_OTHER_TYPE_DEF_ATTR_CNT;
 			byteCount += mOtherTypeDefinition.length();
@@ -170,9 +176,10 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	 * 		we die.
 	 */
 	public String getOtherTypeDefinition() {
-		if (mType != IdentityTypeEnum.other)
+		if (mType != IdentityTypeEnum.other) {
 			throw new SystemErrorException("Identity: Error calling " +
 					"getOtherTypeDefinition() on type=" + mType.toString());
+		}
 
 		return mOtherTypeDefinition;
 	}
@@ -185,31 +192,37 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null)
+		if (o == null) {
 			return false;
+		}
 
-		if (this == o)
+		if (this == o) {
 			return true;
+		}
 
 		// is it Identity at all?
-		if (!(o instanceof Identity))
+		if (!(o instanceof Identity)) {
 			return false;
+		}
 
 		// check administrative domain in super-class
-		if (!super.equals(o))
+		if (!super.equals(o)) {
 			return false;
+		}
 
 		Identity oI = (Identity)o;
 
 		// same type?
-		if (mType != oI.getIdentityType())
+		if (mType != oI.getIdentityType()) {
 			return false;
+		}
 
 		// compare other-type-definitions, if type="other"
 		if (mType == IdentityTypeEnum.other) {
 			String otherTypeDef = oI.getOtherTypeDefinition();
-			if (!mOtherTypeDefinition.equals(otherTypeDef))
+			if (!mOtherTypeDefinition.equals(otherTypeDef)) {
 				return false;
+			}
 		}
 
 		// compare name according to its type extended
@@ -221,16 +234,17 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 				// Sanity check: One of the DNs was null, so this implies
 				// strict handling of DNs is disabled
 
-				if (mConf.getStrictDistinguishedName())
+				if (mConf.getStrictDistinguishedName()) {
 					throw new SystemErrorException("DN null, but strict enabled");
+				}
 
-				return (mCaseSensitive) ? mName.equals(oI.mName) :
+				return mCaseSensitive ? mName.equals(oI.mName) :
 						mName.equalsIgnoreCase(oI.mName);
 			}
 		// all others
 		} else {
 			String otherName = oI.getName();
-			return (mCaseSensitive) ? mName.equals(otherName) :
+			return mCaseSensitive ? mName.equals(otherName) :
 					mName.equalsIgnoreCase(otherName);
 		}
 	}
@@ -249,11 +263,12 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 		hash = 11 * hash + mOtherTypeDefinition.hashCode();
 
-		if (mType == IdentityTypeEnum.distinguishedName && mDistinguishedName != null)
+		if (mType == IdentityTypeEnum.distinguishedName && mDistinguishedName != null) {
 			hash = 11 * hash + mDistinguishedName.getName().hashCode();
-		else
-			hash = 11 * hash + ((mCaseSensitive) ? mName.hashCode() :
+		} else {
+			hash = 11 * hash + (mCaseSensitive ? mName.hashCode() :
 					mName.toLowerCase().hashCode());
+		}
 
 		return 11 * hash + super.getHashCode();
 	}
@@ -313,12 +328,13 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 			// If irond thinks the result of encoding should look different,
 			// send this to the MAPC.
-			if (!myXml.equals(xml))
+			if (!myXml.equals(xml)) {
 				throw new InvalidIdentifierException("Extended Identifier: " +
 						"encoding resulted in different value." +
 						"Your value:\"" + xml + "\" Mine: \"" + myXml + "\". " +
 						"If you think this is an error in irond, please report " +
 						"it. Thanks!");
+			}
 
 		} catch (SAXException e) {
 			throw new InvalidIdentifierException("extended identifier error: " +
@@ -338,8 +354,9 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 	 * @throws InvalidIdentifierException
 	 */
 	private X500Principal prepareDistinguishedName(String dsn) {
-		if (!mCaseSensitive)
+		if (!mCaseSensitive) {
 			dsn = dsn.toLowerCase();
+		}
 
 		try {
 			return new X500Principal(dsn);
@@ -370,46 +387,54 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 		String ad = super.getAdministrativeDomain();
 
-		if (mExtendedIdentifier == null)
+		if (mExtendedIdentifier == null) {
 			throw new SystemErrorException("Trying to check admin-domain, but " +
 										   "extended identifier is null?!");
+		}
 
-		if (ad != null && ad.length() > 0)
+		if (ad != null && ad.length() > 0) {
 			throw new InvalidIdentifierException(
 					"Identity: extended identity with " +
 					"administrative-domain (" + ad + ") found");
+		}
 
 		Node n = mExtendedIdentifier.getFirstChild();
 
-		if (n.getNodeType() != Node.ELEMENT_NODE)
+		if (n.getNodeType() != Node.ELEMENT_NODE) {
 			throw new SystemErrorException("Extended identifier root node not elemnt?");
+		}
 
 		Element el = (Element)n;
 
 		Attr admAttr = el.getAttributeNodeNS(null, "administrative-domain");
 
 		if (admAttr == null)
+		 {
 			throw new InvalidIdentifierException("No administrative-domain " +
 												 "for extended identifier.");
 		// all good, hopefully.
+		}
 	}
 
 	private void validateExtendedIdentifier() throws InvalidIdentifierException {
 		String ns = mExtendedIdentifier.lookupNamespaceURI(null);
 
-		if (ns == null || ns.isEmpty())
+		if (ns == null || ns.isEmpty()) {
 			throw new InvalidIdentifierException("Extended identifier without namespace");
+		}
 
 		StreamSource schema = mConf.getExtendedIdentitySchema(ns);
 		boolean lockdown = mConf.getXmlValidationExtendedIdentityLockDownMode();
 
-		if (lockdown && schema == null)
+		if (lockdown && schema == null) {
 			throw new InvalidIdentifierException("extended identifier: " +
 				"lock-down: missing schema ");
+		}
 
 		try {
-			if (schema != null)
-					DomHelpers.validate(mExtendedIdentifier, schema);
+			if (schema != null) {
+				DomHelpers.validate(mExtendedIdentifier, schema);
+			}
 		} catch (ValidationFailedException e) {
 			throw new InvalidIdentifierException("extended identfier" +
 					" validation failed: " + e.getMessage());
@@ -425,8 +450,9 @@ public class Identity extends  IdentifierWithAdministrativeDomainImpl
 
 		// If we have an extended identifier, make sure we return the Document
 		// that is stored in the name attribute
-		if (isExtendedIdentifier())
+		if (isExtendedIdentifier()) {
 			return mExtendedIdentifier;
+		}
 
 
 		// Otherwise, whatever is there originally...

@@ -353,10 +353,11 @@ public class ChannelThread implements Runnable {
 
 		// If we end up with a broken channel, create a BadChannelEvent,
 		// else a ClosedChannelEvent.
-		if (isBroken())
+		if (isBroken()) {
 			putIntoQueue(new BadChannelEvent(getChannelIdentifier()));
-		else
+		} else {
 			putIntoQueue(new ClosedChannelEvent(getChannelIdentifier()));
+		}
 	}
 
 	private void putIntoQueue(Event event) {
@@ -422,8 +423,9 @@ public class ChannelThread implements Runnable {
 		try {
 			mChannelAuth.authenticate(req);
 		} catch (ChannelAuthException e) {
-			if (reqEntity != null)
+			if (reqEntity != null) {
 				EntityUtils.consume(reqEntity);
+			}
 
 			throw e;
 		}
@@ -437,15 +439,18 @@ public class ChannelThread implements Runnable {
 		mUseGzip = clientAcceptsGzip(req) ? true : mUseGzip;
 		entityGzipped = isReqEntityGzipped(req);
 
-		if (mUseGzip)
+		if (mUseGzip) {
 			sLogger.trace(sName + ": Client " + getClientIdentifier()
 					+ " wants gzipped encoding");
+		}
 
-		if (entityGzipped)
+		if (entityGzipped) {
 			sLogger.trace(sName + ": Received request is gzipped");
+		}
 
-		if (reqEntity == null)
+		if (reqEntity == null) {
 			throw new HttpException();
+		}
 
 		// We bluntly copy the whole stream, but it makes life easier
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -458,8 +463,9 @@ public class ChannelThread implements Runnable {
 			throw new IOException("No content received");
 		}
 
-		if (entityGzipped)
+		if (entityGzipped) {
 			is = uncompress(is);
+		}
 
 		return is;
 	}
@@ -475,8 +481,9 @@ public class ChannelThread implements Runnable {
 			new BasicHeaderElementIterator(req.headerIterator("Accept-Encoding"));
 		while (it.hasNext()) {
 			HeaderElement element = it.nextElement();
-			if (element.getName().contains("gzip"))
+			if (element.getName().contains("gzip")) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -489,8 +496,9 @@ public class ChannelThread implements Runnable {
 			new BasicHeaderElementIterator(req.headerIterator("Content-Encoding"));
 		while (it.hasNext()) {
 			HeaderElement element = it.nextElement();
-			if (element.getName().contains("gzip"))
+			if (element.getName().contains("gzip")) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -505,8 +513,9 @@ public class ChannelThread implements Runnable {
 		is = new GZIPInputStream(is, is.available());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		while ((c = is.read()) >= 0)
+		while ((c = is.read()) >= 0) {
 			baos.write(c);
+		}
 
 		baos.close();
 		is.close();
@@ -519,8 +528,9 @@ public class ChannelThread implements Runnable {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		GZIPOutputStream go = new GZIPOutputStream(baos);
 
-		while ((read = is.read()) > 0)
+		while ((read = is.read()) > 0) {
 			go.write(read);
+		}
 
 		go.close();
 		baos.close();
@@ -548,8 +558,9 @@ public class ChannelThread implements Runnable {
 	 */
 	private void close() {
 		try {
-			if (mSocket != null)
+			if (mSocket != null) {
 				mSocket.close();
+			}
 		} catch (IOException e) {
 			sLogger.warn(sName + ": Exception closing socket: " + e.getMessage());
 		}

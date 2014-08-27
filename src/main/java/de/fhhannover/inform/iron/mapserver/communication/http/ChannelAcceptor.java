@@ -273,8 +273,8 @@ public class ChannelAcceptor {
 	 * of threads.
 	 */
 	private void setUpExecutors() {
-		int acceptors = (mBasicSocket == null) ? 0 : 1;
-		acceptors = (mCertificateSocket == null) ? acceptors : acceptors + 1;
+		int acceptors = mBasicSocket == null ? 0 : 1;
+		acceptors = mCertificateSocket == null ? acceptors : acceptors + 1;
 		mAcceptorExecutor = Executors.newFixedThreadPool(acceptors);
 		mChannelThreadExecutor = new ChannelThreadExecutor();
 	}
@@ -287,8 +287,9 @@ public class ChannelAcceptor {
 	 * instance.
 	 */
 	public void start() {
-		if (!mInitialized)
+		if (!mInitialized) {
 			throw new RuntimeException(sName + ": Missing initialization!");
+		}
 
 		if (mBasicSocket != null) {
 			sLogger.info(sName + ": Listening on port " + mBasicSocket.getLocalPort()
@@ -442,8 +443,9 @@ public class ChannelAcceptor {
 		@Override
 		protected void beforeExecute(Thread t, Runnable r) {
 
-			if (r instanceof ChannelThread)
+			if (r instanceof ChannelThread) {
 				mChannelRep.add((ChannelThread) r);
+			}
 
 			super.beforeExecute(t, r);
 
@@ -452,8 +454,9 @@ public class ChannelAcceptor {
 		@Override
 		protected void afterExecute(Runnable r, Throwable t) {
 
-			if (r instanceof ChannelThread)
+			if (r instanceof ChannelThread) {
 				mChannelRep.remove((ChannelThread) r);
+			}
 
 			super.afterExecute(r, t);
 

@@ -127,8 +127,9 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	 * @throws MetadataConstructionException
 	 */
 	public final void setPublisherId(String pubId) {
-		if (mPublisherIdSet)
+		if (mPublisherIdSet) {
 			throw new SystemErrorException("ifmap-publisher-id was already set");
+		}
 
 		NullCheck.check(pubId, "publisher-id is null");
 		LengthCheck.checkMin(pubId, 1, "ifmap-publisher-id");
@@ -150,8 +151,9 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	 * @param ts
 	 */
 	public final void setTimestamp(Date ts) {
-		if (mTimeStampSet)
+		if (mTimeStampSet) {
 			throw new SystemErrorException("ifmap-timestamp was already set");
+		}
 
 		NullCheck.check(ts, "timestamp is null");
 		LengthCheck.checkMin(ts.getTime() + "", 1, "ifmap-timestamp");
@@ -171,8 +173,9 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	 * @return
 	 */
 	public MetadataType getType() {
-		if (mType == null)
+		if (mType == null) {
 			throw new RuntimeException("type was not initialized, FIX THAT!");
+		}
 
 		return mType;
 	}

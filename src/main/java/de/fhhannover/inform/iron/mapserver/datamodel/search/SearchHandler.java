@@ -45,8 +45,6 @@ package de.fhhannover.inform.iron.mapserver.datamodel.search;
  * #L%
  */
 
-import org.xml.sax.SAXException;
-
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Link;
 import de.fhhannover.inform.iron.mapserver.datamodel.graph.Node;
 import de.fhhannover.inform.iron.mapserver.datamodel.identifiers.Identifier;

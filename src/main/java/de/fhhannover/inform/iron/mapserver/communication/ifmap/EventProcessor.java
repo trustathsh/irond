@@ -251,6 +251,7 @@ public class EventProcessor extends Processor<Event> {
 	 *
 	 * Give us a logging statement.
 	 */
+	@Override
 	public void stop() {
 		super.stop();
 		sLogger.info(sName + " stopped");
@@ -296,8 +297,9 @@ public class EventProcessor extends Processor<Event> {
 		sLogger.trace(sName + ": RequestChannelEvent on channel " + channelId);
 
 		try {
-			if (mServerConf.isLogRaw())
+			if (mServerConf.isLogRaw()) {
 				logRawRequest(event);
+			}
 
 			request = mRequestUnmarshaller.unmarshal(event.getRequestContent());
 
@@ -491,8 +493,9 @@ public class EventProcessor extends Processor<Event> {
 		ClientIdentifier clientId = request.getClientIdentifier();
 		sLogger.debug(sName + ": publish for " + clientId +  " on " + channelId);
 		try {
-			if (!mAuthorizationProv.isWriteAllowed(clientId))
+			if (!mAuthorizationProv.isWriteAllowed(clientId)) {
 				throw new AccessDeniedException("read-only MAPC - publish denied");
+			}
 
 			Session session = getSessionValidated(request);
 
@@ -598,8 +601,9 @@ public class EventProcessor extends Processor<Event> {
 		ClientIdentifier clientId = request.getClientIdentifier();
 		sLogger.debug(sName + ": purgePublisher for " + clientId + " on " + channelId);
 		try {
-			if (!mAuthorizationProv.isWriteAllowed(clientId))
+			if (!mAuthorizationProv.isWriteAllowed(clientId)) {
 				throw new AccessDeniedException("read-only MAPC - purgePublisher denied");
+			}
 
 			Session session = getSessionValidated(request);
 			String sId = request.getSessionId();
@@ -788,8 +792,9 @@ public class EventProcessor extends Processor<Event> {
 			String sessionId = session.getSessionId();
 
 			// sanity check
-			if (session.hasArc() && !session.getArc().equals(arc))
+			if (session.hasArc() && !session.getArc().equals(arc)) {
 				throw new SystemErrorException("Missed a double ARC failure...");
+			}
 
 			session.unsetPollState();
 
@@ -927,9 +932,10 @@ public class EventProcessor extends Processor<Event> {
 			// Do checks to see if the timer is really expired, or if it's just
 			// a nasty race condition.
 			if (!session.hasTimer()) {
-				if (!session.hasSsrc() && !session.hasArc())
+				if (!session.hasSsrc() && !session.hasArc()) {
 					sLogger.error(sName + ": UNEXPECTED: Timer should have"
 							+ "been running for this session");
+				}
 				return;
 			} else if (session.hasTimer() && session.getTimer().isRunning()) {
 				// huh... there is a timer, but it is still running. Can happen due
@@ -941,8 +947,9 @@ public class EventProcessor extends Processor<Event> {
 					+ " will be ended as of a timeout.");
 
 			// Sanity check
-			if (session.isPollPending())
+			if (session.isPollPending()) {
 				sLogger.error("UNEXPECTED: Timeout for a session having a poll pending");
+			}
 
 			endSessionLocal(session);
 		}
@@ -1148,11 +1155,17 @@ public class EventProcessor extends Processor<Event> {
 	 */
 	private void endSessionLocal(Session session) {
 
-		if (session.hasArc()) mSessionRep.unmap(session, session.getArc());
+		if (session.hasArc()) {
+			mSessionRep.unmap(session, session.getArc());
+		}
 
-		if (session.hasSsrc()) mSessionRep.unmap(session, session.getSsrc());
+		if (session.hasSsrc()) {
+			mSessionRep.unmap(session, session.getSsrc());
+		}
 
-		if (session.hasTimer()) session.getTimer().cancel();
+		if (session.hasTimer()) {
+			session.getTimer().cancel();
+		}
 
 		String sessionId = session.getSessionId();
 		if (sessionId != null) {
@@ -1253,8 +1266,9 @@ public class EventProcessor extends Processor<Event> {
 					+ " uses " + arc + " as new ARC");
 
 			// unmap the old ARC
-			if (session.hasArc())
+			if (session.hasArc()) {
 				mSessionRep.unmap(session, session.getArc());
+			}
 
 			session.setArc(arc);
 			mSessionRep.map(session, arc);
@@ -1355,8 +1369,9 @@ public class EventProcessor extends Processor<Event> {
 		// HACK, we rely on the InputStream being reset()able
 		try {
 			is.mark(is.available());
-			while ((ret = is.read()) >= 0)
+			while ((ret = is.read()) >= 0) {
 				sb.append((char)ret);
+			}
 			is.reset();
 			sRawLogger.info(sb.toString());
 		} catch (IOException e) {
@@ -1429,8 +1444,9 @@ public class EventProcessor extends Processor<Event> {
 
 
 		// Early jump out
-		if (list.size() == 0)
+		if (list.size() == 0) {
 			return;
+		}
 
 		ActionSeries as = new ActionSeries();
 		InputStream is = null;
@@ -1441,14 +1457,16 @@ public class EventProcessor extends Processor<Event> {
 			is = mResultMarshaller.marshal(r);
 			sra = new SendResponseAction(chId, clientId, is);
 
-			if (mServerConf.isLogRaw())
+			if (mServerConf.isLogRaw()) {
 				logRawResponse(sra);
+			}
 
 			as.add(sra);
 		}
 
-		if (as.getActions().size() > 0)
+		if (as.getActions().size() > 0) {
 			putActionSeriesIntoActionQueue(as);
+		}
 
 		// Everything is processed
 		list.clear();

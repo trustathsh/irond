@@ -83,8 +83,9 @@ public class ActionProcessor extends Processor<ActionSeries> {
 	public ActionProcessor(Queue<ActionSeries> actionQ, int workers, int forwarders) {
 		super(actionQ, workers, forwarders);
 
-		if (workers != 1)
+		if (workers != 1) {
 			sLogger.warn(sProcName + ": More than 1 worker? I'm not thread-safe :'-(");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -106,6 +107,7 @@ public class ActionProcessor extends Processor<ActionSeries> {
 	 *
 	 * Give us a logging statement.
 	 */
+	@Override
 	public void stop() {
 		super.stop();
 		sLogger.info(sProcName +": stopped");

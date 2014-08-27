@@ -64,8 +64,8 @@ abstract class IdentifierWithAdministrativeDomainImpl extends IdentifierImpl
 	IdentifierWithAdministrativeDomainImpl(final String type, String ad) {
 		super(type);
 
-		ad = (ad == null) ? "" : ad;
-		mAdmByteCount = (ad.length() == 0) ? 0 : IfmapConstStrings.ADMDOM_CNT + ad.length();
+		ad = ad == null ? "" : ad;
+		mAdmByteCount = ad.length() == 0 ? 0 : IfmapConstStrings.ADMDOM_CNT + ad.length();
 		administrativeDomain = ad;
 	}
 
@@ -95,15 +95,17 @@ abstract class IdentifierWithAdministrativeDomainImpl extends IdentifierImpl
 		IdentifierWithAdministrativeDomainImpl oident;
 		String oad;
 
-		if(this == o)
+		if(this == o) {
 			return true;
+		}
 
 		if (o instanceof IdentifierWithAdministrativeDomainImpl) {
 			oident = (IdentifierWithAdministrativeDomainImpl) o;
 			oad = oident.getAdministrativeDomain();
 
-			if (mConf.getAdministrativeDomainIsCaseSensitive())
+			if (mConf.getAdministrativeDomainIsCaseSensitive()) {
 				return administrativeDomain.equals(oad);
+			}
 
 			return administrativeDomain.equalsIgnoreCase(oad);
 		}

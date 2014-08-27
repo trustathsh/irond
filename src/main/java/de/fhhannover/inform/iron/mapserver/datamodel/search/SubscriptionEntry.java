@@ -63,8 +63,9 @@ public class SubscriptionEntry {
 		private LinkEntry(Link l, int d) {
 			NullCheck.check(l, "l is null");
 
-			if (d < 0)
+			if (d < 0) {
 				throw new SystemErrorException("depth can't be < 0");
+			}
 
 			link = l;
 			depth = d;
@@ -101,8 +102,9 @@ public class SubscriptionEntry {
 	public void addMetadataHolder(MetadataHolder mh) {
 		NullCheck.check(mh, "mh is null");
 
-		if (mMetadata.contains(mh))
+		if (mMetadata.contains(mh)) {
 			throw new SystemErrorException("mh already here");
+		}
 
 		mMetadata.add(mh);
 	}
@@ -110,13 +112,15 @@ public class SubscriptionEntry {
 	public void addMetadataHolder(List<MetadataHolder> mhlist) {
 		NullCheck.check(mhlist, "mhlist is null");
 
-		for (MetadataHolder mh : mhlist)
+		for (MetadataHolder mh : mhlist) {
 			addMetadataHolder(mh);
+		}
 	}
 
 	public void removeMetadataHolder(MetadataHolder mh) {
-		if (!mMetadata.contains(mh))
-				throw new SystemErrorException("mh not here");
+		if (!mMetadata.contains(mh)) {
+			throw new SystemErrorException("mh not here");
+		}
 		mMetadata.remove(mh);
 	}
 }

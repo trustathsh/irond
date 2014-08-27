@@ -87,8 +87,9 @@ public class Digests {
 	private static String makePrintable(byte[] hash) {
 		StringBuilder sb = new StringBuilder();
 
-		for (byte c : hash)
+		for (byte c : hash) {
 			sb.append(String.format("%02x", c));
+		}
 
 		return sb.toString();
 	}

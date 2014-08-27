@@ -71,12 +71,15 @@ public class IpAddressValidator {
 	public static boolean validateIPv4(String value) {
 		boolean res = true;
 
-		if (value == null)
+		if (value == null) {
 			return false;
+		}
 
 		int dots = 0;
 		for (byte b : value.getBytes()) {
-			if (b == '.') dots++;
+			if (b == '.') {
+				dots++;
+			}
 			if (dots > 3) {
 				res = false;
 			}
@@ -86,7 +89,7 @@ public class IpAddressValidator {
 			String octets[] = value.split("\\.");
 			if (octets.length == 4 && res) {
 				for (String s : octets) {
-					if (s.length() == 0 || (s.startsWith("0") && s.length() > 1)) {
+					if (s.length() == 0 || s.startsWith("0") && s.length() > 1) {
 						res = false;
 						break;
 					}
@@ -115,14 +118,15 @@ public class IpAddressValidator {
 	public static boolean validateIPv6(String value) {
 		boolean res = true;
 
-		if (value == null)
+		if (value == null) {
 			return false;
+		}
 
 		try {
 			String quads[] = value.split(":");
 			if (quads.length == 8) {
 				for (String s : quads) {
-					if (s.length() == 0 || (s.startsWith("0") && s.length() > 1)) {
+					if (s.length() == 0 || s.startsWith("0") && s.length() > 1) {
 						res = false;
 						break;
 					}

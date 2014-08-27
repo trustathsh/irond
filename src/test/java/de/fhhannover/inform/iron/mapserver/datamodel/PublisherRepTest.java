@@ -58,6 +58,7 @@ public class PublisherRepTest extends TestCase {
 	PublisherRep pubrep;
 	ClientIdentifier cl = new ClientIdentifier("some user");
 
+	@Override
 	@Before
 	public void setUp() {
 		pubrep = new PublisherRep();

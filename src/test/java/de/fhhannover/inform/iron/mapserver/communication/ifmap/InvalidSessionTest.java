@@ -96,6 +96,7 @@ public class InvalidSessionTest extends TestCase {
 
 
 
+	@Override
 	@Before
 	public void setUp() {
 
@@ -109,6 +110,7 @@ public class InvalidSessionTest extends TestCase {
 		mEventProc.start();
 	}
 
+	@Override
 	@After
 	public void tearDown() {
 		mEventProc.stop();
