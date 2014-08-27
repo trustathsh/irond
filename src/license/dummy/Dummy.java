@@ -36,29 +36,3 @@
  * limitations under the License.
  * #L%
  */
-package de.fhhannover.inform.iron.mapserver.datamodel.search;
-
-
-import de.fhhannover.inform.iron.mapserver.messages.SearchResultType;
-
-/**
- * TODO
- *
- * @since 0.3.0
- * @author aw
- */
-public interface ModifiablePollResult extends PollResult {
-
-	public void addErrorResult(String name);
-	/**
-	 * Add a new {@link SearchResult} to the {@link PollResult}.
-	 * If the last {@link SearchResult} is of the same {@link SearchResultType}
-	 * and the same {@link Subscription} then the {@link SearchResult} can be
-	 * compressed into the last one.
-	 *
-	 * @param res
-	 */
-	public void addSearchResult(ModifiableSearchResult res);
-
-	public void removeResultsOf(String name);
-}

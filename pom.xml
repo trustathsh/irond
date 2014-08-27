@@ -9,18 +9,18 @@
 	</properties>
 
 	<!-- general project information -->
-	<groupId>de.fhhannover.inform.trust</groupId>
+	<groupId>de.hshannover.f4.trust</groupId>
 	<artifactId>irond</artifactId>
 	<version>0.4.2</version>
 	<packaging>jar</packaging>
 	<name>irond</name>
-	<url>http://trust.inform.fh-hannover.de</url>
+	<url>http://trust.f4.hs-hannover.de</url>
 	<description>
 		an IF-MAP 2.1 server
 	</description>
 	<organization>
-		<name>Trust@FHH</name>
-		<url>http://trust.inform.fh-hannover.de</url>
+		<name>Trust@HsH</name>
+		<url>http://trust.f4.hs-hannover.de</url>
 	</organization>
 
 	<!-- the project license -->
@@ -36,14 +36,8 @@
 	<!-- the core developers of the project -->
 	<developers>
 		<developer>
-			<id>aw</id>
-			<name>Arne Welzel</name>
-			<email>arne.welzel@googlemail.com</email>
-		</developer>
-		<developer>
-			<id>ib</id>
-			<name>Ingo Bente</name>
-			<email>ingo.bente@fh-hannover.de</email>
+			<name>Trust@HsH</name>
+			<email>trust@f4-i.fh-hannover.de</email>
 		</developer>
 	</developers>
 
@@ -51,8 +45,16 @@
 	<contributors>
 		<contributor>
 			<name>Joram Knaack</name>
-			<email>joram@knaack.name</email>
 		</contributor>
+        <contributor>
+            <name>Arne Welzel</name>
+        </contributor>
+        <contributor>
+            <name>Ralf Steuerwald</name>
+        </contributor>
+        <contributor>
+            <name>Ingo Bente</name>
+        </contributor>
 	</contributors>
 
 	<build>
@@ -105,12 +107,14 @@
 				<version>1.4</version>
 				<configuration>
 					<licenseName>apache_v2</licenseName>
+					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
 					<canUpdateDescription>true</canUpdateDescription>
 					<canUpdateCopyright>true</canUpdateCopyright>
 					<descriptionTemplate>${basedir}/src/license/description_template.ftl</descriptionTemplate>
 					<roots>
 						<root>src/main/java</root>
 						<root>src/test/java</root>
+						<root>src/license/dummy</root>
 					</roots>
 				</configuration>
 			</plugin>
