@@ -77,7 +77,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>de.fhhannover.inform.iron.mapserver.Main</mainClass>
+							<mainClass>de.hshannover.f4.trust.iron.mapserver.Main</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 						<manifestEntries>
