@@ -11,12 +11,12 @@
 	<!-- general project information -->
 	<groupId>de.hshannover.f4.trust</groupId>
 	<artifactId>irond</artifactId>
-	<version>0.4.2</version>
+	<version>0.5.0</version>
 	<packaging>jar</packaging>
 	<name>irond</name>
 	<url>http://trust.f4.hs-hannover.de</url>
 	<description>
-		an IF-MAP 2.1 server
+		an IF-MAP 2.2 server
 	</description>
 	<organization>
 		<name>Trust@HsH</name>
