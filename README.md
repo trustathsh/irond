@@ -2,11 +2,9 @@ irond
 =====
 
 This package contains an *experimental* MAP server based on JAVA.
-If you have downloaded the bin-package, the server is
-pre-configured and should be "ready to run" as provided. If you
-have downloaded the src-package, you can modify the server and
-rebuild it on your own.
-The server is based on the [IF-MAP 2.0][1] specification.
+Pre-configured and "ready to run" binary packages are available
+in the [release section][4].
+The server is based on the [IF-MAP 2.2][1] specification.
 
 irond supports both basic authentication and certificate-based
 authentication (using X.509 certificates) of MAP clients.
@@ -79,6 +77,18 @@ However, if an entry exists, but is set to any other value then `ro` or
 `rw`, the MAPC is restricted to read-only operations.
 
 
+Building
+========
+Before executing Maven commands you have to install unmanaged dependencies
+in your local Maven repository. After running
+
+    $ ./mvn-install-sunxacml.sh
+
+in `src/main/templates/installation` you should be ready to run
+
+    $ mvn package
+
+
 Running
 =======
 The server was developed using JAVA 1.6. It is therefore
@@ -118,6 +128,7 @@ LICENSE
 irond is licensed under the [Apache License, Version 2.0][3].
 
 
-[1]: http://www.trustedcomputinggroup.org/files/static_page_files/1528BAC2-1A4B-B294-D02E5F053A3CF6C9/TNC_IFMAP_v2_0r36.pdf
+[1]: http://www.trustedcomputinggroup.org/files/static_page_files/FF3CB868-1A4B-B294-D093D8383D733B8A/TNC_IFMAP_v2_2r9.pdf
 [2]: http://download.oracle.com/javase/6/docs/technotes/tools/windows/keytool.html
 [3]: http://www.apache.org/licenses/LICENSE-2.0.html
+[4]: https://github.com/trustathsh/irond/releases
