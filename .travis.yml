@@ -2,9 +2,6 @@ language: java
 jdk:
     - openjdk6
 
-before_install:
-    - ./src/main/templates/installation/mvn-install-sunxacml.sh
-
 notifications:
     email:
         recipients:
