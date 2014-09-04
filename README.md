@@ -79,14 +79,10 @@ However, if an entry exists, but is set to any other value then `ro` or
 
 Building
 ========
-Before executing Maven commands you have to install unmanaged dependencies
-in your local Maven repository. After running
-
-    $ ./mvn-install-sunxacml.sh
-
-in `src/main/templates/installation` you should be ready to run
-
+Just run
     $ mvn package
+as Maven will install the dependency to the [SunXACML implementation][5] on its own before
+compiling.
 
 
 Running
@@ -128,7 +124,19 @@ LICENSE
 irond is licensed under the [Apache License, Version 2.0][3].
 
 
+Notes on Sun XACML
+==================
+The original Sun XACML implementation in version `2.0-M2-SNAPSHOT` was changed to not
+include an own log4j properties file.
+The altered jar-file was then handled by a Python script by [Nikita Volkov][6] to
+generate a local Maven repository for irond.
+It installs in the users Maven repository (~/.m2/repository) as `net/sf/sunxacml/sunxacml/2.0-M2.trustathsh-SNAPSHOT/`.
+The license of the original Sun XACML implementation is attached as `LICENSE.SUNXACML.txt`.
+
+
 [1]: http://www.trustedcomputinggroup.org/files/static_page_files/FF3CB868-1A4B-B294-D093D8383D733B8A/TNC_IFMAP_v2_2r9.pdf
 [2]: http://download.oracle.com/javase/6/docs/technotes/tools/windows/keytool.html
 [3]: http://www.apache.org/licenses/LICENSE-2.0.html
 [4]: https://github.com/trustathsh/irond/releases
+[5]: http://sourceforge.net/projects/sunxacml/files/maven/snapshots/net/sf/sunxacml/sunxacml/2.0-M2-SNAPSHOT/
+[6]: https://github.com/nikita-volkov/install-to-project-repo

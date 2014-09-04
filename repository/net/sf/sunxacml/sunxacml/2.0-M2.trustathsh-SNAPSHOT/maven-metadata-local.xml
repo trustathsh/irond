@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>net.sf.sunxacml</groupId>
+  <artifactId>sunxacml</artifactId>
+  <version>2.0-M2.trustathsh-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20140904140026</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>2.0-M2.trustathsh-SNAPSHOT</value>
+        <updated>20140904140026</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>2.0-M2.trustathsh-SNAPSHOT</value>
+        <updated>20140904140026</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

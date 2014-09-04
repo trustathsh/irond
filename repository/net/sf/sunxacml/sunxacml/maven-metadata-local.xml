@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>net.sf.sunxacml</groupId>
+  <artifactId>sunxacml</artifactId>
+  <versioning>
+    <versions>
+      <version>2.0-M2.trustathsh-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20140904140026</lastUpdated>
+  </versioning>
+</metadata>
