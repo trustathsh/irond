@@ -5,7 +5,6 @@
 	<inceptionYear>2010</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<checkstyle.config.location>src/main/checkstyle/trustFhhCodeconventions.xml</checkstyle.config.location>
 	</properties>
 
 	<!-- general project information -->
@@ -122,6 +121,10 @@
         		<groupId>org.apache.maven.plugins</groupId>
        			<artifactId>maven-checkstyle-plugin</artifactId>
         		<version>2.10</version>
+        		<configuration>
+					<propertyExpansion>headerfile=${project.basedir}/src/license/dummy/Dummy.java</propertyExpansion>
+					<configLocation>https://raw.githubusercontent.com/trustathsh/ironcommon/master/src/main/documents/trustAtHsHCheckstylePolicy.xml</configLocation>
+				</configuration>
       		</plugin>
 		</plugins>
 

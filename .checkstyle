@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
+  <local-check-config name="trustAtHsHCheckstyle" location="https://raw.githubusercontent.com/trustathsh/ironcommon/master/src/main/documents/trustAtHsHCheckstylePolicy.xml" type="remote" description="">
+    <property name="headerfile" value="${project_loc}/src/license/dummy/Dummy.java"/>
+    <property name="checkstyle.cache.file" value="${project_loc}/target/cachefile"/>
+    <additional-data name="cache-file" value="false"/>
+  </local-check-config>
+  <fileset name="all" enabled="true" check-config-name="trustAtHsHCheckstyle" local="true">
+    <file-match-pattern match-pattern="." include-pattern="true"/>
+  </fileset>
+</fileset-config>
+
