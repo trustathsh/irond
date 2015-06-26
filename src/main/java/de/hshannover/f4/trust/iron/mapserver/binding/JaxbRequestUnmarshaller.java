@@ -7,17 +7,17 @@
  *    | | | |  | |_| \__ \ |_| | (_| |  _  |\__ \|  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_| |_||___/|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
+ *
  * Hochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.f4.hs-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.5.3, implemented by the Trust@HsH
  * research group at the Hochschule Hannover.
  * %%
@@ -26,9 +26,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@
  * #L%
  */
 package de.hshannover.f4.trust.iron.mapserver.binding;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,6 +83,7 @@ import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.Metadata;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataFactory;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataLifeTime;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
+import de.hshannover.f4.trust.iron.mapserver.datamodel.search.FilterType;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.TerminalIdentifiers;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidFilterException;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidIdentifierException;
@@ -111,12 +111,11 @@ import de.hshannover.f4.trust.iron.mapserver.utils.DomHelpers;
 import de.hshannover.f4.trust.iron.mapserver.utils.NullCheck;
 
 /**
- * Implementation of the {@link RequestTransformer} interface using JAXB
- * for the XML binding.
+ * Implementation of the {@link RequestTransformer} interface using JAXB for the
+ * XML binding.
  *
- * Functionality originates from the old MessageTransformer class. It was
- * a mess back then and it's still a mess, but we now hide it behind an
- * interface.
+ * Functionality originates from the old MessageTransformer class. It was a mess
+ * back then and it's still a mess, but we now hide it behind an interface.
  *
  * @author aw
  */
@@ -146,11 +145,12 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 	/**
 	 * Constructer
+	 * 
 	 * @param schemaProvider
 	 * @param metaFac2
 	 */
-	JaxbRequestUnmarshaller(MetadataFactory metaFac, ValidationEventHandlerFactory mvefac,
-			SchemaProvider schemaProvider) {
+	JaxbRequestUnmarshaller(MetadataFactory metaFac,
+			ValidationEventHandlerFactory mvefac, SchemaProvider schemaProvider) {
 
 		try {
 			NullCheck.check(metaFac, "metaFac is null");
@@ -180,11 +180,11 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public Request unmarshal(InputStream requestContent) throws UnmarshalException,
-			InvalidIdentifierException, InvalidMetadataException, InvalidFilterException {
+	public Request unmarshal(InputStream requestContent)
+			throws UnmarshalException, InvalidIdentifierException,
+			InvalidMetadataException, InvalidFilterException {
 
 		SimpleValidationEventHandler validationHandler = null;
 		JAXBElement<Envelope> reqEnvJaxb = null;
@@ -197,7 +197,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		// Do we want to validate against the given schema?
 		if (mSchema != null) {
 			mBinder.get().setSchema(mSchema);
-			validationHandler = mValidationEventHandlerFactory.newValidationEventHandler();
+			validationHandler = mValidationEventHandlerFactory
+					.newValidationEventHandler();
 			try {
 				mBinder.get().setEventHandler(validationHandler);
 			} catch (JAXBException e) {
@@ -207,7 +208,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 		try {
 			requestDocument = mDocumentBuilder.get().parse(requestContent);
-			reqEnvJaxb = (JAXBElement<Envelope>) mBinder.get().unmarshal(requestDocument);
+			reqEnvJaxb = (JAXBElement<Envelope>) mBinder.get().unmarshal(
+					requestDocument);
 		} catch (SAXException e) {
 			e.printStackTrace();
 			throw new UnmarshalException(e.getMessage());
@@ -216,7 +218,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			throw new UnmarshalException(e.getMessage());
 		} catch (JAXBException e) {
 			if (validationHandler.hasErrorOccured()) {
-				throw new UnmarshalException(validationHandler.getErrorMessage());
+				throw new UnmarshalException(
+						validationHandler.getErrorMessage());
 			}
 
 			e.printStackTrace();
@@ -247,7 +250,6 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			throw new UnmarshalException("No SOAP Body found");
 		}
 
-
 		try {
 			if (soapBody.getDump() != null) {
 
@@ -271,7 +273,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 			} else if (soapBody.getPurgePublisher() != null) {
 
-				return transformPurgePublisherRequest(soapBody.getPurgePublisher());
+				return transformPurgePublisherRequest(soapBody
+						.getPurgePublisher());
 
 			} else if (soapBody.getRenewSession() != null) {
 
@@ -287,7 +290,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 			} else {
 
-				throw new UnmarshalException("no IF-MAP operation found in request");
+				throw new UnmarshalException(
+						"no IF-MAP operation found in request");
 			}
 		} catch (RequestCreationException e) {
 			throw new UnmarshalException(e.getMessage());
@@ -324,8 +328,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 				String nodeName = node.getNodeName();
 				String nodeValue = node.getNodeValue();
 				if (nodeName.startsWith("xmlns:")) {
-					String prefix = nodeName.substring(6); // magic number xmlns:6
-					// don't overwrite existing mappings, the inner ones are those
+					String prefix = nodeName.substring(6); // magic number
+															// xmlns:6
+					// don't overwrite existing mappings, the inner ones are
+					// those
 					// that we want to have!
 					if (!nsMap.containsKey(prefix)) {
 						nsMap.put(nodeName.substring(6), nodeValue);
@@ -337,7 +343,6 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		extractNsMap(w3cNode.getParentNode(), nsMap);
 	}
 
-
 	private DumpRequest transformDumpRequest(DumpRequestType dump)
 			throws RequestCreationException {
 		String sessionId = dump.getSessionId();
@@ -345,18 +350,17 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return requestFactory.createDumpRequest(sessionId, identifier);
 	}
 
-
-	private EndSessionRequest transformEndSessionRequest(EndSessionType endSession)
-			throws RequestCreationException {
+	private EndSessionRequest transformEndSessionRequest(
+			EndSessionType endSession) throws RequestCreationException {
 		String sessionId = endSession.getSessionId();
 		return requestFactory.createEndSessionRequest(sessionId);
 	}
 
-
-	private NewSessionRequest transformNewSessionRequest(NewSessionRequestType newSession)
-			throws RequestCreationException {
+	private NewSessionRequest transformNewSessionRequest(
+			NewSessionRequestType newSession) throws RequestCreationException {
 		BigInteger mprsRrecv = newSession.getMaxPollResultSize();
-		Integer mprs = mprsRrecv == null ? null : new Integer(mprsRrecv.intValue());
+		Integer mprs = mprsRrecv == null ? null : new Integer(
+				mprsRrecv.intValue());
 		return requestFactory.createNewSessionRequest(mprs);
 	}
 
@@ -366,17 +370,17 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return requestFactory.createPollRequest(sessionId);
 	}
 
-
-	private PurgePublisherRequest transformPurgePublisherRequest( PurgePublisherRequestType purgePublisher)
+	private PurgePublisherRequest transformPurgePublisherRequest(
+			PurgePublisherRequestType purgePublisher)
 			throws RequestCreationException {
 		String sessionId = purgePublisher.getSessionId();
 		String publisherId = purgePublisher.getIfmapPublisherId();
-		return requestFactory.createPurgePublisherRequest(sessionId, publisherId);
+		return requestFactory.createPurgePublisherRequest(sessionId,
+				publisherId);
 	}
 
-
-	private RenewSessionRequest transformRenewSessionRequest(RenewSessionType renewSession)
-			throws RequestCreationException {
+	private RenewSessionRequest transformRenewSessionRequest(
+			RenewSessionType renewSession) throws RequestCreationException {
 		String sessionId = renewSession.getSessionId();
 		return requestFactory.createRenewSessionRequest(sessionId);
 	}
@@ -391,63 +395,58 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	 * @throws InvalidFilterException
 	 * @throws UnmarshalException
 	 */
-	private SearchRequest transformSearchRequest(SearchType search, String sessionID)
-			  									throws RequestCreationException,
-			  											InvalidIdentifierException,
-			  											InvalidFilterException,
-			  											UnmarshalException {
+	private SearchRequest transformSearchRequest(SearchType search,
+			String sessionID) throws RequestCreationException,
+			InvalidIdentifierException, InvalidFilterException,
+			UnmarshalException {
 
 		Node w3cSearch = null;
 		SearchRequest searchRequest = null;
 		if (search != null) {
 			w3cSearch = mBinder.get().getXMLNode(search);
 			Map<String, String> nsMap = extractNsMap(w3cSearch);
-			Identifier ident = identifierHelper.extractFromSearch(search, mBinder.get());
+			Identifier ident = identifierHelper.extractFromSearch(search,
+					mBinder.get());
 			Long maxDepth = search.getMaxDepth();
 			Long maxSize = search.getMaxSize();
 			// if no depth is given, process it with zero depth
 			int maxDepthi = maxDepth == null ? 0 : maxDepth.intValue();
-			Integer maxSizeI = maxSize == null ? null : new Integer(maxSize.intValue());
+			Integer maxSizeI = maxSize == null ? null : new Integer(
+					maxSize.intValue());
 
-			Filter matchLinks = FilterFactory.newFilter(search.getMatchLinks(), nsMap);
-			Filter resultFilter = FilterFactory.newFilter(search.getResultFilter(), nsMap);
-			TerminalIdentifiers terminalIdents =
-				new TerminalIdentifiers(search.getTerminalIdentifierType());
+			Filter matchLinks = FilterFactory.newFilter(search.getMatchLinks(),
+					nsMap, FilterType.MATCH_LINKS_FILTER);
+			Filter resultFilter = FilterFactory.newFilter(
+					search.getResultFilter(), nsMap, FilterType.RESULT_FILTER);
+			TerminalIdentifiers terminalIdents = new TerminalIdentifiers(
+					search.getTerminalIdentifierType());
 
 			if (search instanceof SearchRequestType) {
-				sessionID = ((SearchRequestType)search).getSessionId();
+				sessionID = ((SearchRequestType) search).getSessionId();
 			}
 
 			searchRequest = requestFactory.createSearchRequest(sessionID,
-					maxDepthi, maxSizeI, terminalIdents, ident,
-					matchLinks, resultFilter);
+					maxDepthi, maxSizeI, terminalIdents, ident, matchLinks,
+					resultFilter);
 		}
 		return searchRequest;
 	}
 
-
-
-
 	private SearchRequest transformSearchRequest(SearchType search)
-												throws RequestCreationException,
-														InvalidIdentifierException,
-														InvalidFilterException,
-														UnmarshalException {
+			throws RequestCreationException, InvalidIdentifierException,
+			InvalidFilterException, UnmarshalException {
 		return transformSearchRequest(search, null);
 	}
 
-
 	private PublishRequest transformPublishRequest(PublishRequestType publish)
-												throws RequestCreationException,
-														InvalidIdentifierException,
-														InvalidMetadataException,
-														InvalidFilterException,
-														UnmarshalException {
+			throws RequestCreationException, InvalidIdentifierException,
+			InvalidMetadataException, InvalidFilterException,
+			UnmarshalException {
 		PublishRequest publishRequest = null;
 		List<Object> list = null;
 		List<SubPublishRequest> reqlist = null;
 
-		if (publish != null){
+		if (publish != null) {
 			String sid = publish.getSessionId();
 
 			list = publish.getUpdateOrNotifyOrDelete();
@@ -457,11 +456,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return publishRequest;
 	}
 
-
-	private SubscribeRequest transformSubscribeRequest (SubscribeRequestType srt)
-												throws RequestCreationException,
-														InvalidIdentifierException,
-														InvalidFilterException, UnmarshalException {
+	private SubscribeRequest transformSubscribeRequest(SubscribeRequestType srt)
+			throws RequestCreationException, InvalidIdentifierException,
+			InvalidFilterException, UnmarshalException {
 
 		SubscribeRequest sr = null;
 		List<Object> list = null;
@@ -477,11 +474,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return sr;
 	}
 
-
-	private List<SubSubscribeRequest> transformToSubSubscribeList(List<Object> list, String sessionID)
-												throws RequestCreationException,
-														InvalidIdentifierException,
-														InvalidFilterException, UnmarshalException {
+	private List<SubSubscribeRequest> transformToSubSubscribeList(
+			List<Object> list, String sessionID)
+			throws RequestCreationException, InvalidIdentifierException,
+			InvalidFilterException, UnmarshalException {
 
 		ArrayList<SubSubscribeRequest> ssr = new ArrayList<SubSubscribeRequest>();
 
@@ -491,27 +487,27 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i) instanceof DeleteSearchRequestType) {
-				ssr.add(new SubscribeDelete(
-						((DeleteSearchRequestType) list.get(i)).getName()));
+				ssr.add(new SubscribeDelete(((DeleteSearchRequestType) list
+						.get(i)).getName()));
 			} else if (list.get(i) instanceof SubscribeRequestType.Update) {
-				SearchRequest sr = transformSearchRequest
-							((SubscribeRequestType.Update)list.get(i), sessionID);
+				SearchRequest sr = transformSearchRequest(
+						(SubscribeRequestType.Update) list.get(i), sessionID);
 
 				ssr.add(requestFactory.createSubscribeUpdate(
-						((SubscribeRequestType.Update)list.get(i)).getName(), sr));
+						((SubscribeRequestType.Update) list.get(i)).getName(),
+						sr));
 			} else {
-				throw new UnmarshalException("unknown subscribe operation found");
+				throw new UnmarshalException(
+						"unknown subscribe operation found");
 			}
 		}
 
 		return ssr;
 	}
 
-
-
 	/**
-	 * Wrapper to transform a list of objects which can be of
-	 * type UpdateType, DeleteType and NotifyType into
+	 * Wrapper to transform a list of objects which can be of type UpdateType,
+	 * DeleteType and NotifyType into
 	 *
 	 *
 	 * @param list
@@ -522,11 +518,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	 * @throws InvalidFilterException
 	 * @throws UnmarshalException
 	 */
-	private List<SubPublishRequest> transformToSubPublishRequestList(List<Object> list)
-				throws InvalidIdentifierException, RequestCreationException,
-													InvalidMetadataException,
-													InvalidFilterException,
-													UnmarshalException{
+	private List<SubPublishRequest> transformToSubPublishRequestList(
+			List<Object> list) throws InvalidIdentifierException,
+			RequestCreationException, InvalidMetadataException,
+			InvalidFilterException, UnmarshalException {
 		List<SubPublishRequest> retList = new ArrayList<SubPublishRequest>();
 
 		if (list != null) {
@@ -540,21 +535,18 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		return retList;
 	}
 
-
-
 	private SubPublishRequest transformToSubPublishRequest(Object o)
 			throws RequestCreationException, InvalidIdentifierException,
-												InvalidMetadataException,
-												InvalidFilterException,
-												UnmarshalException {
+			InvalidMetadataException, InvalidFilterException,
+			UnmarshalException {
 		SubPublishRequest ret = null;
 		if (o != null) {
 			if (o instanceof UpdateType) {
-				ret = transformUpdateType((UpdateType)o);
+				ret = transformUpdateType((UpdateType) o);
 			} else if (o instanceof DeleteType) {
-				ret = transformDeleteType((DeleteType)o);
+				ret = transformDeleteType((DeleteType) o);
 			} else if (o instanceof NotifyType) {
-				ret = transformNotifyType((NotifyType)o);
+				ret = transformNotifyType((NotifyType) o);
 			} else {
 				throw new UnmarshalException("unknown element in publish list");
 			}
@@ -572,11 +564,9 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	 * @throws RequestCreationException
 	 * @throws UnmarshalException
 	 */
-	private SubPublishRequest transformNotifyType(NotifyType value) throws
-												InvalidMetadataException,
-												InvalidIdentifierException,
-												RequestCreationException,
-												UnmarshalException {
+	private SubPublishRequest transformNotifyType(NotifyType value)
+			throws InvalidMetadataException, InvalidIdentifierException,
+			RequestCreationException, UnmarshalException {
 		SubPublishRequest ret = null;
 		if (value != null) {
 			MetadataLifeTime lt;
@@ -588,35 +578,36 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			}
 
 			List<Metadata> mlist = transformMetadata(value.getMetadata(), lt);
-			Identifier idents[] = identifierHelper.extractFromNotify(value, mBinder.get());
-			ret = requestFactory.createPublishNotifyRequest(idents[0], idents[1],
-					mlist, lt);
+			Identifier idents[] = identifierHelper.extractFromNotify(value,
+					mBinder.get());
+			ret = requestFactory.createPublishNotifyRequest(idents[0],
+					idents[1], mlist, lt);
 		}
 
 		return ret;
 	}
 
-
 	private SubPublishRequest transformDeleteType(DeleteType value)
 			throws InvalidIdentifierException, RequestCreationException,
-				InvalidFilterException, UnmarshalException {
+			InvalidFilterException, UnmarshalException {
 		SubPublishRequest ret = null;
 		Node w3cNode = null;
 		if (value != null) {
 			w3cNode = mBinder.get().getXMLNode(value);
-			Identifier idents[] = identifierHelper.extractFromDelete(value, mBinder.get());
+			Identifier idents[] = identifierHelper.extractFromDelete(value,
+					mBinder.get());
 			Map<String, String> nsMap = extractNsMap(w3cNode);
-			Filter f = FilterFactory.newFilter(value.getFilter(), nsMap);
-			ret = requestFactory.createPublishDeleteRequest(idents[0], idents[1], f);
+			Filter f = FilterFactory.newFilter(value.getFilter(), nsMap,
+					FilterType.DELETE_FILTER);
+			ret = requestFactory.createPublishDeleteRequest(idents[0],
+					idents[1], f);
 		}
 		return ret;
 	}
 
-
-
 	private SubPublishRequest transformUpdateType(UpdateType value)
-				throws InvalidIdentifierException, RequestCreationException,
-				InvalidMetadataException, UnmarshalException {
+			throws InvalidIdentifierException, RequestCreationException,
+			InvalidMetadataException, UnmarshalException {
 
 		SubPublishRequest ret = null;
 		if (value != null) {
@@ -631,26 +622,27 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 				lt = MetadataLifeTime.forever;
 			}
 			if (value.getMetadata() == null) {
-				throw new InvalidMetadataException("No Metadata in update element found.");
+				throw new InvalidMetadataException(
+						"No Metadata in update element found.");
 
 			}
 			List<Metadata> mlist = transformMetadata(value.getMetadata(), lt);
-			Identifier idents[] = identifierHelper.extractFromUpdate(value, mBinder.get());
-			ret = requestFactory.createPublishUpdateRequest(idents[0], idents[1], mlist, lt);
+			Identifier idents[] = identifierHelper.extractFromUpdate(value,
+					mBinder.get());
+			ret = requestFactory.createPublishUpdateRequest(idents[0],
+					idents[1], mlist, lt);
 		}
 
 		return ret;
 	}
 
-
-
 	/**
-	 * Method to transform the autogenerated MetadataList into a
-	 * List of datamodel Metadata.
+	 * Method to transform the autogenerated MetadataList into a List of
+	 * datamodel Metadata.
 	 *
-	 * This method transforms to the XMLMetadata implementation
-	 * using DOMBuilder from JDOM to create a JDOM Document from
-	 * the Document objects in the MetadataListType.
+	 * This method transforms to the XMLMetadata implementation using DOMBuilder
+	 * from JDOM to create a JDOM Document from the Document objects in the
+	 * MetadataListType.
 	 *
 	 *
 	 * @param metaDataListType
@@ -663,7 +655,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 		List<Object> lo = metaDataListType.getAny();
 
 		if (lo == null || lo.size() == 0) {
-			throw new InvalidMetadataException("No metadata in metadata list found");
+			throw new InvalidMetadataException(
+					"No metadata in metadata list found");
 		}
 
 		for (Object o : lo) {
@@ -671,7 +664,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			Element el;
 			// I have no idea why this works...
 			try {
-				el = (Element)o;
+				el = (Element) o;
 				Document mdDoc = DomHelpers.deepCopy(el);
 				metadata = mMetaFac.newMetadata(mdDoc);
 			} catch (Exception e) {
@@ -686,7 +679,8 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 	/**
 	 * Simple thread-local class for the {@link DocumentBuilder}
 	 */
-	private class DocumentBuilderThreadLocal extends ThreadLocal<DocumentBuilder> {
+	private class DocumentBuilderThreadLocal extends
+			ThreadLocal<DocumentBuilder> {
 
 		@Override
 		protected DocumentBuilder initialValue() {

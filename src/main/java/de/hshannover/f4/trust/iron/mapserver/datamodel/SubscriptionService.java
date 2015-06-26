@@ -7,17 +7,17 @@
  *    | | | |  | |_| \__ \ |_| | (_| |  _  |\__ \|  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_| |_||___/|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
+ *
  * Hochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.f4.hs-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.5.3, implemented by the Trust@HsH
  * research group at the Hochschule Hannover.
  * %%
@@ -26,9 +26,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@
  * #L%
  */
 package de.hshannover.f4.trust.iron.mapserver.datamodel;
-
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -120,36 +119,38 @@ public class SubscriptionService {
 		mSearchFac = params.searchFac;
 		mPep = params.pep;
 		mConf = params.conf;
-		mChangedSubscriptions =
-			CollectionHelper.provideMapFor(Subscription.class, SubscriptionChangeState.class);
+		mChangedSubscriptions = CollectionHelper.provideMapFor(
+				Subscription.class, SubscriptionChangeState.class);
 		mChangedPublishers = CollectionHelper.provideSetFor(Publisher.class);
-		mChangedMetadata = CollectionHelper.provideListFor(MetadataHolder.class);
+		mChangedMetadata = CollectionHelper
+				.provideListFor(MetadataHolder.class);
 
 		mLogicalTimeStamp = 0;
 	}
 
 	/**
 	 * Handling of a {@link SubscriptionRequest} which is forwarded by the
-	 * {@link DataModelService}.
-	 * Look at all teh {@link SubPublishRequest} objects contained in the
-	 * {@link SubscriptionRequest} and dispatch whether it's a update or
-	 * a delete.
+	 * {@link DataModelService}. Look at all teh {@link SubPublishRequest}
+	 * objects contained in the {@link SubscriptionRequest} and dispatch whether
+	 * it's a update or a delete.
 	 *
 	 * @param subscriptionReq
 	 * @throws SearchException
 	 * @throws NoSuchSubscribeException
 	 */
-	void subscribe(SubscribeRequest subReq) throws NoSuchSubscriptionException, SearchException {
+	void subscribe(SubscribeRequest subReq) throws NoSuchSubscriptionException,
+			SearchException {
 		NullCheck.check(subReq, "subReq is null");
 
-		Publisher pub = publisherRep.getPublisherBySessionId(subReq.getSessionId());
+		Publisher pub = publisherRep.getPublisherBySessionId(subReq
+				.getSessionId());
 		sLogger.debug(sName + ": subscribe for " + pub.getPublisherId());
 
 		for (SubSubscribeRequest ssr : subReq.getSubSubscribeRequests()) {
 			if (ssr instanceof SubscribeUpdate) {
-				processSubscribeUpdate(pub, (SubscribeUpdate)ssr);
+				processSubscribeUpdate(pub, (SubscribeUpdate) ssr);
 			} else if (ssr instanceof SubscribeDelete) {
-				processSubscribeDelete(pub, (SubscribeDelete)ssr);
+				processSubscribeDelete(pub, (SubscribeDelete) ssr);
 			} else {
 				throw new SystemErrorException("Unknown SubscribeRequest Impl");
 			}
@@ -185,23 +186,24 @@ public class SubscriptionService {
 			clearContainers(sub);
 			subState.removeSubscription(sub);
 		} else {
-			throw new NoSuchSubscriptionException("Subscription " +
-					ssr.getName() + " does not exist");
+			throw new NoSuchSubscriptionException("Subscription "
+					+ ssr.getName() + " does not exist");
 		}
 	}
 
 	/**
-	 * Create a new {@link Subscription}, attach it to a {@link Publisher},
-	 * run the first search.
+	 * Create a new {@link Subscription}, attach it to a {@link Publisher}, run
+	 * the first search.
 	 *
-	 * If a {@link Subscription} with the same name is already there, reset
-	 * it and update the {@link SearchResult} objects
+	 * If a {@link Subscription} with the same name is already there, reset it
+	 * and update the {@link SearchResult} objects
 	 *
 	 * @param pub
 	 * @param ssr
 	 * @throws SearchException
 	 */
-	private void processSubscribeUpdate(Publisher pub, SubscribeUpdate ssr) throws SearchException {
+	private void processSubscribeUpdate(Publisher pub, SubscribeUpdate ssr)
+			throws SearchException {
 
 		NullCheck.check(pub, "pub is null");
 		NullCheck.check(ssr, "ssr is null");
@@ -210,26 +212,29 @@ public class SubscriptionService {
 		SubscriptionState subState = pub.getSubscriptionState();
 		Subscription sub = subState.getSubscription(ssr.getName());
 
-		sLogger.debug(sName + ": subscribe update \"" + ssr.getName() + "\" for "
-				+ pub.getPublisherId());
+		sLogger.debug(sName + ": subscribe update \"" + ssr.getName()
+				+ "\" for " + pub.getPublisherId());
 
 		// TODO: Maybe we should throw something here to notify the MAPC about
 		// this problem.
 		if (subState.isPollResultsTooBig()) {
-			sLogger.warn(sName + ": Ignoring subscribeUpdate as the PollResult "
+			sLogger.warn(sName
+					+ ": Ignoring subscribeUpdate as the PollResult "
 					+ " grew too big and no notification was sent out yet");
 			return;
 		}
 
 		// Check if subscription was already there and remove it if it was.
 		if (sub != null) {
-			sLogger.debug(sName + ": subscribe update for existing subscription"
-					+ "\"" + sub.getName() + "\", removing existing subscription");
+			sLogger.debug(sName
+					+ ": subscribe update for existing subscription" + "\""
+					+ sub.getName() + "\", removing existing subscription");
 			clearContainers(sub);
 			subState.removeSubscription(sub);
 		}
 
-		sub = mSearchFac.newSubscription(pub, ssr.getName(), ssr.getSearchRequest());
+		sub = mSearchFac.newSubscription(pub, ssr.getName(),
+				ssr.getSearchRequest());
 		subState.addSubscription(sub);
 
 		try {
@@ -240,7 +245,8 @@ public class SubscriptionService {
 			subState.getPollResult().addErrorResult(sub.getName());
 			clearContainers(sub);
 			sLogger.debug(sName + ": initial search too big: " + e.getReached()
-					+ " bytes used, but only " + e.getLimit() + " bytes allowed.");
+					+ " bytes used, but only " + e.getLimit()
+					+ " bytes allowed.");
 		}
 
 		setHasChanges(sub);
@@ -249,34 +255,31 @@ public class SubscriptionService {
 	}
 
 	/**
-	 * If a new {@link Subscription} is created, the first thing to do is to
-	 * run a search in the current graph. While doing so, mark all contained
-	 * {@link MetadataContainer} with this {@link Subscription}.
-	 * Further, put the first {@link SearchResult} of type
-	 * {@link SearchResultType#SEARCH} into the {@link PollResult}.
+	 * If a new {@link Subscription} is created, the first thing to do is to run
+	 * a search in the current graph. While doing so, mark all contained
+	 * {@link MetadataContainer} with this {@link Subscription}. Further, put
+	 * the first {@link SearchResult} of type {@link SearchResultType#SEARCH}
+	 * into the {@link PollResult}.
 	 *
 	 * @param sub
 	 * @throws SearchException
 	 */
-	private ModifiableSearchResult runInitialSearch(Subscription sub) throws SearchResultsTooBigException, SearchException {
+	private ModifiableSearchResult runInitialSearch(Subscription sub)
+			throws SearchResultsTooBigException, SearchException {
 
-		Map<GraphElement, List<MetadataHolder>> visitedGraphElement =
-				new HashMap<GraphElement, List<MetadataHolder>>();
-		Set<MetadataHolder> newMeta = CollectionHelper.provideSetFor(MetadataHolder.class);
+		Map<GraphElement, List<MetadataHolder>> visitedGraphElement = new HashMap<GraphElement, List<MetadataHolder>>();
+		Set<MetadataHolder> newMeta = CollectionHelper
+				.provideSetFor(MetadataHolder.class);
 		Set<Node> starters = CollectionHelper.provideSetFor(Node.class);
-		ModifiableSearchResult initSres = mSearchFac.newCopySearchResult(sub.getName());
+		ModifiableSearchResult initSres = mSearchFac.newCopySearchResult(sub
+				.getName());
 		SearchRequest sr = sub.getSearchRequest();
-		int msrs = sr.maxSizeGiven() ? sr.getMaxResultSize() : mConf.getDefaultMaxSearchResultSize();
+		int msrs = sr.maxSizeGiven() ? sr.getMaxResultSize() : mConf
+				.getDefaultMaxSearchResultSize();
 
 		SearchHandler handler = mSearchFac.newContinueSearchHandler(
-				sr.getStartIdentifier(),
-				0,
-				sub,
-				visitedGraphElement,
-				newMeta,
-				starters,
-				sub.getPublisherReference(),
-				mPep);
+				sr.getStartIdentifier(), 0, sub, visitedGraphElement, newMeta,
+				starters, sub.getPublisherReference(), mPep);
 
 		Searcher searcher = mSearchFac.newSearcher(mGraph, handler);
 		searcher.runSearch();
@@ -284,15 +287,17 @@ public class SubscriptionService {
 		for (GraphElement ge : visitedGraphElement.keySet()) {
 			initSres.addGraphElement(ge);
 
-			for (MetadataHolder mh : ge.getSubscriptionEntry(sub).getMetadataHolder()) {
+			for (MetadataHolder mh : ge.getSubscriptionEntry(sub)
+					.getMetadataHolder()) {
 				initSres.addMetadata(ge, mh.getMetadata());
 			}
 		}
 
-		// Need to check max-size manually as ContinueSearchHandler does not care
+		// Need to check max-size manually as ContinueSearchHandler does not
+		// care
 		if (initSres.getByteCount() > msrs) {
 			throw new SearchResultsTooBigException("SearchResult grew too big",
-	 											   msrs, initSres.getByteCount());
+					msrs, initSres.getByteCount());
 		}
 
 		// Sanitize check: An initial search never leads to new Starters.
@@ -306,15 +311,13 @@ public class SubscriptionService {
 
 	/**
 	 * TODO: for metadata to appear in a notifyResult the state of the
-	 *       subscriptions before <b>all</b> changes because of publishUpdate
-	 *       or publishDelete is taken. It's been like this some time before,
-	 *       but one could think of the following scenario:
-	 *       - A publishUpdate introduces a link somewhere, such that the
-	 *	 subscription would be active for more identifiers and links.
-	 *       - A consecutive notify of metadata would appear in the notifyResult
-	 *	 because of the "new state" of the subscription.
-	 *       As mentioned above, currently only the old state of subscriptions
-	 *       is used.
+	 * subscriptions before <b>all</b> changes because of publishUpdate or
+	 * publishDelete is taken. It's been like this some time before, but one
+	 * could think of the following scenario: - A publishUpdate introduces a
+	 * link somewhere, such that the subscription would be active for more
+	 * identifiers and links. - A consecutive notify of metadata would appear in
+	 * the notifyResult because of the "new state" of the subscription. As
+	 * mentioned above, currently only the old state of subscriptions is used.
 	 *
 	 * @param changedMetadata
 	 * @throws ResponseCreationException
@@ -346,21 +349,26 @@ public class SubscriptionService {
 	private void buildNewResults() {
 		sLogger.trace(sName + ": Building new results");
 
-		for (Entry<Subscription, SubscriptionChangeState> entry :
-											mChangedSubscriptions.entrySet()) {
+		for (Entry<Subscription, SubscriptionChangeState> entry : mChangedSubscriptions
+				.entrySet()) {
 			Subscription sub = entry.getKey();
 			SubscriptionChangeState subcs = entry.getValue();
 
-			makeResults(sub, subcs.mNotifyMetadataHolders, SearchResultType.NOTIFY);
-			makeResults(sub, subcs.mDeletedMetadataHolders, SearchResultType.DELETE);
-			makeResults(sub, subcs.mAddedMetadataHolders, SearchResultType.UPDATE);
+			makeResults(sub, subcs.mNotifyMetadataHolders,
+					SearchResultType.NOTIFY);
+			makeResults(sub, subcs.mDeletedMetadataHolders,
+					SearchResultType.DELETE);
+			makeResults(sub, subcs.mAddedMetadataHolders,
+					SearchResultType.UPDATE);
 		}
 	}
 
 	private void makeResults(Subscription sub,
 			Collection<MetadataHolder> results, SearchResultType type) {
-		SubscriptionState state = sub.getPublisherReference().getSubscriptionState();
-		ModifiableSearchResult sres = mSearchFac.newCopySearchResult(sub.getName(), type);
+		SubscriptionState state = sub.getPublisherReference()
+				.getSubscriptionState();
+		ModifiableSearchResult sres = mSearchFac.newCopySearchResult(
+				sub.getName(), type);
 
 		if (results.size() == 0) {
 			return;
@@ -376,36 +384,39 @@ public class SubscriptionService {
 	}
 
 	private void doSearchers() {
-		try { for (Entry<Subscription, SubscriptionChangeState> entry :
-											mChangedSubscriptions.entrySet()) {
-			Subscription sub = entry.getKey();
-			SubscriptionChangeState subcs = entry.getValue();
+		try {
+			for (Entry<Subscription, SubscriptionChangeState> entry : mChangedSubscriptions
+					.entrySet()) {
+				Subscription sub = entry.getKey();
+				SubscriptionChangeState subcs = entry.getValue();
 
-			sLogger.trace(sName + ": Running DeleteSearchers for " + sub);
-			doDeleteSearchers(sub, subcs);
+				sLogger.trace(sName + ": Running DeleteSearchers for " + sub);
+				doDeleteSearchers(sub, subcs);
 
-			sLogger.trace(sName + ": Running ContinueSearchers for " + sub);
-			doContinueSearchers(sub, subcs);
+				sLogger.trace(sName + ": Running ContinueSearchers for " + sub);
+				doContinueSearchers(sub, subcs);
 
-			sLogger.trace(sName + ": Running CleanupSearchers for " + sub);
-			doCleanupSearchers(sub, subcs);
-		} } catch (SearchResultsTooBigException e) {
+				sLogger.trace(sName + ": Running CleanupSearchers for " + sub);
+				doCleanupSearchers(sub, subcs);
+			}
+		} catch (SearchResultsTooBigException e) {
 			// This should never happen
-			sLogger.error(sName +
-					": SearchResultsTooBig while updating Subscriptions");
+			sLogger.error(sName
+					+ ": SearchResultsTooBig while updating Subscriptions");
 			throw new SystemErrorException(
 					"SearchResultsTooBig while updating Subscriptions");
 		} catch (SearchException e) {
 			// This should never happen
-			sLogger.error(sName +
-					": SearchException while updating Subscriptions");
+			sLogger.error(sName
+					+ ": SearchException while updating Subscriptions");
 			throw new SystemErrorException(
 					"SearchException while updating Subscriptions");
 		}
 	}
 
-	private void doCleanupSearchers(Subscription sub, SubscriptionChangeState subcs)
-			throws SearchResultsTooBigException, SearchException {
+	private void doCleanupSearchers(Subscription sub,
+			SubscriptionChangeState subcs) throws SearchResultsTooBigException,
+			SearchException {
 
 		for (Node starter : subcs.mDeleteStarters) {
 			// might not have to run it anymore
@@ -421,25 +432,26 @@ public class SubscriptionService {
 		}
 	}
 
-	private void doDeleteSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException, SearchException {
+	private void doDeleteSearchers(Subscription sub,
+			SubscriptionChangeState subcs) throws SearchResultsTooBigException,
+			SearchException {
 		Set<Node> contStarters = CollectionHelper.provideSetFor(Node.class);
-		Set<MetadataHolder> deleted = CollectionHelper.provideSetFor(MetadataHolder.class);
+		Set<MetadataHolder> deleted = CollectionHelper
+				.provideSetFor(MetadataHolder.class);
 		SearchHandler handler = null;
 		Searcher searcher = null;
 
 		for (Node starter : subcs.mDeleteStarters) {
 
-			// might not have to run it anymore if another delete searcher removed us.
+			// might not have to run it anymore if another delete searcher
+			// removed us.
 			if (starter.getSubscriptionEntry(sub) == null) {
 				continue;
 			}
 
 			handler = mSearchFac.newDeleteSearchHandler(
-					starter.getIdentifier(),
-					starter.getSubscriptionEntry(sub).getDepth(),
-					sub,
-					deleted,
-					contStarters);
+					starter.getIdentifier(), starter.getSubscriptionEntry(sub)
+							.getDepth(), sub, deleted, contStarters);
 
 			searcher = mSearchFac.newSearcher(mGraph, handler);
 
@@ -450,16 +462,17 @@ public class SubscriptionService {
 		subcs.mContinueStarter.addAll(contStarters);
 	}
 
-	private void doContinueSearchers(Subscription sub, SubscriptionChangeState subcs) throws SearchResultsTooBigException, SearchException {
+	private void doContinueSearchers(Subscription sub,
+			SubscriptionChangeState subcs) throws SearchResultsTooBigException,
+			SearchException {
 		Set<Node> curStarters = CollectionHelper.provideSetFor(Node.class);
-		Set<MetadataHolder> added = CollectionHelper.provideSetFor(MetadataHolder.class);
+		Set<MetadataHolder> added = CollectionHelper
+				.provideSetFor(MetadataHolder.class);
 		Set<Node> nextStarters = CollectionHelper.provideSetFor(Node.class);
 		SearchHandler handler = null;
 		Searcher searcher = null;
 		// FIXME: unused here!
-		Map<GraphElement, List<MetadataHolder>> unusedVisited =
-				new HashMap<GraphElement, List<MetadataHolder>>();
-
+		Map<GraphElement, List<MetadataHolder>> unusedVisited = new HashMap<GraphElement, List<MetadataHolder>>();
 
 		// prepare for the first run
 		curStarters.addAll(subcs.mContinueStarter);
@@ -475,13 +488,9 @@ public class SubscriptionService {
 
 				handler = mSearchFac.newContinueSearchHandler(
 						starter.getIdentifier(),
-						starter.getSubscriptionEntry(sub).getDepth(),
-						sub,
-						unusedVisited,
-						added,
-						nextStarters,
-						sub.getPublisherReference(),
-						mPep);
+						starter.getSubscriptionEntry(sub).getDepth(), sub,
+						unusedVisited, added, nextStarters,
+						sub.getPublisherReference(), mPep);
 
 				searcher = mSearchFac.newSearcher(mGraph, handler);
 				searcher.runSearch();
@@ -501,17 +510,17 @@ public class SubscriptionService {
 
 		for (MetadataHolder mh : mChangedMetadata) {
 			switch (mh.getState()) {
-			case NEW:
-				mh.setState(MetadataState.UNCHANGED);
-				break;
-			case DELETED:
-			case REPLACED:
-				// all references should be gone anyway
-				break;
+				case NEW:
+					mh.setState(MetadataState.UNCHANGED);
+					break;
+				case DELETED:
+				case REPLACED:
+					// all references should be gone anyway
+					break;
 
-			default:
-				throw new SystemErrorException("Metadata with bad state "
-						+ mh.getState() + " in changes");
+				default:
+					throw new SystemErrorException("Metadata with bad state "
+							+ mh.getState() + " in changes");
 			}
 		}
 	}
@@ -521,12 +530,11 @@ public class SubscriptionService {
 			sLogger.trace(sName + ": Dumping changed metadata:");
 			for (MetadataHolder mh : mChangedMetadata) {
 				Metadata m = mh.getMetadata();
-				sLogger.trace("\t" + m.getPrefixAndElement()
-						+ " [state=" + mh.getState()
-						+ " cardinality=" + m.getCardinality()
-						+ " lifetime=" + mh.getLifetime()
-						+ " size=" + m.getByteCount() + " bytes"
-						+ " on " + mh.getGraphElement().dummy() + "]");
+				sLogger.trace("\t" + m.getPrefixAndElement() + " [state="
+						+ mh.getState() + " cardinality=" + m.getCardinality()
+						+ " lifetime=" + mh.getLifetime() + " size="
+						+ m.getByteCount() + " bytes" + " on "
+						+ mh.getGraphElement().dummy() + "]");
 			}
 		}
 	}
@@ -535,7 +543,8 @@ public class SubscriptionService {
 		GraphElement ge;
 		Subscription sub;
 		SubscriptionChangeState subcs;
-		List<MetadataHolder> toRemove = CollectionHelper.provideListFor(MetadataHolder.class);
+		List<MetadataHolder> toRemove = CollectionHelper
+				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh : mChangedMetadata) {
 
@@ -566,29 +575,31 @@ public class SubscriptionService {
 	private void doUpdateDeleteMetadata() {
 		for (MetadataHolder mh : mChangedMetadata) {
 			switch (mh.getState()) {
-			case DELETED:
-				deleteMetadataHolder(mh);
-				break;
-			case NEW:
-				addMetadataHolder(mh);
-				break;
-			case REPLACED:
-				// Sanity Check: REPLACED is always singleValue
-				if (!mh.getMetadata().isSingleValue()) {
-					throw new SystemErrorException("REPLACED not singleValue");
-				}
+				case DELETED:
+					deleteMetadataHolder(mh);
+					break;
+				case NEW:
+					addMetadataHolder(mh);
+					break;
+				case REPLACED:
+					// Sanity Check: REPLACED is always singleValue
+					if (!mh.getMetadata().isSingleValue()) {
+						throw new SystemErrorException(
+								"REPLACED not singleValue");
+					}
 
-				if (mConf.isSanityChecksEnabled()) {
-					replaceSanitize(mh);
-				}
+					if (mConf.isSanityChecksEnabled()) {
+						replaceSanitize(mh);
+					}
 
-				// Forget about it;
-				mh.getGraphElement().removeMetadataHolder(mh);
-				mh.getPublisher().removeMetadataHolder(mh);
+					// Forget about it;
+					mh.getGraphElement().removeMetadataHolder(mh);
+					mh.getPublisher().removeMetadataHolder(mh);
 
-				break;
-			default:
-				throw new SystemErrorException("Bad metadata state: " + mh.getState());
+					break;
+				default:
+					throw new SystemErrorException("Bad metadata state: "
+							+ mh.getState());
 			}
 		}
 	}
@@ -604,7 +615,8 @@ public class SubscriptionService {
 		MetadataType type = mh.getMetadata().getType();
 		GraphElement ge = mh.getGraphElement();
 		List<MetadataHolder> mhs = ge.getMetadataHolder(type);
-		List<MetadataHolder> tmp = CollectionHelper.provideListFor(MetadataHolder.class);
+		List<MetadataHolder> tmp = CollectionHelper
+				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh2 : mhs) {
 			if (mh2.isNew()) {
@@ -670,7 +682,6 @@ public class SubscriptionService {
 		mh.getPublisher().removeMetadataHolder(mh);
 	}
 
-
 	/**
 	 * Somebody, please, add some documentation...
 	 *
@@ -685,19 +696,25 @@ public class SubscriptionService {
 		}
 
 		if (!isLink(ge)) {
-			throw new SystemErrorException("GraphElement not Link nor Identifier");
+			throw new SystemErrorException(
+					"GraphElement not Link nor Identifier");
 		}
 
-		Link l = (Link)ge;
+		Link l = (Link) ge;
 		Node n1 = l.getNode1();
 		Node n2 = l.getNode2();
-		Set<Subscription> subLinkSet = CollectionHelper.provideSetFor(Subscription.class);
-		Set<Subscription> subSetN1 = CollectionHelper.provideSetFor(Subscription.class);
-		Set<Subscription> subSetN2 = CollectionHelper.provideSetFor(Subscription.class);
-		Set<Subscription> res1 = CollectionHelper.provideSetFor(Subscription.class);
-		Set<Subscription> res2 = CollectionHelper.provideSetFor(Subscription.class);
-		Set<Subscription> intersection = CollectionHelper.provideSetFor(Subscription.class);
-
+		Set<Subscription> subLinkSet = CollectionHelper
+				.provideSetFor(Subscription.class);
+		Set<Subscription> subSetN1 = CollectionHelper
+				.provideSetFor(Subscription.class);
+		Set<Subscription> subSetN2 = CollectionHelper
+				.provideSetFor(Subscription.class);
+		Set<Subscription> res1 = CollectionHelper
+				.provideSetFor(Subscription.class);
+		Set<Subscription> res2 = CollectionHelper
+				.provideSetFor(Subscription.class);
+		Set<Subscription> intersection = CollectionHelper
+				.provideSetFor(Subscription.class);
 
 		// create the sets
 		for (SubscriptionEntry entry : l.getSubscriptionEntries()) {
@@ -740,18 +757,19 @@ public class SubscriptionService {
 
 	}
 
-	private void addToContinueStarterIfMatching(MetadataHolder mh, Subscription sub, Node n) {
+	private void addToContinueStarterIfMatching(MetadataHolder mh,
+			Subscription sub, Node n) {
 		Filter matchLinksFilter = sub.getSearchRequest().getMatchLinksFilter();
 		SubscriptionChangeState subcs = getSubChangeState(sub);
 		Publisher pub = sub.getPublisherReference();
 
-		if (isAuthorizedAndMatching(pub, mh, matchLinksFilter)) {
+		if (isAuthorizedAndMatchingMatchLinks(pub, mh, matchLinksFilter)) {
 			subcs.mContinueStarter.add(n);
 		}
 	}
 
-	private void checkForDeletedSubGraph(GraphElement ge, SubscriptionEntry entry,
-			SubscriptionChangeState subcs) {
+	private void checkForDeletedSubGraph(GraphElement ge,
+			SubscriptionEntry entry, SubscriptionChangeState subcs) {
 
 		// Not possible for nodes
 		if (isNode(ge)) {
@@ -759,10 +777,11 @@ public class SubscriptionService {
 		}
 
 		if (!isLink(ge)) {
-			throw new SystemErrorException("GraphElement not Link nor Identifier");
+			throw new SystemErrorException(
+					"GraphElement not Link nor Identifier");
 		}
 
-		Link l = (Link)ge;
+		Link l = (Link) ge;
 		Node n1 = l.getNode1();
 		Node n2 = l.getNode2();
 		Node greaterDepth = null;
@@ -774,8 +793,8 @@ public class SubscriptionService {
 
 		// Sanity
 		if (e1 == null && e2 == null) {
-			throw new SystemErrorException("UNEXPECTED: link had sub, but none "
-					+ " of the nodes");
+			throw new SystemErrorException(
+					"UNEXPECTED: link had sub, but none " + " of the nodes");
 		}
 
 		// There's still metadata on the link for this subscription, so we don't
@@ -814,13 +833,14 @@ public class SubscriptionService {
 	 */
 	private void removeUndeleted() {
 
-					CollectionHelper.provideSetFor(MetadataHolder.class);
-		Set<MetadataHolder> intersection = CollectionHelper.provideSetFor(MetadataHolder.class);
+		CollectionHelper.provideSetFor(MetadataHolder.class);
+		Set<MetadataHolder> intersection = CollectionHelper
+				.provideSetFor(MetadataHolder.class);
 
 		SubscriptionChangeState subcs;
 
-		for (Entry<Subscription, SubscriptionChangeState> entry :
-												mChangedSubscriptions.entrySet()) {
+		for (Entry<Subscription, SubscriptionChangeState> entry : mChangedSubscriptions
+				.entrySet()) {
 			subcs = entry.getValue();
 
 			// I always sucked at set theory
@@ -854,7 +874,8 @@ public class SubscriptionService {
 		boolean res = false;
 
 		// would it be included in the result at all?
-		res = isAuthorizedAndMatching(sub.getPublisherReference(), mh, rFilter);
+		res = isAuthorizedAndNotMatchingResultFiler(
+				sub.getPublisherReference(), mh, rFilter);
 
 		// Links need to match the match-links-filter as well?
 		if (res && isLink(ge)) {
@@ -865,65 +886,74 @@ public class SubscriptionService {
 	}
 
 	/**
-	 * Check if {@link Publisher} is allowed to see {@link Metadata} and if
-	 * the {@link Filter} matches.
+	 * Check if {@link Publisher} is allowed to see {@link Metadata} and if the
+	 * {@link Filter} matches.
 	 *
-	 * TODO:
-	 * I don't know which way is better, first do XACML or first do the
+	 * TODO: I don't know which way is better, first do XACML or first do the
 	 * filter matching.
 	 *
-	 * On a different note, we could try to do both in parallel, as
-	 * they are completely independent. Though, for a allow-all or
-	 * allow-nothing the overhead might not be worth it.
+	 * On a different note, we could try to do both in parallel, as they are
+	 * completely independent. Though, for a allow-all or allow-nothing the
+	 * overhead might not be worth it.
 	 *
 	 * @param pub
 	 * @param metadata
 	 * @param matchLinksFilter
 	 * @return
 	 */
-	private boolean isAuthorizedAndMatching(Publisher pub, MetadataHolder mh, Filter f) {
+	private boolean isAuthorizedAndNotMatchingResultFiler(Publisher pub,
+			MetadataHolder mh, Filter f) {
+		Metadata md = mh.getMetadata();
+		return isAuthorized(pub, mh) && !md.matchesFilter(f);
+	}
+
+	private boolean isAuthorizedAndMatchingMatchLinks(Publisher pub,
+			MetadataHolder mh, Filter f) {
 		Metadata md = mh.getMetadata();
 		return isAuthorized(pub, mh) && md.matchesFilter(f);
 	}
 
 	private boolean isAuthorized(Publisher pub, MetadataHolder mh) {
-		List<MetadataHolder> param = CollectionHelper.provideListFor(MetadataHolder.class);
+		List<MetadataHolder> param = CollectionHelper
+				.provideListFor(MetadataHolder.class);
 		param.add(mh);
 		return mPep.isSearchAuthorized(pub, param).size() > 0;
 	}
 
 	/**
-	 * If a {@link SubscriptionObserver} calls getPollResultFor() the corresponding
-	 * Publisher with the given sessionId is searched.
+	 * If a {@link SubscriptionObserver} calls getPollResultFor() the
+	 * corresponding Publisher with the given sessionId is searched.
 	 *
 	 * All of it's subscriptions are checked, to see if any of them has changes.
-	 * If a subscription has changes either the search result, the update result,
-	 * the delete result or the notify result has elements which might be of
-	 * interest for the MAPC.
+	 * If a subscription has changes either the search result, the update
+	 * result, the delete result or the notify result has elements which might
+	 * be of interest for the MAPC.
 	 *
 	 * A {@link PollResult} is constructed which contains {@link SearchResult}
 	 * objects for all the different result types and further for all
 	 * subscriptions a client has.
 	 *
-	 * thoughts:
-	 * 	could this get too big?
+	 * thoughts: could this get too big?
 	 *
 	 * @param sessionId
 	 * @return
 	 * @throws PollResultsTooBigException
 	 */
-	public PollResult getPollResultFor(String sessionId) throws PollResultsTooBigException {
+	public PollResult getPollResultFor(String sessionId)
+			throws PollResultsTooBigException {
 		Publisher pub = publisherRep.getPublisherBySessionId(sessionId);
 		SubscriptionState subState = pub.getSubscriptionState();
 		PollResult ret = null;
 
 		if (!subState.isNotified()) {
-			throw new SystemErrorException("getPollResultFor() but never notified");
+			throw new SystemErrorException(
+					"getPollResultFor() but never notified");
 		}
 
 		try {
 			if (subState.isPollResultsTooBig()) {
-				sLogger.debug(sName + ": PollResultsTooBig for "  + pub.getPublisherId());
+				sLogger.debug(sName + ": PollResultsTooBig for "
+						+ pub.getPublisherId());
 				subState.resetPollResult();
 				throw new PollResultsTooBigException("too big");
 			}
@@ -951,12 +981,14 @@ public class SubscriptionService {
 	 * Set the {@link SubscriptionObserver} to the given one.
 	 *
 	 * @param subObs
-	 * @throws AlreadyObservedException if another {@link SubscriptionObserver} was
-	 *  registered before
+	 * @throws AlreadyObservedException
+	 *             if another {@link SubscriptionObserver} was registered before
 	 */
-	public void setSubscriptionObserver(SubscriptionObserver subObs) throws AlreadyObservedException {
+	public void setSubscriptionObserver(SubscriptionObserver subObs)
+			throws AlreadyObservedException {
 		if (mObserver != null) {
-			throw new AlreadyObservedException("Only one SubscriptionObserver is allowed!");
+			throw new AlreadyObservedException(
+					"Only one SubscriptionObserver is allowed!");
 		}
 
 		mObserver = subObs;
@@ -980,22 +1012,23 @@ public class SubscriptionService {
 		}
 
 		if (!subState.isNotified()) {
-			sLogger.trace(sName + ": " + pub.getPublisherId() +
-					" has new poll results");
+			sLogger.trace(sName + ": " + pub.getPublisherId()
+					+ " has new poll results");
 			subState.setNotified();
 			mObserver.pollResultAvailable(pub.getSessionId());
 		}
 	}
-
 
 	/**
 	 * Helper method to prepare the notification of the observer with all
 	 * publishers that have new results available.
 	 */
 	private void doResultNotifications() {
-		sLogger.debug(sName + ": Notify SubscriptionObserver about new results...");
+		sLogger.debug(sName
+				+ ": Notify SubscriptionObserver about new results...");
 		for (Publisher p : mChangedPublishers) {
-			sLogger.trace(sName + ": "+ p.getPublisherId()+ " has changed subscriptions");
+			sLogger.trace(sName + ": " + p.getPublisherId()
+					+ " has changed subscriptions");
 			notifyNewPollResults(p);
 		}
 	}
@@ -1026,26 +1059,26 @@ public class SubscriptionService {
 				pollResult.addErrorResult(name);
 				sub.setExceededSize();
 				clearContainers(sub);
-				sLogger.trace(sName + ": Subscription " + name + " of " +
-						pub.getPublisherId() + " grew too big");
+				sLogger.trace(sName + ": Subscription " + name + " of "
+						+ pub.getPublisherId() + " grew too big");
 			}
 		}
 	}
 
 	/**
-	 * If a publisher stores more than its set max-poll-result-size,
-	 * he gets marked by us.
+	 * If a publisher stores more than its set max-poll-result-size, he gets
+	 * marked by us.
 	 */
 	private void markPublisherPollResultTooBig() {
 		for (Publisher pub : mChangedPublishers) {
 			SubscriptionState subState = pub.getSubscriptionState();
 			PollResult pr = subState.getPollResult();
 
-
 			if (subState.isPollResultsTooBig()) {
-				sLogger.trace(sName + ": " + pub.getPublisherId() +
-						" PollResult grew too big (was=" + pr.getByteCount() +
-						"bytes allowed=" + subState.getMaxPollSize() + " bytes)");
+				sLogger.trace(sName + ": " + pub.getPublisherId()
+						+ " PollResult grew too big (was=" + pr.getByteCount()
+						+ "bytes allowed=" + subState.getMaxPollSize()
+						+ " bytes)");
 
 				// Remove all subscriptions from this publisher
 				removeSubscriptions(pub);
@@ -1114,18 +1147,18 @@ public class SubscriptionService {
 		for (GraphElement dummyGe : mGraph.getAllElements()) {
 			GraphElement ge = null;
 			if (isNode(dummyGe)) {
-				ge = mGraph.getNodeFor(((Node)dummyGe).getIdentifier());
+				ge = mGraph.getNodeFor(((Node) dummyGe).getIdentifier());
 			} else if (isLink(dummyGe)) {
-				ge = mGraph.getLinkFor(((Link)dummyGe).getNode1().getIdentifier(),
-						((Link)dummyGe).getNode2().getIdentifier());
+				ge = mGraph.getLinkFor(((Link) dummyGe).getNode1()
+						.getIdentifier(), ((Link) dummyGe).getNode2()
+						.getIdentifier());
 			} else {
 				throw new SystemErrorException("IMPOSSIBLE");
 			}
 
-
 			if (ge.getRemovedSubscriptionEntries().size() > 0) {
-				sLogger.warn(sName + ": Found removed sub entries on " + dummyGe +
-						" for ");
+				sLogger.warn(sName + ": Found removed sub entries on "
+						+ dummyGe + " for ");
 				for (SubscriptionEntry entry : dummyGe.getSubscriptionEntries()) {
 					sLogger.warn(sName + ": " + entry.getSubscription());
 				}
@@ -1133,8 +1166,8 @@ public class SubscriptionService {
 
 			for (MetadataHolder mh : ge.getMetadataHolder()) {
 				if (mh.getState() != MetadataState.UNCHANGED) {
-					sLogger.warn(sName + ": Found metadata with state " +
-							mh.getState() + " on " + ge);
+					sLogger.warn(sName + ": Found metadata with state "
+							+ mh.getState() + " on " + ge);
 				}
 			}
 		}
@@ -1174,16 +1207,14 @@ public class SubscriptionService {
 		private final Set<MetadataHolder> mAddedMetadataHolders;
 
 		public SubscriptionChangeState() {
-			mDeleteStarters =
-				CollectionHelper.provideSetFor(Node.class);
-			mContinueStarter =
-				CollectionHelper.provideSetFor(Node.class);
-			mNotifyMetadataHolders =
-				CollectionHelper.provideSetFor(MetadataHolder.class);
-			mDeletedMetadataHolders =
-				CollectionHelper.provideSetFor(MetadataHolder.class);
-			mAddedMetadataHolders =
-				CollectionHelper.provideSetFor(MetadataHolder.class);
+			mDeleteStarters = CollectionHelper.provideSetFor(Node.class);
+			mContinueStarter = CollectionHelper.provideSetFor(Node.class);
+			mNotifyMetadataHolders = CollectionHelper
+					.provideSetFor(MetadataHolder.class);
+			mDeletedMetadataHolders = CollectionHelper
+					.provideSetFor(MetadataHolder.class);
+			mAddedMetadataHolders = CollectionHelper
+					.provideSetFor(MetadataHolder.class);
 		}
 	}
 }

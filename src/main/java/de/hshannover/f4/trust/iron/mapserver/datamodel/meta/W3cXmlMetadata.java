@@ -7,17 +7,17 @@
  *    | | | |  | |_| \__ \ |_| | (_| |  _  |\__ \|  _  |
  *    |_| |_|   \__,_|___/\__|\ \__,_|_| |_||___/|_| |_|
  *                             \____/
- * 
+ *
  * =====================================================
- * 
+ *
  * Hochschule Hannover
  * (University of Applied Sciences and Arts, Hannover)
  * Faculty IV, Dept. of Computer Science
  * Ricklinger Stadtweg 118, 30459 Hannover, Germany
- * 
+ *
  * Email: trust@f4-i.fh-hannover.de
  * Website: http://trust.f4.hs-hannover.de/
- * 
+ *
  * This file is part of irond, version 0.5.3, implemented by the Trust@HsH
  * research group at the Hochschule Hannover.
  * %%
@@ -26,9 +26,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,12 +38,11 @@
  */
 package de.hshannover.f4.trust.iron.mapserver.datamodel.meta;
 
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.OutputKeys;
@@ -120,9 +119,7 @@ public class W3cXmlMetadata extends Metadata {
 	@Override
 	public boolean matchesFilter(Filter f) {
 		NullCheck.check(f, "filter is null");
-		/*
-		logger.trace("matching with filter " + f.toString());
-		*/
+		sLogger.trace("matching with filter " + f.toString());
 
 		// shortcut
 		if (f.isMatchEverything()) {
@@ -139,29 +136,24 @@ public class W3cXmlMetadata extends Metadata {
 
 		Map<String, String> nsMap = f.getNamespaceMap();
 
-		/*
-		if (logger.isTraceEnabled()) {
+		if (sLogger.isTraceEnabled()) {
 			int cnt = 1;
-			logger.trace("Namespace map used for matching:");
+			sLogger.trace("Namespace map used for matching:");
 			for (Entry<String, String> e : nsMap.entrySet()) {
-				logger.trace(cnt++ + ":\t" +  e.getKey() + " -- " + e.getValue());
+				sLogger.trace(cnt++ + ":\t" + e.getKey() + " -- "
+						+ e.getValue());
 			}
 		}
-		*/
 
 		NamespaceContext nsCtx = new SimpleNamespaceContext(nsMap);
 		xpath.setNamespaceContext(nsCtx);
 
-		/*
-		logger.trace("Filter before adaption: " + fs);
-		*/
+		sLogger.trace("Filter before adaption: " + fs);
 
 		// add * to lonely brackets
 		fs = FilterAdaption.adaptFilterString(fs);
 
-		/*
-		logger.trace("Filter after adaption: " + fs);
-		*/
+		sLogger.trace("Filter after adaption: " + fs);
 
 		XPathExpression expr = null;
 
@@ -176,15 +168,14 @@ public class W3cXmlMetadata extends Metadata {
 		Object ret = null;
 		try {
 			ret = expr.evaluate(mXmlDocument, XPathConstants.BOOLEAN);
-			/*
-			logger.trace("matching result is " + ((Boolean)ret).booleanValue());
-			*/
+			sLogger.trace("matching result is "
+					+ ((Boolean) ret).booleanValue());
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 			sLogger.error("evaluate failed badly: " + e.getMessage());
 			return false;
 		}
-		return ((Boolean)ret).booleanValue();
+		return ((Boolean) ret).booleanValue();
 	}
 
 	@Override
@@ -202,8 +193,10 @@ public class W3cXmlMetadata extends Metadata {
 	@Override
 	public void setTimeStampInternal(Date ts) {
 		mTimeStamp = ts;
-		mXmlElement.setAttribute(TIMESTAMP, Iso8601DateTime.formatDate(mTimeStamp));
-		mXmlElement.setAttribute(TIMESTAMP_FRACTION, TimestampFraction.getSecondFraction(mTimeStamp) + "");
+		mXmlElement.setAttribute(TIMESTAMP,
+				Iso8601DateTime.formatDate(mTimeStamp));
+		mXmlElement.setAttribute(TIMESTAMP_FRACTION,
+				TimestampFraction.getSecondFraction(mTimeStamp) + "");
 		createStrings();
 	}
 
@@ -211,7 +204,6 @@ public class W3cXmlMetadata extends Metadata {
 	 * No pretty print, no nothing, but remove the leading <xml .... > stuff
 	 */
 	private void createStrings() {
-
 
 		Transformer trans = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -223,7 +215,8 @@ public class W3cXmlMetadata extends Metadata {
 			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 			trans.setOutputProperty(OutputKeys.METHOD, "xml");
 		} catch (TransformerConfigurationException e) {
-			sLogger.error("Could not create Transformer instance: " + e.getMessage());
+			sLogger.error("Could not create Transformer instance: "
+					+ e.getMessage());
 			throw new RuntimeException(e.getMessage());
 		}
 
@@ -237,7 +230,8 @@ public class W3cXmlMetadata extends Metadata {
 		try {
 			baos.flush();
 		} catch (IOException e) {
-			sLogger.error("Could not create Transformer instance: " + e.getMessage());
+			sLogger.error("Could not create Transformer instance: "
+					+ e.getMessage());
 			throw new RuntimeException(e.getMessage());
 		}
 		mMetadataAsString = new String(baos.toByteArray());
@@ -264,4 +258,3 @@ public class W3cXmlMetadata extends Metadata {
 		return mPrefixElementName;
 	}
 }
-
