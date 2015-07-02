@@ -10,7 +10,7 @@
 	<!-- general project information -->
 	<groupId>de.hshannover.f4.trust</groupId>
 	<artifactId>irond</artifactId>
-	<version>0.5.4</version>
+	<version>0.5.5</version>
 	<packaging>jar</packaging>
 	<name>irond</name>
 	<url>http://trust.f4.hs-hannover.de</url>
