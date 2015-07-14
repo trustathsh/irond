@@ -68,11 +68,12 @@ public interface GraphElement extends SearchAble {
 
 	/**
 	 * @param f
+	 * @param invertResult if true, includes only elements NOT matching the filter
 	 * @return a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object, matching the given {@link Filter}
 	 * 			instance.
 	 */
-	public List<MetadataHolder> getMetadataHolder(Filter f);
+	public List<MetadataHolder> getMetadataHolder(Filter f, boolean invertResult);
 
 
 	/**
@@ -93,27 +94,30 @@ public interface GraphElement extends SearchAble {
 
 	/**
 	 * @param f
+	 * @param invertResult if true, includes only elements NOT matching the filter
 	 * @return a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object, having either state UNCHANGED
 	 * 			or DELETED and matching the given {@link Filter} instance.
 	 */
-	public List<MetadataHolder> getMetadataHolderInGraph(Filter f);
-
+	public List<MetadataHolder> getMetadataHolderInGraph(Filter f, boolean invertResult);
+	
 	/**
 	 * @param f
+	 * @param invertResult if true, includes only elements NOT matching the filter
 	 * @return a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object, having either state UNCHANGED
 	 * 			or NEW and matching the given {@link Filter} instance.
 	 */
-	public List<MetadataHolder> getMetadataHolderNext(Filter f);
+	public List<MetadataHolder> getMetadataHolderNext(Filter f, boolean invertResult);
 
 	/**
 	 * @param f
+	 * @param invertResult if true, includes only elements NOT matching the filter
 	 * @return a list of {@link MetadataHolder} objects attached to this
 	 * 			{@link GraphElement} object, having state NEW and matching the
 	 * 			given {@link Filter} instance.
 	 */
-	public List<MetadataHolder> getMetadataHolderNew(Filter f);
+	public List<MetadataHolder> getMetadataHolderNew(Filter f, boolean invertResult);
 
 	/**
 	 * Add a {@link MetadataHolder} object to this {@link GraphElement} object.

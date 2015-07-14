@@ -41,10 +41,7 @@ package de.hshannover.f4.trust.iron.mapserver.datamodel.meta;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -55,22 +52,14 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidMetadataException;
-import de.hshannover.f4.trust.iron.mapserver.utils.FilterAdaption;
 import de.hshannover.f4.trust.iron.mapserver.utils.Iso8601DateTime;
 import de.hshannover.f4.trust.iron.mapserver.utils.NullCheck;
-import de.hshannover.f4.trust.iron.mapserver.utils.SimpleNamespaceContext;
 import de.hshannover.f4.trust.iron.mapserver.utils.TimestampFraction;
 
 public class W3cXmlMetadata extends Metadata {
@@ -82,12 +71,10 @@ public class W3cXmlMetadata extends Metadata {
 	private Date mTimeStamp;
 	private String mPublisherId;
 
-	private static XPathFactory xpathFactory;
 	private static TransformerFactory transformerFactory;
 
 	static {
 		try {
-			xpathFactory = XPathFactory.newInstance();
 			transformerFactory = TransformerFactory.newInstance();
 		} catch (TransformerFactoryConfigurationError e) {
 			sLogger.error("Could not get a TransformerFactory instance: "
@@ -114,68 +101,6 @@ public class W3cXmlMetadata extends Metadata {
 
 		mXmlElement = (Element) mXmlDocument.getFirstChild();
 		createStrings();
-	}
-
-	@Override
-	public boolean matchesFilter(Filter f) {
-		NullCheck.check(f, "filter is null");
-		sLogger.trace("matching with filter " + f.toString());
-
-		// shortcut
-		if (f.isMatchEverything()) {
-			return true;
-		}
-
-		// shortcut
-		if (f.isMatchNothing()) {
-			return false;
-		}
-
-		String fs = f.getFilterString();
-		XPath xpath = xpathFactory.newXPath();
-
-		Map<String, String> nsMap = f.getNamespaceMap();
-
-		if (sLogger.isTraceEnabled()) {
-			int cnt = 1;
-			sLogger.trace("Namespace map used for matching:");
-			for (Entry<String, String> e : nsMap.entrySet()) {
-				sLogger.trace(cnt++ + ":\t" + e.getKey() + " -- "
-						+ e.getValue());
-			}
-		}
-
-		NamespaceContext nsCtx = new SimpleNamespaceContext(nsMap);
-		xpath.setNamespaceContext(nsCtx);
-
-		sLogger.trace("Filter before adaption: " + fs);
-
-		// add * to lonely brackets
-		fs = FilterAdaption.adaptFilterString(fs);
-
-		sLogger.trace("Filter after adaption: " + fs);
-
-		XPathExpression expr = null;
-
-		// this should never happen, as we checked it before
-		try {
-			expr = xpath.compile(fs);
-		} catch (XPathExpressionException e1) {
-			sLogger.error("UNEXPECTED: Could not compile filterstring" + fs);
-			return false;
-		}
-
-		Object ret = null;
-		try {
-			ret = expr.evaluate(mXmlDocument, XPathConstants.BOOLEAN);
-			sLogger.trace("matching result is "
-					+ ((Boolean) ret).booleanValue());
-		} catch (XPathExpressionException e) {
-			e.printStackTrace();
-			sLogger.error("evaluate failed badly: " + e.getMessage());
-			return false;
-		}
-		return ((Boolean) ret).booleanValue();
 	}
 
 	@Override

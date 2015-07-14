@@ -39,10 +39,23 @@
 package de.hshannover.f4.trust.iron.mapserver.datamodel.search;
 
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.log4j.Logger;
 
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.Metadata;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.SystemErrorException;
+import de.hshannover.f4.trust.iron.mapserver.provider.LoggingProvider;
+import de.hshannover.f4.trust.iron.mapserver.utils.FilterAdaption;
 import de.hshannover.f4.trust.iron.mapserver.utils.NullCheck;
+import de.hshannover.f4.trust.iron.mapserver.utils.SimpleNamespaceContext;
 
 /**
  * A Filter object simple represents a filter string given by some MAPC.
@@ -70,11 +83,12 @@ import de.hshannover.f4.trust.iron.mapserver.utils.NullCheck;
  * @version 0.1
  */
 
-public class Filter {
+public abstract class Filter {
 
-	private final String mFilterString;
-	private final Map<String, String> mPrefixUriMap;
-	private final FilterType mFilterType;
+	protected final String mFilterString;
+	protected final Map<String, String> mPrefixUriMap;
+	protected final static XPathFactory xPathFactory = XPathFactory.newInstance();
+	protected final static Logger sLogger = LoggingProvider.getTheLogger();
 
 	/**
 	 * toStringString cache;
@@ -91,11 +105,10 @@ public class Filter {
 	 * @param fs
 	 * @param hu
 	 */
-	public Filter(String fs, Map<String, String> hu, FilterType type) {
+	public Filter(String fs, Map<String, String> hu) {
 		NullCheck.check(hu, "No Namespace Mapping given");
 		mPrefixUriMap = hu;
 		mFilterString = fs;
-		mFilterType = type;
 		toStringString = null;
 	}
 
@@ -107,13 +120,9 @@ public class Filter {
 		return mFilterString;
 	}
 
-	public boolean isMatchNothing() {
-		return mFilterString != null && mFilterString.length() == 0;
-	}
+	public abstract boolean isMatchNothing();
 
-	public boolean isMatchEverything() {
-		return mFilterString == null;
-	}
+	public abstract boolean isMatchEverything();
 
 	/**
 	 * Returns a hashmap with all namespace prefix namespace uri mappgings known
@@ -148,25 +157,74 @@ public class Filter {
 		return sb.toString();
 	}
 
-	public boolean isResultFilter() {
-		return mFilterType.equals(FilterType.RESULT_FILTER);
-	}
-
-	public boolean isMatchLinksFilter() {
-		return mFilterType.equals(FilterType.MATCH_LINKS_FILTER);
-	}
-
-	public FilterType getFilterType() {
-		return mFilterType;
-	}
-
-	public static boolean matchesResultFilter(Metadata metadata, Filter filter) {
-		if (filter.isMatchEverything()) {
+	/**
+	 * This method should contain the logic to check
+	 * whether or not this {@link Metadata} object matches the
+	 * given {@link Filter} f.
+	 *
+	 * @param metadata
+	 * @param filter
+	 * @return
+	 */
+	public boolean matches(Metadata metadata) {
+		
+		//shortcut
+		if(isMatchEverything()) {
 			return true;
-		} else if (filter.isMatchNothing()) {
-			return false;
-		} else {
-			return !metadata.matchesFilter(filter);
 		}
+		
+		//shortcut
+		if(isMatchNothing()) {
+			return false;
+		}
+		
+//		NullCheck.check(f, "filter is null");
+		sLogger.trace("matching with filter " + this.toString());
+
+		String fs = this.getFilterString();
+		XPath xpath = xPathFactory.newXPath();
+
+		Map<String, String> nsMap = this.getNamespaceMap();
+
+		if (sLogger.isTraceEnabled()) {
+			int cnt = 1;
+			sLogger.trace("Namespace map used for matching:");
+			for (Entry<String, String> e : nsMap.entrySet()) {
+				sLogger.trace(cnt++ + ":\t" + e.getKey() + " -- "
+						+ e.getValue());
+			}
+		}
+
+		NamespaceContext nsCtx = new SimpleNamespaceContext(nsMap);
+		xpath.setNamespaceContext(nsCtx);
+
+		sLogger.trace("Filter before adaption: " + fs);
+
+		// add * to lonely brackets
+		fs = FilterAdaption.adaptFilterString(fs);
+
+		sLogger.trace("Filter after adaption: " + fs);
+
+		XPathExpression expr = null;
+
+		// this should never happen, as we checked it before
+		try {
+			expr = xpath.compile(fs);
+		} catch (XPathExpressionException e1) {
+			sLogger.error("UNEXPECTED: Could not compile filterstring" + fs);
+			return false;
+		}
+
+		Object ret = null;
+		try {
+			ret = expr.evaluate(metadata.toW3cDocument(), XPathConstants.BOOLEAN);
+			sLogger.trace("matching result is "
+					+ ((Boolean) ret).booleanValue());
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+			sLogger.error("evaluate failed badly: " + e.getMessage());
+			return false;
+		}
+		return ((Boolean) ret).booleanValue();
 	}
 }

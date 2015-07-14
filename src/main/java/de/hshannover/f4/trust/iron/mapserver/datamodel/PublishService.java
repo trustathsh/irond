@@ -364,7 +364,7 @@ class PublishService {
 		GraphElement ge = mGraph.getGraphElement(i1, i2);
 		List<MetadataHolder> toRemove;
 
-		toRemove = ge.getMetadataHolder(filter);
+		toRemove = ge.getMetadataHolder(filter, false);
 		sLogger.trace(sName + ": publish delete for " + ge + " and "
 				+ toRemove.size() + " metadata objects");
 

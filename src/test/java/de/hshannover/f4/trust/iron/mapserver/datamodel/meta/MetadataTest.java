@@ -52,7 +52,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
-import de.hshannover.f4.trust.iron.mapserver.datamodel.search.FilterType;
+import de.hshannover.f4.trust.iron.mapserver.datamodel.search.MatchLinks;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidMetadataException;
 import de.hshannover.f4.trust.iron.mapserver.provider.StubProvider;
 
@@ -141,26 +141,20 @@ public class MetadataTest extends TestCase {
 	@Test
 	public void testMatching_Role() {
 		try {
-			Filter f1 = new Filter("meta:role", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
-			Filter f2 = new Filter("meta:capability", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
-			Filter f3 = new Filter("meta:role/name=\"administrator\"", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
-			Filter f4 = new Filter("meta:role/name=\"chief\"", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
-			Filter f5 = new Filter("meta:role/name=\"administrator\"", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
-			Filter f6 = new Filter("role/name=\"administrator\"", nsMap,
-					FilterType.MATCH_LINKS_FILTER);
+			Filter f1 = new MatchLinks("meta:role", nsMap);
+			Filter f2 = new MatchLinks("meta:capability", nsMap);
+			Filter f3 = new MatchLinks("meta:role/name=\"administrator\"", nsMap);
+			Filter f4 = new MatchLinks("meta:role/name=\"chief\"", nsMap);
+			Filter f5 = new MatchLinks("meta:role/name=\"administrator\"", nsMap);
+			Filter f6 = new MatchLinks("role/name=\"administrator\"", nsMap);
 
 			Metadata meta = mFac.newMetadata(mMetaRoleDoc);
-			assertTrue(meta.matchesFilter(f1));
-			assertFalse(meta.matchesFilter(f2));
-			assertTrue(meta.matchesFilter(f3));
-			assertFalse(meta.matchesFilter(f4));
-			assertTrue(meta.matchesFilter(f5));
-			assertFalse(meta.matchesFilter(f6));
+			assertTrue(f1.matches(meta));
+			assertFalse(f2.matches(meta));
+			assertTrue(f3.matches(meta));
+			assertFalse(f4.matches(meta));
+			assertTrue(f5.matches(meta));
+			assertFalse(f6.matches(meta));
 
 		} catch (InvalidMetadataException e) {
 			e.printStackTrace();

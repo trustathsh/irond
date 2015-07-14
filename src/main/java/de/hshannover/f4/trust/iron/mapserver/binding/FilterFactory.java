@@ -41,7 +41,8 @@ package de.hshannover.f4.trust.iron.mapserver.binding;
 import java.util.Map;
 
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
-import de.hshannover.f4.trust.iron.mapserver.datamodel.search.FilterType;
+import de.hshannover.f4.trust.iron.mapserver.datamodel.search.MatchLinks;
+import de.hshannover.f4.trust.iron.mapserver.datamodel.search.ResultFilter;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidFilterException;
 import de.hshannover.f4.trust.iron.mapserver.utils.FilterValidator;
 
@@ -66,6 +67,36 @@ public class FilterFactory {
 	 * Transformer method to create a filter object from a filterstring and a
 	 * given namespace prefix namespace uri map.<br>
 	 *
+	 * If fs is null a filterobject which matches nothing is contstructed.<br>
+	 *
+	 * If fs is empty, fs.length() == 0, a filterobject which matches everything is
+	 * constructed.<br/>
+	 *
+	 * Else fs is seen as a Filterstring specified in the IF-MAP specification.<br/>
+	 *
+	 * If nm is null a default map with one entry<br>
+	 * ["meta", "urn:trustedcomputinggroup.org:2010:IFMAP-METADATA:2" ]<br>
+	 * is used. One will get a warning constructing such a filter.
+	 *
+	 * @param fs
+	 *            filterstring
+	 * @param nm
+	 *            namespace mapping
+	 * @return
+	 * @throws InvalidFilterException
+	 */
+	public static Filter newResultFilter(String fs, Map<String, String> nm) throws InvalidFilterException {
+		Filter f = new ResultFilter(fs, nm);
+		if (!FilterValidator.validateFilter(f)) {
+			throw new InvalidFilterException("Bad Filter");
+		}
+		return f;
+	}
+	
+	/**
+	 * Transformer method to create a filter object from a filterstring and a
+	 * given namespace prefix namespace uri map.<br>
+	 *
 	 * If fs is null a filterobject which matches everything is contstructed.<br>
 	 *
 	 * If fs is empty, fs.length() == 0, a filterobject which matches nothing is
@@ -84,9 +115,8 @@ public class FilterFactory {
 	 * @return
 	 * @throws InvalidFilterException
 	 */
-	public static Filter newFilter(String fs, Map<String, String> nm,
-			FilterType type) throws InvalidFilterException {
-		Filter f = new Filter(fs, nm, type);
+	public static Filter newMatchLinks(String fs, Map<String, String> nm) throws InvalidFilterException {
+		Filter f = new MatchLinks(fs, nm);
 		if (!FilterValidator.validateFilter(f)) {
 			throw new InvalidFilterException("Bad Filter");
 		}

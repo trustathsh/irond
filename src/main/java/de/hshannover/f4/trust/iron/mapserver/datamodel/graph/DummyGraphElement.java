@@ -69,10 +69,10 @@ abstract class DummyGraphElement implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolder(Filter f) {
+	public List<MetadataHolder> getMetadataHolder(Filter f, boolean invertResult) {
 		throw new SystemErrorException(sErrorString);
 	}
-
+	
 	@Override
 	public List<MetadataHolder> getMetadataHolder(MetadataType type) {
 		throw new SystemErrorException(sErrorString);
@@ -84,17 +84,17 @@ abstract class DummyGraphElement implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderInGraph(Filter f) {
+	public List<MetadataHolder> getMetadataHolderInGraph(Filter f, boolean invertResult) {
 		throw new SystemErrorException(sErrorString);
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderNext(Filter f) {
+	public List<MetadataHolder> getMetadataHolderNext(Filter f, boolean invertResult) {
 		throw new SystemErrorException(sErrorString);
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderNew(Filter f) {
+	public List<MetadataHolder> getMetadataHolderNew(Filter f, boolean invertResult) {
 		throw new SystemErrorException(sErrorString);
 	}
 

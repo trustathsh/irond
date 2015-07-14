@@ -175,7 +175,7 @@ class IfmapPepImpl implements IfmapPep {
 			case DELETE:
 				Filter f = ((PublishDelete)sreq).getFilter();
 
-				for (MetadataHolder mh : ge.getMetadataHolderInGraph(f)) {
+				for (MetadataHolder mh : ge.getMetadataHolderInGraph(f, false)) {
 					Metadata md = mh.getMetadata();
 					clob = !samePublisher(pub, mh);
 					results.add(mExecutor.submit(

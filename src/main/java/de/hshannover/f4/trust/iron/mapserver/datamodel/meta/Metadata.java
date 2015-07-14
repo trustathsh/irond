@@ -91,16 +91,6 @@ public abstract class Metadata extends SimpleSearchAbleImpl {
 	}
 
 	/**
-	 * This method should contain the logic to check
-	 * whether or not this {@link Metadata} object matches the
-	 * given {@link Filter} f.
-	 *
-	 * @param f
-	 * @return
-	 */
-	abstract public boolean matchesFilter(Filter f);
-
-	/**
 	 * Conversation from the internal representation to a
 	 * W3C document representation. This is needed when
 	 * transforming this {@link Metadata} object into objects

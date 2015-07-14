@@ -124,7 +124,7 @@ class BasicSearchHandler extends AbstractSearchHandler {
 		}
 
 		// Matching and authorization is costly, cache the result.
-		matching = authorized(l.getMetadataHolderInGraph(getMatchLinksFilter()));
+		matching = authorized(l.getMetadataHolderInGraph(getMatchLinksFilter(), false));
 
 		getVisitedElements().put(l, matching);
 
@@ -175,7 +175,7 @@ class BasicSearchHandler extends AbstractSearchHandler {
 	 */
 	private void appendToResult(Node n) {
 		List<MetadataHolder> mhlist = n
-				.getMetadataHolderInGraph(getResultFilter());
+				.getMetadataHolderInGraph(getResultFilter(), true);
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 
 		for (MetadataHolder mh : authorized(mhlist)) {
@@ -199,7 +199,7 @@ class BasicSearchHandler extends AbstractSearchHandler {
 		List<Metadata> toAdd = CollectionHelper.provideListFor(Metadata.class);
 
 		for (MetadataHolder mh : matchLinksMd) {
-			if (Filter.matchesResultFilter(mh.getMetadata(), getResultFilter())) {
+			if (!getResultFilter().matches(mh.getMetadata())) {
 				toAdd.add(mh.getMetadata());
 			}
 		}

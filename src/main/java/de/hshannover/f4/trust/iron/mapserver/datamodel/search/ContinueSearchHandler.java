@@ -152,7 +152,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 
 		// Just check whether there is some new Metadata that matches,
 		// assuming this is always a subset of the Next metadata
-		newMatching = l.getMetadataHolderNew(getMatchLinksFilter());
+		newMatching = l.getMetadataHolderNew(getMatchLinksFilter(), false);
 
 		// Only for what the client is authorized
 		newMatching = authorized(newMatching);
@@ -163,7 +163,7 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 
 		// Only now check whether there is metadata that would match in
 		// the next graph state.
-		nextMatching = l.getMetadataHolderNext(getMatchLinksFilter());
+		nextMatching = l.getMetadataHolderNext(getMatchLinksFilter(), false);
 		nextMatching = authorized(nextMatching);
 
 		return nextMatching.size() > 0;
@@ -267,15 +267,14 @@ class ContinueSearchHandler extends AbstractSearchHandler {
 				entry = new SubscriptionEntry(mSubscription);
 
 				if (ge instanceof Node) {
-					toAdd = ge.getMetadataHolder(getResultFilter());
+					toAdd = ge.getMetadataHolder(getResultFilter(), true);
 				} else if (ge instanceof Link) {
 					List<MetadataHolder> tmp = CollectionHelper
 							.provideListFor(MetadataHolder.class);
-					toAdd = ge.getMetadataHolder(getMatchLinksFilter());
+					toAdd = ge.getMetadataHolder(getMatchLinksFilter(), false);
 
 					for (MetadataHolder mh : toAdd) {
-						if (Filter.matchesResultFilter(mh.getMetadata(),
-								getResultFilter())) {
+						if (!getResultFilter().matches(mh.getMetadata())) {
 							tmp.add(mh);
 						}
 					}

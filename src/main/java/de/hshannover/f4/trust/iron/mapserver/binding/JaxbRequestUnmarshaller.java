@@ -83,7 +83,6 @@ import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.Metadata;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataFactory;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataLifeTime;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
-import de.hshannover.f4.trust.iron.mapserver.datamodel.search.FilterType;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.TerminalIdentifiers;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidFilterException;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.InvalidIdentifierException;
@@ -414,10 +413,10 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			Integer maxSizeI = maxSize == null ? null : new Integer(
 					maxSize.intValue());
 
-			Filter matchLinks = FilterFactory.newFilter(search.getMatchLinks(),
-					nsMap, FilterType.MATCH_LINKS_FILTER);
-			Filter resultFilter = FilterFactory.newFilter(
-					search.getResultFilter(), nsMap, FilterType.RESULT_FILTER);
+			Filter matchLinks = FilterFactory.newMatchLinks(search.getMatchLinks(),
+					nsMap);
+			Filter resultFilter = FilterFactory.newResultFilter(
+					search.getResultFilter(), nsMap);
 			TerminalIdentifiers terminalIdents = new TerminalIdentifiers(
 					search.getTerminalIdentifierType());
 
@@ -597,8 +596,7 @@ class JaxbRequestUnmarshaller implements RequestUnmarshaller {
 			Identifier idents[] = identifierHelper.extractFromDelete(value,
 					mBinder.get());
 			Map<String, String> nsMap = extractNsMap(w3cNode);
-			Filter f = FilterFactory.newFilter(value.getFilter(), nsMap,
-					FilterType.DELETE_FILTER);
+			Filter f = FilterFactory.newMatchLinks(value.getFilter(), nsMap);
 			ret = requestFactory.createPublishDeleteRequest(idents[0],
 					idents[1], f);
 		}

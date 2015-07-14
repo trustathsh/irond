@@ -44,7 +44,6 @@ import java.util.Map;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataHolder;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.meta.MetadataType;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Filter;
-import de.hshannover.f4.trust.iron.mapserver.datamodel.search.FilterType;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.Subscription;
 import de.hshannover.f4.trust.iron.mapserver.datamodel.search.SubscriptionEntry;
 import de.hshannover.f4.trust.iron.mapserver.exceptions.SystemErrorException;
@@ -77,19 +76,16 @@ abstract class GraphElementImpl implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolder(Filter f) {
+	public List<MetadataHolder> getMetadataHolder(Filter f, boolean invertResult) {
 		List<MetadataHolder> ret = CollectionHelper
 				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh : mMetadataHolder) {
-			boolean matches = f.getFilterType()
-					.equals(FilterType.RESULT_FILTER) ? Filter
-					.matchesResultFilter(mh.getMetadata(), f) : mh
-					.getMetadata().matchesFilter(f);
+			//^ == XOR! 
+			boolean matches = f.matches(mh.getMetadata()) ^ invertResult;
 			if (matches) {
 				ret.add(mh);
 			}
-
 		}
 
 		return ret;
@@ -124,15 +120,13 @@ abstract class GraphElementImpl implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderInGraph(Filter f) {
+	public List<MetadataHolder> getMetadataHolderInGraph(Filter f, boolean invertResult) {
 		List<MetadataHolder> ret = CollectionHelper
 				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh : getMetadataHolderInGraph()) {
-			boolean matches = f.getFilterType()
-					.equals(FilterType.RESULT_FILTER) ? Filter
-					.matchesResultFilter(mh.getMetadata(), f) : mh
-					.getMetadata().matchesFilter(f);
+			//^ == XOR! 
+			boolean matches = f.matches(mh.getMetadata()) ^ invertResult;
 			if (matches) {
 				ret.add(mh);
 			}
@@ -142,15 +136,13 @@ abstract class GraphElementImpl implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderNext(Filter f) {
+	public List<MetadataHolder> getMetadataHolderNext(Filter f, boolean invertResult) {
 		List<MetadataHolder> ret = CollectionHelper
 				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh : getMetadataHolder()) {
-			boolean matches = f.getFilterType()
-					.equals(FilterType.RESULT_FILTER) ? Filter
-					.matchesResultFilter(mh.getMetadata(), f) : mh
-					.getMetadata().matchesFilter(f);
+			//^ == XOR! 
+			boolean matches = f.matches(mh.getMetadata()) ^ invertResult;
 			if ((mh.isNew() || mh.isUnchanged()) && matches) {
 				ret.add(mh);
 			}
@@ -160,15 +152,13 @@ abstract class GraphElementImpl implements GraphElement {
 	}
 
 	@Override
-	public List<MetadataHolder> getMetadataHolderNew(Filter f) {
+	public List<MetadataHolder> getMetadataHolderNew(Filter f, boolean invertResult) {
 		List<MetadataHolder> ret = CollectionHelper
 				.provideListFor(MetadataHolder.class);
 
 		for (MetadataHolder mh : getMetadataHolder()) {
-			boolean matches = f.getFilterType()
-					.equals(FilterType.RESULT_FILTER) ? Filter
-					.matchesResultFilter(mh.getMetadata(), f) : mh
-					.getMetadata().matchesFilter(f);
+			//^ == XOR! 
+			boolean matches = f.matches(mh.getMetadata()) ^ invertResult;
 			if (mh.isNew() && matches) {
 				ret.add(mh);
 			}

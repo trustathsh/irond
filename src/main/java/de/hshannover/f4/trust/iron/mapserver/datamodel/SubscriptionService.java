@@ -763,7 +763,7 @@ public class SubscriptionService {
 		SubscriptionChangeState subcs = getSubChangeState(sub);
 		Publisher pub = sub.getPublisherReference();
 
-		if (isAuthorizedAndMatchingMatchLinks(pub, mh, matchLinksFilter)) {
+		if (isAuthorizedAndMatchingFilter(pub, mh, matchLinksFilter)) {
 			subcs.mContinueStarter.add(n);
 		}
 	}
@@ -805,7 +805,7 @@ public class SubscriptionService {
 
 		// There is NEW metadata which will take over. We do not delete the
 		// the subscription in this case.
-		for (MetadataHolder mh : ge.getMetadataHolderNew(matchLinks)) {
+		for (MetadataHolder mh : ge.getMetadataHolderNew(matchLinks, false)) {
 			if (isAuthorized(pub, mh)) {
 				return;
 			}
@@ -871,18 +871,17 @@ public class SubscriptionService {
 		Filter lFilter = sub.getSearchRequest().getMatchLinksFilter();
 		Filter rFilter = sub.getSearchRequest().getResultFilter();
 		GraphElement ge = mh.getGraphElement();
-		boolean res = false;
-
-		// would it be included in the result at all?
-		res = isAuthorizedAndNotMatchingResultFiler(
-				sub.getPublisherReference(), mh, rFilter);
-
-		// Links need to match the match-links-filter as well?
-		if (res && isLink(ge)) {
-			res &= mh.getMetadata().matchesFilter(lFilter);
+		
+		if(isAuthorizedAndMatchingFilter(sub.getPublisherReference(), mh, rFilter)) {
+			//Needs to be filtered (included in result-filter)
+			return false;
 		}
-
-		return res;
+		if (isLink(ge)) {
+			//If it is a link, check whether it matches the link filter as well?
+			return lFilter.matches(mh.getMetadata());
+		}
+		//Not included in result-filter and no link? Good to go!
+		return true;
 	}
 
 	/**
@@ -901,16 +900,10 @@ public class SubscriptionService {
 	 * @param matchLinksFilter
 	 * @return
 	 */
-	private boolean isAuthorizedAndNotMatchingResultFiler(Publisher pub,
+	private boolean isAuthorizedAndMatchingFilter(Publisher pub,
 			MetadataHolder mh, Filter f) {
 		Metadata md = mh.getMetadata();
-		return isAuthorized(pub, mh) && !md.matchesFilter(f);
-	}
-
-	private boolean isAuthorizedAndMatchingMatchLinks(Publisher pub,
-			MetadataHolder mh, Filter f) {
-		Metadata md = mh.getMetadata();
-		return isAuthorized(pub, mh) && md.matchesFilter(f);
+		return isAuthorized(pub, mh) && f.matches(md);
 	}
 
 	private boolean isAuthorized(Publisher pub, MetadataHolder mh) {
